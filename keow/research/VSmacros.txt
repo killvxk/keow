@@ -1,0 +1,21 @@
+Use the File and Directory lists on the Custom Build tab to insert any of the following directory and file name macros in either the Commands or Output box at the current insertion point location.
+
+The following table shows the Directory list contents.
+Label 			Macro 		Description
+Intermediate 		$(IntDir) 	Path to the directory specified for intermediate files, relative to the project directory
+Output 			$(OutDir) 	Path to the directory specified for output files, relative to the project directory
+Target 			$(TargetDir) 	Fully qualified path to the directory specified for output files
+Input 			$(InputDir) 	Relative path to the project directory
+Project 		$(ProjDir) 	Fully qualified path to the project directory
+Workspace 		$(WkspDir) 	Fully qualified path to the workspace directory
+Microsoft Developer 	$(MSDevDir) 	Fully qualified path to the installation directory for Microsoft Visual C++® .NET
+Remote Target 		$(RemoteDir) 	Fully qualified path to the remote output file
+
+The following table shows the File list contents.
+Label 		Macro 		Description
+Target Path 	$(TargetPath) 	Fully qualified name for the project output file
+Target Name 	$(TargetName) 	Base name for the output file
+Input Path 	$(InputPath) 	Fully qualified name for the input file
+Input Name 	$(InputName) 	Base name for the input file
+Workspace Name 	$(WkspName) 	Name of the workspace
+Remote Target Path 	$(RemoteTargetPath) 	Fully qualified name for the remote output file

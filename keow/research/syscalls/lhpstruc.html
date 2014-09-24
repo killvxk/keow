@@ -1,0 +1,1721 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+                      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+    <title>Linux 2.2+ Syscalls, Data Types</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+    <link href="http://www.lxhp.in-berlin.de/">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+    <link rev="made" href="lxhp@china.com?subject=w3lxa">
+</head>
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc"
+alink="#ff99ff" lang="en" style="font-family:lucida,arial,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<!-- The <tab> tag is quite precise, but lynx specific; TAB spacing is 8 NBSP-s, "i0".."i13" are def'd  -->
+<pre>|<tab id="i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+<table width="98%">
+<tr>
+<td width="70%">
+    <small><big>
+    <a href="index-lx.shtml#nospam">Copyright &copy; h-peter recktenwald, berlin, 2000</a> - Free for non-commercial use.<br>
+    <a href="http://lynx.browser.org">Lynx</a> (etc) text mode tables arranged to 132 chars/line - <br>
+    where if properly adjusted the tables appear most "readable"...
+    </big></small>
+</td>
+<td align="right"><a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0"></a></td>
+</tr>
+</table>
+<hr>
+<a name="top"></a>
+
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0s.html">[s:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a name="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+
+<hr>
+<span style="font-family: lucida,helvetica,arial">
+
+<h3>content</h3>
+
+<ul>
+<li><a href="#types" name="rtypes">data types</a>, sizes of named data entities.</li>
+<li><a href="#dirent">dirent</a>, directory file entry.</li>
+<li><a href="#sexample">example</a> to &lt;sys_select> watching an fd &lt; 32.</li>
+<li><a href="#flock">flock</a> struct, for the file locking <a href="#fcntl">fcntl</a>.</li>
+<li><a href="#fdset">fdset</a>, bit array for sys_select.</li>
+<li>keyboard, <a href="file:///usr/src/linux/include/linux/kd.h">include/linux/kd.h</a><ul>
+	<li><a href="#kbentry"></a>struct kbentry</li>
+	<li><a href="#kbsentry"></a>struct kbsentry</li>
+	<li><a href="#kbdiacr"></a>struct kbdiacr</li>
+	<li><a href="#kbdiacrs"></a>struct kbdiacrs</li>
+	<li><a href="#kbkeycode"></a>struct kbkeycode</li>
+	<li><a href="#kbd_repeat"></a>struct kbd_repeat</li>
+	<li><a href="#unipair"></a>struct unipair</li>
+	<li><a href="#unimapdesc"></a>struct unimapdesc</li>
+	<li><a href="#unimapinit"></a>struct unimapinit</li>
+	<li><a href="#consolefontdesc"></a>struct consolefontdesc</li>
+</ul></li>
+<li><a href="#ksym">ksym</a>, kernel symbols entry.</li>
+<li>ppp<ul>
+	<li><a href="#npioctl">npioctl</a>, PPPIOCGNPMODE, PPPIOCSNPMODE</li>
+	<li><a href="#ppp_option_data">ppp_option_data</a>, CCP configuration option, for PPPIOCSCOMPRESS</li>
+	<li><a href="#ppp_idle">ppp_idle</a>, time in seconds since the last NP packet was sent or received</li>
+	<li><a href="#ext_accm">ext_accm</a> typedef</li>
+</ul></li>
+<li><a href="#ptregs">pt_regs</a>, saved regs at signal stack.</li>
+<li><a href="#adregs">pushad/popad</a> data structure @ESP.</li>
+<li><a href="#resource">resource</a> contol &amp; accounting.</li>
+<li><a href="#rusage">rusage</a>, kernel resources control &amp; accounting data structure.</li>
+<li><a href="#siginfo_t">siginfo_t</a>, signal handler data item.</li>
+<li><a href="#sighandler">signal handler</a> types structure.</li>
+<li><a href="#sigset">sigset_t</a>, signal handler data item.</li>
+<li><a href="#sigset">old_sigset_t</a>, signal handler data item.</li>
+<li><a href="#stat">stat</a>, file status description</li>
+<li><a href="#stat64">stat64</a>, file status description, 2.4.18</li>
+<li><a href="#sigstack">sig(alt)stack</a>, stack_t, alternate signal handlers stack</li>
+<li><a href="#sysinfo">sysinfo</a>, system statistics.</li>
+<li><a href="#timespec">timespec</a>, seconds &amp; nanoseconds.</li>
+<li><a href="#timeval">timeval</a>, seconds &amp; mikroseconds, e.g. ru_utime, ru_stime; time by user &amp; system.</li>
+<li><a href="#timezone">timezone</a></li>
+<li><a href="#utsname">utsname</a>, by uname, getdomainname, gethostname</li>
+<li>terminal description and related structs<ul>
+	<li><a href="#async_struct"</a>async_struct</li>
+	<li><a href="#fasync_struct"</a>fasync_struct</li>
+	<li><a href="#file">file</a>, -re- <a href="file:///usr/src/linux/include/linux/fs.h">linux/fs.h</a></li>
+	<li><a href="#serial_icounter_struct">serial_icounter_struct</a></li>
+	<li><a href="#serial_multiport_struct">serial_multiport_struct</a></li>
+	<li><a href="#termio">termio</a></li>
+	<li><a href="#termios">termios</a><ul>
+	    <li><a href="#termbits">termbits</a></li>
+	    </ul>
+	</li>
+	<li><a href="#tq_struct">tq_struct</a></li>
+	<li><a href="#tty_driver">tty_driver</a></li>
+	<li><a href="#tty_flip_buffer">tty_flip_buffer</a></li>
+	<li><a href="#tty_ldisc">tty_ldisc</a></li>
+	<li><a href="#tty_struct">tty_struct</a></li>
+	<li><a href="#wait_queue">wait_queue</a></li>
+	<li><a href="#semaphore">semaphore</a></li>
+	<li><a href="#cfo">console_font_op</a>, font operations</li>
+	<li><a href="#hwc">hwclk_time</a>, r/w hardware clock</li>
+	</ul>
+</li>
+<li><a href="#vm86p">vm86plus_struct</a>, virtual 8086 mode defns</li>
+<li><a href="#vt">vt</a>, video terminal: vt_mode, vt_stat, vt_sizes, vt_consize</li>
+<li><a href="#winsize">winsize</a></li>
+</ul>
+
+<hr>
+<hr>
+
+
+<p>&nbsp;</p>
+
+// <a href="file:///usr/src/linux/include/linux/kd.h" name="kd.h">include/linux/kd.h</a><pre>
+		<a name="kbentry">struct kbentry</a> {
+		    unsigned char kb_table;
+		    unsigned char kb_index;
+		    unsigned short kb_value;
+		};
+		<a name="kbsentry">struct kbsentry</a> {
+		    unsigned char kb_func;
+		    unsigned char kb_string[512];
+		};
+		<a name="kbdiacr">struct kbdiacr</a> {
+        	    unsigned char diacr, base, result;
+		};
+		<a name="kbdiacrs">struct kbdiacrs</a> {
+        	    unsigned int kb_cnt;		// number of entries in following array
+		    <a href="#kbdiacr">struct kbdiacr</a> kbdiacr[256];	// MAX_DIACR from keyboard.h
+		};
+		<a name="kbkeycode">struct kbkeycode</a> {
+		    unsigned int scancode, keycode;
+		};
+		<a name="kbd_repeat">struct kbd_repeat</a> {
+		    int delay;	// in msec &lt;= 0: don't change
+		    int rate;	// in msec &lt;= 0: don't change
+		};
+		<a name="unipair">struct unipair</a> {
+		    unsigned short unicode;
+		    unsigned short fontpos;
+		};
+		<a name="unimapdesc">struct unimapdesc</a> {
+		    unsigned short entry_ct;
+		    <a href="#unipair">struct unipair</a> *entries;
+		};
+		<a name="unimapinit">struct unimapinit</a> {
+		    unsigned short advised_hashsize;	// 0 if no opinion
+		    unsigned short advised_hashstep;	// 0 if no opinion
+		    unsigned short advised_hashlevel;	// 0 if no opinion
+		};
+		<a name="consolefontdesc">struct consolefontdesc</a> {
+		    unsigned short charcount;		// characters in font (256 or 512)
+		    unsigned short charheight;		// scan lines per character (1-32)
+		    char *chardata;			// font data in expanded form
+		};
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="npioctl" href="file://localhost/usr/src/linux/include/linux/if_ppp.h">include/linux/if_ppp.h</a><pre>
+		// PPPIOCGNPMODE, PPPIOCSNPMODE	get/set NP mode
+		struct npioctl {
+		    int		protocol;	// PPP protocol, e.g. PPP_IP 
+		    enum NPmode	mode;
+		};
+</pre>
+
+<a name="ppp_option_data" href="file://localhost/usr/src/linux/include/linux/if_ppp.h">include/linux/if_ppp.h</a><pre>
+		// Structure describing a CCP configuration option, for PPPIOCSCOMPRESS 
+		struct ppp_option_data {
+		    __u8	*ptr;
+		    __u32	length;
+		    int	transmit;
+		};
+</pre>
+
+<a name="ppp_idle" href="file://localhost/usr/src/linux/include/linux/ppp_defs.h">include/linux/ppp_defs.h</a><pre>
+		// records the time in seconds since the last NP packet was sent or received.
+		struct ppp_idle {
+		    time_t xmit_idle;		// time since last NP packet sent
+		    time_t recv_idle;		// time since last NP packet received
+		};
+</pre>
+
+<a name="ext_accm" href="file://localhost/usr/src/linux/include/linux/ppp_defs.h">include/linux/ppp_defs.h</a><pre>
+		typedef __u32	ext_accm[8];
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="cfo" href="file://localhost/usr/src/linux/include/linux/kd.h">include/linux/kd.h</a><pre>
+
+		// <a href="#cfo">console_font_op</a>, console ioctl KDFONTOP (0x4B72)
+		struct console_font_op {
+		    int op;		
+		    int flags;		
+		    int width,height;	
+		    int charcount;
+		    uchar *data;	// w. fixed 32-bit height data size
+		};
+		    op:
+			0		KD_FONT_OP_SET
+			1		KD_FONT_OP_GET
+			2		KD_FONT_OP_SET_DEFAULT
+			3		KD_FONT_OP_COPY		copy fount from another console
+		    flags:
+			1		KD_FONT_FLAG_DONT_RECALC
+			0x80000000	KD_FONT_FLAG_OLD
+			
+		// <a href="#cfo" name="hwc">hwclk_time</a>, console ioctl KD{G,S}HWCLK (0x4850,0x4851)
+		struct hwclk_time {	// items set to -1 will not be modified
+		    uint sec;
+		    uint min;
+		    uint hour;
+		    uint day;
+		    uint mon;
+		    uint year;		// 70...
+		    int wday;		// 0..6, 0 for sunday
+		};
+		
+</pre>
+
+
+<p>&nbsp;</p>
+
+<a name="vm86p" href="file:///usr/src/linux/include/asm/vm86.h">include/asm/vm86.h</a><pre>
+
+		// <a href="#vm86p" name="vm86f">function codes</a>
+		#define VM86_PLUS_INSTALL_CHECK	0
+		#define VM86_ENTER		1
+		#define VM86_ENTER_NO_BYPASS	2
+		#define	VM86_REQUEST_IRQ	3
+		#define VM86_FREE_IRQ		4
+		#define VM86_GET_IRQ_BITS	5
+		#define VM86_GET_AND_RESET_IRQ	6
+
+		#define VM86_SCREEN_BITMAP	0x0001
+
+		struct vm86plus_info_struct {
+			unsigned long force_return_for_pic:1;
+			unsigned long vm86dbg_active:1;       // for debugger
+			unsigned long vm86dbg_TFpendig:1;     // for debugger
+			unsigned long unused:28;
+			unsigned long is_vm86pus:1;	      // for vm86 internal use
+			unsigned char vm86dbg_intxxtab[32];   // for debugger
+		};
+
+		struct <a href="#vm86p">vm86plus_struct</a> {
+			struct vm86_regs regs;
+			unsigned long flags;
+			unsigned long screen_bitmap;
+			unsigned long cpu_type;
+			struct revectored_struct int_revectored;
+			struct revectored_struct int21_revectored;
+			struct vm86plus_info_struct vm86plus;
+		};
+
+		// <a name="vm86r" href="#vm86p">>Return values</a>
+		#define VM86_SIGNAL	0	// return due to signal
+		#define VM86_UNKNOWN	1	// unhandled GP fault - IO-instruction or similar
+		#define VM86_INTx	2	// int3/int x instruction (ARG = x)
+		#define VM86_STI	3	// sti/popf/iret instruction enabled virtual interrupts
+		#define VM86_PICRETURN	4	// return due to pending PIC request
+		#define VM86_TRAP	6	// return due to DOS-debugger request
+
+		#define VM86_TYPE(retval)	((retval) & 0xff)
+		#define VM86_ARG(retval)	((retval) >> 8)
+</pre>
+
+
+<p>&nbsp;</p>
+
+<a name="utsname" href="file:///usr/src/linux/include/linux/utsname.h ">include/linux/utsname.h</a><pre>
+
+		#define __NEW_UTS_LEN 64
+
+		struct new_utsname {
+			char sysname[65];
+			char nodename[65];
+			char release[65];
+			char version[65];
+			char machine[65];
+			char domainname[65];
+		};
+
+		struct old_utsname {
+			char sysname[65];
+			char nodename[65];
+			char release[65];
+			char version[65];
+			char machine[65];
+		};
+
+		#define __OLD_UTS_LEN 8
+
+		struct oldold_utsname {
+			char sysname[9];
+			char nodename[9];
+			char release[9];
+			char version[9];
+			char machine[9];
+		};
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="serial_multiport_struct" href="file:///usr/src/linux/include/linux/serial.h ">include/linux/serial.h </a><pre>
+
+// Multiport serial configuration structure --- external structure
+	struct serial_multiport_struct {
+		int		irq;
+		int		port1;
+		unsigned char	mask1, match1;
+		int		port2;
+		unsigned char	mask2, match2;
+		int		port3;
+		unsigned char	mask3, match3;
+		int		port4;
+		unsigned char	mask4, match4;
+		int		port_monitor;
+		int	reserved[32];
+	};
+
+	// Serial input interrupt line counters -- external structure
+	// Four lines can interrupt: CTS, DSR, RI, DCD
+	struct <a name="serial_icounter_struct">serial_icounter_struct</a> {
+		int cts, dsr, rng, dcd;
+		int rx, tx;
+		int frame, overrun, parity, brk;
+		int buf_overrun;
+		int reserved[9];
+	};
+
+
+<p>&nbsp;</p>
+
+<a name="async_struct" href="file:///usr/src/linux/include/linux/serialP.h ">include/linux/serialP.h </a><pre>
+
+	struct async_struct {
+		int			magic;
+		int			port;
+		int			hub6;
+		int			flags;
+		int			xmit_fifo_size;
+		struct serial_state	*state;
+		struct tty_struct 	*tty;
+		int			read_status_mask;
+		int			ignore_status_mask;
+		int			timeout;
+		int			quot;
+		int			x_char;		// xon/xoff character
+		int			close_delay;
+		unsigned short		closing_wait;
+		unsigned short		closing_wait2;
+		int			IER; 		// Interrupt Enable Register
+		int			MCR; 		// Modem control register
+		unsigned long		event;
+		unsigned long		last_active;
+		int			line;
+		int			blocked_open; 	// # of blocked opens
+		long			session;	// Session of opening process
+		long			pgrp; 		// pgrp of opening process
+		unsigned char 		*xmit_buf;
+		int			xmit_head;
+		int			xmit_tail;
+		int			xmit_cnt;
+		struct tq_struct	tqueue;
+		struct <a href="#wait_queue">wait_queue</a>	*open_wait;
+		struct wait_queue	*close_wait;
+		struct wait_queue	*delta_msr_wait;
+		struct async_struct	*next_port; 	// For the linked list
+		struct async_struct	*prev_port;
+	};
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="serial_struct" href="file:///usr/src/linux/include/linux/serial.h">include/linux/serial.h</a><pre>
+
+	struct serial_struct {
+		int	type;
+		int	line;
+		int	port;
+		int	irq;
+		int	flags;
+		int	xmit_fifo_size;
+		int	custom_divisor;
+		int	baud_base;
+		unsigned short	close_delay;
+		char	reserved_char[2];
+		int	hub6;
+		unsigned short	closing_wait;		// time to wait before closing
+		unsigned short	closing_wait2;		// no longer used...
+		int	reserved[4];
+	};
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="fcntl" href="file:///usr/src/linux/include/asm/fcntl.h">include/asm/fcntl.h</a><pre><a name="flock"></a>
+	'mandatory file locking' effective if files' SGID bit set and 'group' exec permission unset.
+
+	struct flock {
+		short l_type;
+		short l_whence;
+		<a href="#off_t">off_t</a> l_start;
+		off_t l_len;
+		<a href="#pid_t">pid_t</a> l_pid;
+	};
+
+	// &lt;cmd> to fcntl
+	#define F_GETLK		5
+	#define F_SETLK		6
+	#define F_SETLKW	7		// wait until un-locked
+
+	// &lt;l_type> for posix fcntl
+	#define F_RDLCK		0
+	#define F_WRLCK		1
+	#define F_UNLCK		2
+
+	// for old implementation of bsd flock
+	#define F_EXLCK		4		// or 3
+	#define F_SHLCK		8		// or 4
+
+	// &lt;l_whence>
+	#define LOCK_SH		1		// shared lock
+	#define LOCK_EX		2		// exclusive lock
+	#define LOCK_NB		4		// or'd with one of the above to prevent blocking
+	#define LOCK_UN		8		// remove lock
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="vt" href="file:///usr/src/linux/include/linux/vt.h">include/linux/vt.h</a><pre>
+
+	struct <a name="vt_mode">vt_mode</a> {
+		char mode;			// vt mode
+		char waitv;			// if set, hang on writes if not active
+		short relsig;			// signal to raise on release req
+		short acqsig;			// signal to raise on acquisition
+		short frsig;			// unused (set to 0)
+	};
+
+	struct <a name="vt_stat">vt_stat</a> {
+		unsigned short v_active;	// active vt
+		unsigned short v_signal;	// signal to send
+		unsigned short v_state;		// vt bitmask
+	};
+
+	struct <a name="vt_sizes">vt_sizes</a> {
+		unsigned short v_rows;		// number of rows
+		unsigned short v_cols;		// number of columns
+		unsigned short v_scrollsize;	// number of lines of scrollback
+	};
+
+	struct <a name="vt_consize">vt_consize</a> {
+		unsigned short v_rows;		// number of rows
+		unsigned short v_cols;		// number of columns
+		unsigned short v_vlin;		// number of pixel rows on screen
+		unsigned short v_clin;		// number of pixel rows per character
+		unsigned short v_vcol;		// number of pixel columns on screen
+		unsigned short v_ccol;		// number of pixel columns per character
+	};
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="tty_struct" href="file:///usr/src/linux/include/linux/tty.h">include/linux/tty.h</a><pre>
+
+	#define N_TTY_BUF_SIZE 4096
+
+	struct tty_struct {
+		int	magic;
+		struct <a href="#tty_driver">tty_driver</a> driver;
+		struct <a href="#tty_ldisc">tty_ldisc</a> ldisc;
+		struct <a href="#termios">termios</a> *termios, *termios_locked;
+		int pgrp;
+		int session;
+		kdev_t device;
+		unsigned long flags;
+		int count;
+		struct <a href="#winsize">winsize</a> winsize;
+		unsigned char stopped:1, hw_stopped:1, flow_stopped:1, packet:1;
+		unsigned char low_latency:1, warned:1;
+		unsigned char ctrl_status;
+		struct tty_struct *link;
+		struct <a href="#fasync_struct">fasync_struct</a> *fasync;
+		struct <a href="#tty_flip_buffer">tty_flip_buffer</a> flip;
+		int max_flip_cnt;
+		int alt_speed;			// For magic substitution of 38400 bps
+		struct <a href="#wait_queue">wait_queue</a> *write_wait;
+		struct <a href="#wait_queue">wait_queue</a> *read_wait;
+		struct <a href="#tq_struct">tq_struct</a> tq_hangup;
+		void *disc_data;
+		void *driver_data;
+	// The following is data for the N_TTY line discipline. For
+	// historical reasons, this is included in the tty structure.
+		unsigned int column;
+		unsigned char lnext:1, erasing:1, raw:1, real_raw:1, icanon:1;
+		unsigned char closing:1;
+		unsigned short minimum_to_wake;
+		unsigned overrun_time;
+		int num_overrun;
+		unsigned long process_char_map[256/(8*sizeof(unsigned long))];
+		char *read_buf;
+		int read_head;
+		int read_tail;
+		int read_cnt;
+		unsigned long read_flags[N_TTY_BUF_SIZE/(8*sizeof(unsigned long))];
+		int canon_data;
+		unsigned long canon_head;
+		unsigned int canon_column;
+		struct <a href="#semaphore">semaphore</a> atomic_read;
+		struct <a href="#semaphore">semaphore</a> atomic_write;
+	};
+
+	<a name="tty_flip_buffer" href="file:///usr/src/linux/include/linux/tty.h">linux/tty.h</a>
+
+	#define TTY_FLIPBUF_SIZE 512
+	#define PTY_BUF_SIZE	4*TTY_FLIPBUF_SIZE	// pty uses char_buf and flag_buf as a contiguous buffer
+
+	struct tty_flip_buffer {
+		struct <a href="#tq_struct">tq_struct</a> tqueue;
+		struct <a href="#semaphore">semaphore</a> pty_sem;
+		char		*char_buf_ptr;
+		unsigned char	*flag_buf_ptr;
+		int		count;
+		int		buf_num;
+		unsigned char	char_buf[2*TTY_FLIPBUF_SIZE];
+		char		flag_buf[2*TTY_FLIPBUF_SIZE];
+		unsigned char	slop[4]; // N.B. bug overwrites buffer by 1
+	};
+
+	<a name="winsize" href="file:///usr/src/linux/include/asm/termios.h">asm/termios.h</a>
+	struct winsize {
+		unsigned short ws_row;
+		unsigned short ws_col;
+		unsigned short ws_xpixel;
+		unsigned short ws_ypixel;
+	};
+	<a name="termio"></a>
+	#define NCC 8
+	struct termio {
+		unsigned short c_iflag;		// input mode flags
+		unsigned short c_oflag;		// output mode flags
+		unsigned short c_cflag;		// control mode flags
+		unsigned short c_lflag;		// local mode flags
+		unsigned char c_line;		// line discipline
+		unsigned char c_cc[NCC];	// control characters
+	};
+
+	<a name="termios" href="file:///usr/src/linux/include/asm/termbits.h">asm/termbits.h</a>
+	typedef unsigned char	cc_t;
+	typedef unsigned int	speed_t;
+	typedef unsigned int	tcflag_t;
+
+	#define NCCS 19
+	struct termios {
+		tcflag_t c_iflag;		// input mode flags
+		tcflag_t c_oflag;		// output mode flags
+		tcflag_t c_cflag;		// control mode flags
+		tcflag_t c_lflag;		// local mode flags
+		cc_t c_line;			// line discipline
+		cc_t c_cc[NCCS];		// control characters
+	};
+
+	<a name="termbits" href="file:///usr/src/linux/include/asm/termbits.h">termbits.h</a>
+	// c_cc character posns - commments from the mips defn
+	%define VINTR	0		; Interrupt character [ISIG].
+	%define VQUIT	1		; Quit character [ISIG].
+	%define VERASE	2		; Erase character [ICANON].
+	%define VKILL	3		; Kill-line character [ICANON].
+	%define VEOF	4		; End-of-file character [ICANON]. (m:16)
+	%define VTIME	5		;.Time-out value (tenths of a second) [!ICANON].
+	%define VMIN	6		;.Minimum number of bytes read at once [!ICANON]. (m:4)
+	%define VSWTC	7		; ???(console switch)???
+	%define VSTART	8		; Start (X-ON) character [IXON, IXOFF].
+	%define VSTOP	9		; Stop (X-OFF) character [IXON, IXOFF].
+	%define VSUSP	10		; Suspend character [ISIG]
+	%define VEOL	11		; End-of-line character [ICANON]. (m:17)
+	%define VREPRINT 12		; Reprint-line character [ICANON].
+	%define VDISCARD 13		; Discard character [IEXTEN].
+	%define VWERASE	14		; Word-erase character [ICANON].
+	%define VLNEXT	15		; Literal-next character [IEXTEN].
+	%define VEOL2	16		; Second EOL character [ICANON]. (m:6)
+
+	// defaults, from linux/include/asm-i386/termios.h:
+	%define CC_VINTR	3	; ^C
+	%define CC_VQUIT	034q	; ^\
+	%define CC_VERASE	177q	; &lt;del>
+	%define CC_VKILL	025q	; ^U
+	%define CC_VEOF		4	; ^D
+	%define CC_VTIME	0	;	#0
+	%define CC_VMIN		1	;	#1
+	%define CC_VSWTC	0	;	#0
+	%define CC_VSTART	021q	; ^Q
+	%define CC_VSTOP	023q	; ^S
+	%define CC_VSUSP	032q	; ^Z
+	%define CC_VEOL		0	;	#0
+	%define CC_VREPRINT	022q	; ^R
+	%define CC_VDISCARD	017q	; ^U
+	%define CC_VWERASE	027q	; ^W
+	%define CC_VLNEXT	026q	; ^V
+	%define CC_VEOL2	0	;	#0
+
+	// 'sane', default c_cc settings:
+	%define INIT_C_CC 3,034q,177q,025q,4,0,1,0,021q,023q,032q,0,022q,017q,027q,026q,0
+
+	// c_iflag bits
+	%define IGNBRK	0000001q	; Ignore break condition.
+	%define BRKINT	0000002q	; Signal interrupt on break.
+	%define IGNPAR	0000004q	; Ignore characters with parity errors.
+	%define PARMRK	0000010q	; Mark parity and framing errors.
+	%define INPCK	0000020q	;.Enable input parity check.
+	%define ISTRIP	0000040q	;.Strip 8th bit off characters.
+	%define INLCR	0000100q	; Map NL to CR on input.
+	%define IGNCR	0000200q	; Ignore CR.
+	%define ICRNL	0000400q	; Map CR to NL on input.
+	%define IUCLC	0001000q	; Map upper case to lower case on input. (bsd|kernel)
+	%define IXON	0002000q	;.Enable start/stop output control.
+	%define IXANY	0004000q	; Any character will restart after stop. (bsd|kernel)
+	%define IXOFF	0010000q	; Enable start/stop input control.
+	%define IMAXBEL	0020000q	; Ring bell when input queue is full. (bsd|kernel)
+
+	// c_oflag bits and attributes
+	%define OPOST	0000001q	;.Perform output processing.
+	%define OLCUC	0000002q	; Map lower case to upper case on output.
+	%define ONLCR	0000004q	;.Map NL to CR-NL on output.
+	%define OCRNL	0000010q
+	%define ONOCR	0000020q
+	%define ONLRET	0000040q
+	%define OFILL	0000100q
+	%define OFDEL	0000200q
+	%define NLDLY	0000400q
+	%define   NL0	0000000q
+	%define   NL1	0000400q
+	%define CRDLY	0003000q
+	%define   CR0	0000000q
+	%define   CR1	0001000q
+	%define   CR2	0002000q
+	%define   CR3	0003000q
+	%define TABDLY	0014000q
+	%define   TAB0	0000000q
+	%define   TAB1	0004000q
+	%define   TAB2	0010000q
+	%define   TAB3	0014000q
+	%define   XTABS	0014000q
+	%define BSDLY	0020000q
+	%define   BS0	0000000q
+	%define   BS1	0020000q
+	%define VTDLY	0040000q
+	%define   VT0	0000000q
+	%define   VT1	0040000q
+	%define FFDLY	0100000q
+	%define   FF0	0000000q
+	%define   FF1	0100000q
+
+	// c_cflag bits, attributes
+	%define CBAUD	0010017q
+	%define  B0	0000000q	; hang up
+	%define  B50	0000001q
+	%define  B75	0000002q
+	%define  B110	0000003q
+	%define  B134	0000004q
+	%define  B150	0000005q
+	%define  B200	0000006q
+	%define  B300	0000007q
+	%define  B600	0000010q
+	%define  B1200	0000011q
+	%define  B1800	0000012q
+	%define  B2400	0000013q
+	%define  B4800	0000014q
+	%define  B9600	0000015q
+	%define  B19200	0000016q
+	%define  B38400	0000017q
+	%define EXTA	B19200q
+	%define EXTB	B38400q
+	%define CSIZE	0000060q	; Number of bits per byte (mask).
+	%define   CS5	0000000q	; 5 bits per byte. .. etc
+	%define   CS6	0000020q
+	%define   CS7	0000040q
+	%define   CS8	0000060q
+	%define CSTOPB	0000100q	; Two stop bits instead of one.
+	%define CREAD	0000200q	; Enable receiver.
+	%define PARENB	0000400q	; Parity enable.
+	%define PARODD	0001000q	; Odd parity instead of even.
+	%define HUPCL	0002000q	; Hang up on last close.
+	%define CLOCAL	0004000q	; Ignore modem status lines.
+	%define CBAUDEX 0010000q
+	%define  B57600  0010001q
+	%define  B115200 0010002q
+	%define  B230400 0010003q
+	%define  B460800 0010004q
+	%define CIBAUD	002003600000q	; input baud rate (not used)
+	%define CRTSCTS	020000000000q	; flow control
+	%define CMSPAR  010000000000q	; mark or space (stick) parity ! MIPS only (?) !
+
+	// c_lflag bits
+	%define ISIG	0000001q	;.Enable signals.
+	%define ICANON	0000002q	;.Do erase and kill processing.
+	%define XCASE	0000004q
+	%define ECHO	0000010q	;.Enable echo.
+	%define ECHOE	0000020q	; Visual erase for ERASE.
+	%define ECHOK	0000040q	; Echo NL after KILL.
+	%define ECHONL	0000100q	; Echo NL even if ECHO is off.
+	%define NOFLSH	0000200q	; Disable flush after interrupt.
+	%define TOSTOP	0000400q	; Send SIGTTOU for background output.
+	%define ECHOCTL	0001000q	; Echo control characters as ^X.
+	%define ECHOPRT	0002000q	; Hardcopy visual erase.
+	%define ECHOKE	0004000q	; Visual erase for KILL.
+	%define FLUSHO	0010000q	;
+	%define PENDIN	0040000q	; Retype pending input (state).
+	%define IEXTEN	0100000q	; Enable DISCARD and LNEXT.
+
+
+	<a name="tty_driver" href="file:///usr/src/linux/include/linux/tty_driver.h">linux/tty_driver.h</a>
+
+	#define TTY_DRIVER_MAGIC	0x5402	// tty driver magic number
+
+
+	struct tty_driver {
+		int	magic;			// magic number for this structure
+		const char	*driver_name;
+		const char	*name;
+		int	name_base;		// offset of printed name
+		short	major;			// major device number
+		short	minor_start;		// start of minor device number*/
+		short	num;			// number of devices
+		short	type;			// type of tty driver
+		short	subtype;		// subtype of tty driver
+		struct <a href="#termios">termios</a> init_termios;	// Initial termios
+		int	flags;			// tty driver flags
+		int	*refcount;		// for loadable tty drivers
+		struct <a href="file:///usr/src/linux/include/linux/proc_fs.h">proc_dir_entry</a> *proc_entry; // /proc fs entry
+		struct tty_driver *other;	// only used for the PTY driver
+	// ptrs to the tty data structures
+		struct <a href="#tty_struct">tty_struct</a> **table;
+		struct <a href="#termios">termios</a> **termios;
+		struct <a href="#termios">termios</a> **termios_locked;
+		void *driver_state;		// only used for the PTY driver
+	// Interface routines from the upper tty layer to the tty driver.
+		int  (*open)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a name="#file">file</a> *filp);
+		void (*close)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a name="#file">file</a> *filp);
+		int  (*write)(struct <a href="#tty_struct">tty_struct</a> *tty, int from_user, const unsigned char *buf, int count);
+		void (*put_char)(struct <a href="#tty_struct">tty_struct</a> *tty, unsigned char ch);
+		void (*flush_chars)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		int  (*write_room)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		int  (*chars_in_buffer)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		int  (*ioctl)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a name="#file">file</a> *file, unsigned int cmd, unsigned long arg);
+		void (*set_termios)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a href="#termios">termios</a> *old);
+		void (*throttle)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*unthrottle)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*stop)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*start)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*hangup)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*break_ctl)(struct <a href="#tty_struct">tty_struct</a> *tty, int state);
+		void (*flush_buffer)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*set_ldisc)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		void (*wait_until_sent)(struct <a href="#tty_struct">tty_struct</a> *tty, int timeout);
+		void (*send_xchar)(struct <a href="#tty_struct">tty_struct</a> *tty, char ch);
+		int (*read_proc)(char *page, char **start, <a href="#off_t">off_t</a> off, int count, int *eof, void *data);
+		int (*write_proc)(struct <a name="#file">file</a> *file, const char *buffer, unsigned long count, void *data);
+	// linked list ptrs
+		struct tty_driver *next;
+		struct tty_driver *prev;
+	};
+
+	<a name="tty_ldisc" href="file:///usr/src/linux/include/linux/tty_ldisc.h">linux/tty_ldisc.h</a>
+
+	#define TTY_LDISC_MAGIC	0x5403
+
+	struct tty_ldisc {
+		int	magic;
+		char	*name;
+		int	num;
+		int	flags;
+		int	(*open)(struct <a href="#tty_struct">tty_struct</a> *);
+		void	(*close)(struct <a href="#tty_struct">tty_struct</a> *);
+		void	(*flush_buffer)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		<a href="#ssize_t">ssize_t</a>	(*chars_in_buffer)(struct <a href="#tty_struct">tty_struct</a> *tty);
+		<a href="#ssize_t">ssize_t</a>	(*read)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a name="#file">file</a> *file, unsigned char *buf, size_t nr);
+		<a href="#ssize_t">ssize_t</a>	(*write)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a name="#file">file</a> *file, const unsigned char *buf, size_t nr);	
+		int	(*ioctl)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a name="#file">file</a> *file, unsigned int cmd, unsigned long arg);
+		void	(*set_termios)(struct <a href="#tty_struct">tty_struct</a> *tty, struct <a href="#termios">termios</a> *old);
+		unsigned int (*poll)(struct <a href="#tty_struct">tty_struct</a> *, struct <a name="#file">file</a> *, struct <a href="file:///usr/src/linux/include/linux/poll.h">poll_table_struct</a> *);
+		void	(*receive_buf)(struct <a href="#tty_struct">tty_struct</a> *, const unsigned char *cp, char *fp, int count);
+		int	(*receive_room)(struct <a href="#tty_struct">tty_struct</a> *);
+		void	(*write_wakeup)(struct <a href="#tty_struct">tty_struct</a> *);
+	};
+
+	<a name="fasync_struct" href="file:///usr/src/linux/include/linux/fs.h">linux/fs.h</a>
+
+	#define FASYNC_MAGIC 0x4601
+
+	struct fasync_struct {
+		int    magic;
+		int    fa_fd;
+		struct fasync_struct *fa_next;	// singly linked list
+		struct file *fa_file;
+	};
+
+	struct <a name="file">file</a> {
+		struct file		*f_next, **f_pprev;
+		struct dentry		*f_dentry;
+		struct <a href="file:///usr/src/linux/include/linux/fs.h">file_operations</a> *f_op;
+		<a href="#umode_t">mode_t</a>			f_mode;
+		loff_t			f_pos;
+		unsigned int 		f_count, f_flags;
+		unsigned long 		f_reada, f_ramax, f_raend, f_ralen, f_rawin;
+		struct <a href="file:///usr/src/linux/include/linux/fs.h">fown_struct</a> f_owner;
+		unsigned int		f_uid, f_gid;
+		int			f_error;
+		unsigned long		f_version;
+		// needed for tty driver, and maybe others
+		void			*private_data;
+	};
+
+	<a name="wait_queue" href="file:///usr/src/linux/include/linux/wait.h">linux/wait.h</a>
+
+	#define WAIT_QUEUE_HEAD(x) ((struct wait_queue *)((x)-1))
+
+	struct wait_queue {
+		struct <a href="file:///usr/src/linux/include/linux/sched.h">task_struct</a> *task;
+		struct <a href="#wait_queue">wait_queue</a> *next;
+	};
+
+	<a name="tq_struct" href="file:///usr/src/linux/include/linux/tqueue.h">linux/tqueue.h</a>
+
+	struct tq_struct {
+		struct tq_struct *next;		// linked list of active bh's
+		unsigned long sync;		// must be initialized to zero
+		void (*routine)(void *);	// function to call
+		void *data;			// argument to function
+	};
+
+	<a name="semaphore" href="file:///usr/src/linux/include/asm/semaphore.h">asm/semaphore.h</a>
+
+	struct semaphore {
+		atomic_t count;
+		int waking;
+		struct <a href="#wait_queue">wait_queue</a> *wait;
+	};
+
+
+
+</pre>
+
+<p>&nbsp;</p>
+<a name="adregs" href="">pushad/popad</a> data structure @esp<pre>
+	<b>nasm syntax</b>:
+
+		%define s_tor +32	; ESP before &lt;pushad>
+		%define s_eax +28
+		%define s_ecx +24
+		%define s_edx +20
+		%define s_ebx +16
+		%define s_esp +12
+		%define s_ebp +8
+		%define s_esi +4
+		%define s_edi
+		
+		! requires updated to at least 98e version nasm for %+ opr !
+
+		; read reg %1 from &lt;pushad> reg %2 storage
+		%macro readad 2_nolist
+		    mov %{1},[byte esp s_ %+ %{2}]
+		%endm
+		
+		; store reg %2 to &lt;pushad> reg %1 storage
+		%macro writead 2_nolist
+		    mov [byte esp s_ %+ %{1}],%{2}
+		%endm
+
+</pre>
+
+<p>&nbsp;</p>
+<a name="ptregs" href="file:///usr/src/linux/include/asm/ptrace.h">include/asm/ptrace.h</a><pre>
+
+	struct pt_regs {
+		long ebx;	
+		long ecx;
+		long edx;
+		long esi;
+		long edi;
+		long ebp;
+		long eax;
+		int  xds;
+		int  xes;
+		long orig_eax;
+		long eip;
+		int  xcs;
+		long eflags;
+		long esp;
+		int  xss;	
+	};
+
+	<b>nasm syntax</b>:
+		    struc pt_regs
+		.ebx:		resd 1
+		.ecx:		resd 1
+		.edx:		resd 1
+		.esi:		resd 1
+		.edi:		resd 1
+		.ebp:		resd 1
+		.eax:		resd 1
+		.xds:		resd 1
+		.xes:		resd 1
+		.orig_eax:	resd 1
+		.eip:		resd 1
+		.xcs:		resd 1
+		.eflags:	resd 1
+		.esp:		resd 1
+		.xss:		resd 1	
+		    endstruc
+
+</pre>
+
+<p>&nbsp;</p>
+<a name="ptraceregs" href="file:///usr/src/linux/include/asm/user.h">include/asm/user.h</a> regs wrt sys_ptrace
+<pre>
+	struct user_i387_struct {
+		long	cwd;
+		long	swd;
+		long	twd;
+		long	fip;
+		long	fcs;
+		long	foo;
+		long	fos;
+		long	st_space[20];	// 8*10 bytes for each FP-reg = 80 bytes
+	};
+
+	struct user_regs_struct {
+		long ebx, ecx, edx, esi, edi, ebp, eax;
+		unsigned short ds, __ds, es, __es;
+		unsigned short fs, __fs, gs, __gs;
+		long orig_eax, eip;
+		unsigned short cs, __cs;
+		long eflags, esp;
+		unsigned short ss, __ss;
+	};
+
+	<b>nasm syntax</b>:
+		    struc user_i387_struct {
+		.cwd:		resd 1
+		.swd:		resd 1
+		.twd:		resd 1
+		.fip:		resd 1
+		.fcs:		resd 1
+		.foo:		resd 1
+		.fos:		resd 1
+		.st_space:	resd 20
+		    ensdtruc
+
+		    struc user_regs_struct
+		.ebx:		resd 1
+		.ecx:		resd 1
+		.edx:		resd 1
+		.esi:		resd 1
+		.edi:		resd 1
+		.ebp:		resd 1
+		.eax:		resd 1
+		.ds:		resw 1	; seg.regs also by dword but,
+		.__ds:		resw 1	;	msw may be any value.
+		.es:		resw 1
+		.__es:		resw 1
+		.fs:		resw 1
+		.__fs:		resw 1
+		.gs:		resw 1
+		.__gs:		resw 1
+		.orig_eax:	resd 1
+		.eip:		resd 1
+		.cs:		resw 1
+		.__cs:		resw 1
+		.eflags:	resd 1
+		.esp:		resd 1
+		.ss:		resw 1
+		.__ss:		resw 1
+		    endstruc
+</pre>
+
+<p>&nbsp;</p>
+<a name="rusage" href="file:///usr/src/linux/include/linux/resource.h">include/linux/resource.h</a><pre>
+	    // Resource control/accounting header file for linux
+	    #define	RUSAGE_SELF	0
+	    #define	RUSAGE_CHILDREN	(-1)
+	    #define	RUSAGE_BOTH	(-2)		// sys_wait4() uses this
+
+	    struct	rusage {
+	    	struct <a href="#timeval">timeval</a> ru_utime;	// user time used
+	    	struct <a href="#timeval">timeval</a> ru_stime;	// system time used
+	    	long	ru_maxrss;		// maximum resident set size
+	    	long	ru_ixrss;		// integral shared memory size
+	    	long	ru_idrss;		// integral unshared data size
+	    	long	ru_isrss;		// integral unshared stack size
+	    	long	ru_minflt;		// page reclaims
+	    	long	ru_majflt;		// page faults
+	    	long	ru_nswap;		// swaps
+	    	long	ru_inblock;		// block input operations
+	    	long	ru_oublock;		// block output operations
+	    	long	ru_msgsnd;		// messages sent
+	    	long	ru_msgrcv;		// messages received
+	    	long	ru_nsignals;		// signals received
+	    	long	ru_nvcsw;		// voluntary context switches
+	    	long	ru_nivcsw;		// involuntary "
+	    };
+
+	    #define RLIM_INFINITY	((long)(~0UL>>1))
+
+	    struct <a name="rlimit">rlimit</a> {
+	    	long	rlim_cur;
+	    	long	rlim_max;
+	    };
+
+	    #define	PRIO_MIN	(-20)
+	    #define	PRIO_MAX	20
+	    #define	PRIO_PROCESS	0
+	    #define	PRIO_PGRP	1
+	    #define	PRIO_USER	2
+
+	    // Resource limits : <a name="resource" href="file:///usr/src/linux/include/asm/resource.h">include/asm/resource.h</a>
+
+	    #define RLIMIT_CPU		0	// CPU time in ms
+	    #define RLIMIT_FSIZE	1	// Maximum filesize
+	    #define RLIMIT_DATA		2	// max data size
+	    #define RLIMIT_STACK	3	// max stack size
+	    #define RLIMIT_CORE		4	// max core file size
+	    #define RLIMIT_RSS		5	// max resident set size
+	    #define RLIMIT_NPROC	6	// max number of processes
+	    #define RLIMIT_NOFILE	7	// max number of open files
+	    #define RLIMIT_MEMLOCK	8	// max locked-in-memory address space
+	    #define RLIMIT_AS		9	// address space limit
+	    #define RLIM_NLIMITS	10
+
+	    #ifdef __KERNEL__
+
+	    #define INIT_RLIMITS				\
+	    {							\
+	    	{ LONG_MAX, LONG_MAX },				\
+	    	{ LONG_MAX, LONG_MAX },				\
+	    	{ LONG_MAX, LONG_MAX },				\
+	    	{ _STK_LIM, LONG_MAX },				\
+	    	{        0, LONG_MAX },				\
+	    	{ LONG_MAX, LONG_MAX },				\
+	    	{ MAX_TASKS_PER_USER, MAX_TASKS_PER_USER },	\
+	    	{ INR_OPEN, INR_OPEN },				\
+	    	{ LONG_MAX, LONG_MAX },				\
+	    	{ LONG_MAX, LONG_MAX },				\
+	    }
+</pre>
+
+<p>&nbsp;</p>
+<a name="ksym" href="file:///usr/src/linux/include/linux/module.h">include/linux/module.h</a><pre>
+		struct kernel_sym {
+		unsigned long value;
+		char name[60];
+		};
+
+	<b>nasm syntax</b>:
+		struc kernel_sym
+		.value	resd 1
+		.name	resb 60 
+		endstruc</pre>
+
+<p>&nbsp;</p>
+<a name="fdset" href="file:///usr/src/linux/include/linux/posix_types.h">include/linux/posix_types.h</a><pre>
+	    #define __NFDBITS		(8 * sizeof(unsigned long))
+	    #define __FD_SETSIZE	1024
+	    #define __FDSET_LONGS	(__FD_SETSIZE/__NFDBITS)
+	    #define __FDELT(d)		((d) / __NFDBITS)
+	    #define __FDMASK(d)		(1UL &gt;&gt; ((d) % __NFDBITS))</pre>
+<a href="file:///usr/src/linux/include/asm/posix_types.h">include/asm/posix_types.h</a><pre>
+	    #define __FD_SET(fd,fdsetp) \
+	    		__asm__ __volatile__("btsl %1,%0": \
+	    		"=m" (*(__kernel_fd_set *) (fdsetp)):"r" ((int) (fd)))
+
+	    #define __FD_CLR(fd,fdsetp) \
+	    		__asm__ __volatile__("btrl %1,%0": \
+	    		"=m" (*(__kernel_fd_set *) (fdsetp)):"r" ((int) (fd)))
+
+	    #define __FD_ISSET(fd,fdsetp) (__extension__ ({ \
+	    	unsigned char __result; \
+	    		__asm__ __volatile__("btl %1,%2 ; setb %0" \
+	    		:"=q" (__result) :"r" ((int) (fd)), \
+	    		"m" (*(__kernel_fd_set *) (fdsetp))); \
+	    		__result; }))
+
+	    #define __FD_ZERO(fdsetp) \
+	    do { \
+	    	int __d0, __d1; \
+	    	    __asm__ __volatile__("cld ; rep ; stosl" \
+		    :"=m" (*(__kernel_fd_set *) (fdsetp)), \
+		     "=&c" (__d0), "=&D" (__d1) \
+		    :"a" (0), "1" (__FDSET_LONGS), \
+		     "2" ((__kernel_fd_set *) (fdsetp)) : "memory");
+
+	<b>nasm syntax</b>:
+	    %define __NFDBITS		(8 * 4)
+	    %define __FD_SETSIZE	1024
+	    %define __FDSET_LONGS	(__FD_SETSIZE/__NFDBITS)
+	    %define __FDELT(d)		((d) / __NFDBITS)
+	    %define __FDMASK(d)		(1 &gt;&gt; ((d) % __NFDBITS))
+
+	    :in:
+	    ; eax: fd filedescriptor, e.g. &lt;eax&gt; returned from sys_open
+	    ; ecx: fdsetp, ptr to beginning of bitfield, at byte address
+	    ;out:
+	    ; eflags: ret C flag set according to bit value, prior to any change
+
+	    FD_ISSET:
+	        bt [ecx],eax	; no address arithmetic required!
+		ret		; returns C flag set equal to tested bit
+
+	    ; alternatively, overwriting &lt;eax&gt; w/ result set:=-1 or, unset:=0
+	    ; - which can also be applied to FD_SET, FD_CLR, where it
+	    ; - returns bit state prior to the rsp &lt;bt.&gt; operation
+	    FD_ISSET:
+		bt [ecx],eax
+		sbb eax,eax
+		ret
+
+	    FD_SET:
+	        bts [ecx],eax
+		ret
+
+	    FD_CLR:
+	        btr [ecx],eax
+		ret
+
+	    ; eax is top fd number expected to be handled, at most = _FD_SETSIZE
+	    FD_ZERO:
+		mov edi,ecx
+		lea ecx,[eax+__NFDBITS]
+		and ecx,-__NFDBITS
+		shr ecx,2
+		mov eax,0
+	    .l:
+		stosd
+		dec ecx
+		jg .l
+		ret
+
+	    <a name="sexample">example</a>, &lt;sys_select> watching an fd &lt; 32, in &lt;ebx> for input and exceptions:
+	    NOTE: signal handler (apparently) modifies caller's esp - re "<a href="index-lx.shtml#e4">eforth</a>" example prg!
+	    w4i:
+		cmp ebx,byte 32	; this example, only: bitfield max = register size
+		jnc .r		;? too high an fd number
+		push esi
+		push edi
+		mov esi,esp
+		lea edi,[ebx+1]	; 1 + top fd number to watch
+		mov ecx,ebx	; fd
+		movzx ebx,bh	; ebx := 0
+		bts ebx,ecx	; set bit correspondinding to input-fd
+		push ebx	; r/w/x flags
+		mov ecx,esp	; ->readfds, also excep, write is NULL
+		mov ebx,0x7fffffff; almost endless...
+		push ebx	; timeval.sec
+		push ebx
+		mov edx,esp	; ->time
+		push esi	; save stack-top
+		sys_select edi,EMPTY,NULL,ecx,edx; w-table un-set, r=x=ecx
+		pop esp		; clr stack
+		pop edi
+		pop esi
+	    .r:
+		ret</pre>
+	    
+<p>&nbsp;</p>
+<a name="timeval" href="file:///usr/src/linux/include/linux/time.h">include/linux/time.h</a><pre>
+	    struct timeval {
+	    	time_t		tv_sec;		// dword, seconds
+	    	suseconds_t	tv_usec;	// dword, microseconds
+	    };</pre>
+
+<p>&nbsp;</p>
+<a name="timespec" href="file:///usr/src/linux/include/linux/time.h">include/linux/time.h</a><pre>
+	    struct timespec {
+	    	time_t		tv_sec;		// dword, seconds
+	    	long		tv_nsec;	// dword, nanoseconds
+	    };</pre>
+<p>&nbsp;</p>
+<a name="timezone" href="file:///usr/src/linux/include/linux/time.h">include/linux/time.h</a><pre>
+
+		struct timezone {
+			int	tz_minuteswest;	// minutes west of Greenwich
+			int	tz_dsttime;	// type of dst correction
+		};
+</pre>
+
+<p>&nbsp;</p>
+<a name="dirent" href="file:///usr/src/linux/include/linux/dirent.h">include/linux/dirent.h</a><pre>
+	    struct dirent {
+	    	long		d_ino;
+	    	__kernel_off_t	d_off;
+	    	unsigned short	d_reclen;
+	    	char		d_name[256]; // We must not include limits.h!
+	    };
+
+	    NOTE: False description of structure &lt;dirent&gt; in man 2 de getdents:
+	    2nd item, "d_off", is <u>offset from beginning of directory file</u> to concerning entry.
+
+	<b>Kernel 2.4.xx</b>:
+	    struct dirent64 {
+	    	__u64		d_ino;
+	    	__s64		d_off;
+	    	unsigned short	d_reclen;
+	    	unsigned char	d_type;
+	    	char		d_name[256];
+	    };
+
+	<b>Kernel 2.4.18</b> (<a name="dirent" href="file:///usr/src/linux/fs/readdir.c">fs/readdir.c</a>):
+	    struct linux_dirent64 {
+		u64		d_ino;
+		s64		d_off;
+		unsigned short	d_reclen;
+		unsigned char	d_type;
+		char		d_name[0];
+	    };
+
+
+        <b>nasm syntax</b>:
+	    %define NAME_MAX 255
+	        struc dirent
+	    .d_ino: resd 1		; inode no.
+	    .d_off: resd 1		; dir-file offset
+	    .d_reclen: resw 1		; len of record
+	    .d_ino: resb NAME_MAX+1	; directory name
+	        endstruc
+
+	        struc dirent64		; K4
+	    .d_ino: resd 2		; inode no.
+	    .d_off: resd 2		; dir-file offset
+	    .d_reclen: resw 1		; len of record
+	    .d_ino: resb NAME_MAX+1	; directory name
+	        endstruc
+</pre>
+
+<p>&nbsp;</p>
+
+<a href="file:///usr/src/linux/include/linux/times.h">include/linux/times.h</a><pre>
+	    struct <a name="tms">tms</a> {
+	    	clock_t tms_utime;	// re <a name="clock_t" href="file:///usr/src/linux/include/asm/posix_types.h">__kernel_clock_t</a>
+		clock_t tms_stime;
+		clock_t tms_cutime;
+	    	clock_t tms_cstime;
+	    };</pre>
+
+<p>&nbsp;</p>
+<a href="file:///usr/src/linux/include/asm/signal.h">include/asm/signal.h</a><pre>
+	    struct <a name="old_sigaction">old_sigaction</a> {
+	    	<a href="#sighandler">__sighandler_t</a> sa_handler;
+	    	<a href="#sigset">old_sigset_t</a> sa_mask;
+	    	unsigned long sa_flags;
+	    	void (*sa_restorer)(void);
+	    };
+
+	    struct <a name="sigaction">sigaction</a> {
+	    	<a href="#sighandler">__sighandler_t</a> sa_handler;
+	    	unsigned long sa_flags;
+	    	void (*sa_restorer)(void);
+	    	<a href="#sigset">sigset_t</a> sa_mask;	// mask last for extendability
+	    };</pre>
+
+
+<a name="sighandler">Type of a signal handler.</a><pre>
+	    typedef void (*__kernel_sighandler_t)(int);		<a href="file:///usr/src/linux/include/linux/posix_types.h">linux/posix_txpes.h</a>
+	    typedef void (*__sighandler_t)(int);		<a href="file:///usr/src/linux/include/asm/signal.h">asm/signal.h</a></pre>
+
+
+<a name="sigset">sigset_t, old_sigset_t</a><pre>							<a 
+href="file:///usr/src/linux/include/asm/signal.h">asm/signal.h</a>
+	    #include <a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>
+	    #include <a href="file:///usr/src/linux/include/linux/posix_types.h">linux/posix_types.h</a>
+	    #include <a href="file:///usr/src/linux/include/asm/types.h">asm/types.h</a>
+	    #include <a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>
+	    #include <a href="file:///usr/src/linux/include/linux/stddef.h">linux/stddef.h</a>
+
+	    <a href="#siginfo">struct siginfo;</a>
+
+	    #define _NSIG	64
+	    #define _NSIG_BPW	32
+	    #define _NSIG_WORDS	(_NSIG/_NSIG_BPW)
+
+	    typedef unsigned long old_sigset_t;		// at least 32 bits
+
+	    typedef struct {
+	    	unsigned long sig[_NSIG_WORDS];
+	    } sigset_t;</pre>
+
+
+<a name="siginfo_t">siginfo_t</a><pre>							<a href="file:///usr/src/linux/include/asm/siginfo.h">asm/siginfo.h</a>
+	    typedef union <a name="sigval">sigval</a> {
+	    	int sival_int;
+	    	void *sival_ptr;
+	    } sigval_t;
+
+	    #define SI_MAX_SIZE	128
+	    #define SI_PAD_SIZE	((SI_MAX_SIZE/sizeof(int)) - 3)
+
+	    typedef struct <a name="siginfo">siginfo</a> {
+	    	int si_signo;
+	    	int si_errno;
+	    	int si_code;
+	    	union {
+	    		int _pad[SI_PAD_SIZE];
+        		struct {	    	// kill()
+	    			<a href="#pid_t">pid_t</a> _pid;		// sender's pid
+	    			<a href="#uid_t">uid_t</a> _uid;		// sender's uid
+	    		} _kill;
+	    		struct {	    	// POSIX.1b timers
+	    			unsigned int _timer1;
+	    			unsigned int _timer2;
+	    		} _timer;
+	    		struct {	    	// POSIX.1b signals
+	    			pid_t _pid;		// sender's pid
+	    			uid_t _uid;		// sender's uid
+	    			<a href="#sigval">sigval_t</a> _sigval;
+	    		} _rt;
+	    		struct {	    	// SIGCHLD
+	    			pid_t _pid;		// which child
+	    			uid_t _uid;		// sender's uid
+	    			int _status;		// exit code
+	    			<a href="#clock_t">clock_t</a> _utime;
+	    			clock_t _stime;
+	    		} _sigchld;
+	    		struct {	    	// SIGILL, SIGFPE, SIGSEGV, SIGBUS
+	    			void *_addr;		// faulting insn/memory ref.
+	    		} _sigfault;
+	    		struct {	    	// SIGPOLL
+	    			int _band;		// POLL_IN, POLL_OUT, POLL_MSG
+	    			int _fd;
+	    		} _sigpoll;
+	    	} _sifields;
+	    } siginfo_t;</pre>
+																															
+<p>&nbsp;</p>
+
+
+<a name="ustat">ustat</a> structure, <a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>
+<pre>
+	    struct ustat {
+		__kernel_daddr_t	f_tfree;
+		__kernel_ino_t		f_tinode;
+		char			f_fname[6];
+		char			f_fpack[6];
+	    };
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="stat">stat</a> structure, <a href="file:///usr/src/linux/include/asm/stat.h">asm/stat.h</a>
+<pre>
+	<b>NOTE</b>:	2.4.18 sys_stat64 using <b>stat64</b>, 
+		2.4.18, 2.2.19 sys_stat with <b>__old_kernel_stat</b>, 
+		2.2.19 sys_newstat using the <b>stat</b> structure.
+		actually different, according to "asmutils" - verify against the actual kernel...
+
+	<b>nasm syntax</b>
+	    struc stat		; size	disp ; "CELL" == 'long'
+		.st_dev:	resw 1	; SHORT 00 device, zero for PIPE
+		.pad1:		resw 1	; SHORT 	
+		.st_ino:	resd 1	; CELL  04 inode
+		.st_mode:	resw 1	; SHORT 08 protection
+		.st_nlink:	resw 1	; SHORT 0a number of hard links
+		.st_uid:	resw 1	; SHORT 0c user ID of owner
+		.st_gid:	resw 1	; SHORT 0e group ID of owner
+		.st_rdev:	resw 1	; SHORT 10 device type (if inode device)
+		.pad2:		resw 1	; SHORT 	
+		.st_size:	resd 1	; CELL  14 total size, in bytes
+		.st_blksize:	resd 1	; CELL  18 blocksize for filesystem I/O
+		.st_blocks:	resd 1	; CELL  1c number of blocks allocated
+		.st_atime:	resd 1	; CELL  20 time of last access
+		.unused1:	resd 1	; CELL  24
+		.st_mtime:	resd 1	; CELL  28 time of last modification
+		.unused2:	resd 1	; CELL  2c
+		.st_ctime:	resd 1	; CELL  30 time of last change
+		.unused3:	resd 1	; CELL  34
+		.unused4:	resd 1	; CELL  38
+		.unused5:	resd 1	; CELL  3c
+	    endstruc
+
+	    ; flags in &lt;st_dev>, -re- <a href="file:///usr/src/linux/include/linux/major.h">include/major.h</a>
+		%define S_IFMT  00170000q	; device type mask
+		%define S_IFSOCK 0140000q	; socket
+		%define S_IFLNK  0120000q	; symbolic link
+		%define S_IFREG  0100000q	; regular file
+		%define S_IFBLK  0060000q	; block device
+		%define S_IFDIR  0040000q	; directory
+		%define S_IFCHR  0020000q	; character device
+		%define S_IFIFO  0010000q	; fifo
+		%define S_ISUID  0004000q	; set user id when executing
+		%define S_ISGID  0002000q	; reg: set grup id when executing or, 
+						;      mandataory file locking if not executeable for group.
+						; dir: files and sub-dirs inherit uid, dirs this flag, also
+		%define S_ISVTX  0001000q	; dir: despite root, only owner of dir or file can delete.
+	    ; "C"-ish 'macroes' for device types
+		%define S_ISLNK(m)      (((m) & S_IFMT) = S_IFLNK)
+		%define S_ISREG(m)      (((m) & S_IFMT) = S_IFREG)
+		%define S_ISDIR(m)      (((m) & S_IFMT) = S_IFDIR)
+		%define S_ISCHR(m)      (((m) & S_IFMT) = S_IFCHR)
+		%define S_ISBLK(m)      (((m) & S_IFMT) = S_IFBLK)
+		%define S_ISFIFO(m)     (((m) & S_IFMT) = S_IFIFO)
+		%define S_ISSOCK(m)     (((m) & S_IFMT) = S_IFSOCK)
+
+	    <a name="ostat">__old_kernel_stat</a> structure, <a href="file:///usr/src/linux/include/asm/stat.h">asm/stat.h</a>
+	    <b>2.4.18 stat</b> refers to <b>__old_kernel_stat</b> where 2.2.19 uses the above <b>stat</b> structure.
+	    struct __old_kernel_stat {
+		unsigned short st_dev;
+		unsigned short st_ino;
+		unsigned short st_mode;
+		unsigned short st_nlink;
+		unsigned short st_uid;
+		unsigned short st_gid;
+		unsigned short st_rdev;
+		unsigned long  st_size;
+		unsigned long  st_atime;
+		unsigned long  st_mtime;
+		unsigned long  st_ctime;
+	    };
+
+	    <a name="stat64">stat64</a> structure, <a href="file:///usr/src/linux/include/asm/stat.h">asm/stat.h</a>, kernel 2.4.18
+	    // This matches struct stat64 in glibc2.1, hence the absolutely insane amounts of padding around dev_t's.
+	    %define STAT64_HAS_BROKEN_ST_INO	1
+	<b>nasm syntax</b>
+	    struc stat64	; stat64_size = 0x60 = 96
+		.st_dev:	resw 1	; 00
+		.__pad0:	resb 10	; 02
+		.__st_ino:	resd 1	; 0c 12
+		.st_mode:	resd 1	; 10 16
+		.st_nlink:	resd 1	; 14 20
+		.st_uid:	resd 1	; 18 24
+		.st_gid:	resd 1	; 1c 28
+		.st_rdev:	resd 1	; 20 32
+		.__pad3:	resb 10	; 22 34
+		.st_size:	resd 2	; 2c 44 double
+		.st_blksize:	resd 1	; 34 52
+		.st_blocks:	resd 1	; 38 56		Number 512-byte blocks allocated.
+		.__pad4:	resd 1	; 3c 60		future possible st_blocks high bits
+		.st_atime:	resd 1	; 40 64
+		.__pad5:	resd 1	; 44 68
+		.st_mtime:	resd 1	; 48 72
+		.__pad6:	resd 1	; 4c 76
+		.st_ctime:	resd 1	; 50 80
+		.__pad7:	resd 1	; 54 84		will be high 32 bits of ctime someday
+		.st_ino:	resd 2	; 58 88 double
+	    endstruc
+</pre>
+
+
+<p>&nbsp;</p>
+
+<a name="sysinfo">sysinfo</a> system statistics data, <a href="file:///usr/src/linux/include/linux/kernel.h">linux/kernel.h</a>
+<pre>
+	    struct sysinfo {
+		long uptime;			// Seconds since boot
+		unsigned long loads[3];		// 1, 5, and 15 minute load averages
+		unsigned long totalram;		// Total usable main memory size
+		unsigned long freeram;		// Available memory size
+		unsigned long sharedram;	// Amount of shared memory
+		unsigned long bufferram;	// Memory used by buffers
+		unsigned long totalswap;	// Total swap space size
+		unsigned long freeswap;		// swap space still available
+		unsigned short procs;		// Number of current processes
+		char _f[22];			// Pads structure to 64 bytes
+		};
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="sigstack">sigaltstack</a>, alternate stack for signal handlers 
+<a href="file:///usr/src/linux/include/asm/signal.h">asm/signal.h</a>
+(libc: <a href="file:///usr/include/bits/sigstack.h">bits/sigstack.h</a>)
+<pre>
+
+		MINSIGSTKSZ	8192		// minimal stack size for a signal handler.
+		SIGSTKSZ	(MINSIGSTKSZ + 32768)	// System default stack size.
+
+		SS_ONSTACK	0x0001
+		SS_DISABLE	0x0004
+
+		typedef struct sigaltstack {	// <a name="stack_t">stack_t</a>
+			void *ss_sp;		// int (dword)
+			int ss_flags;		// int (dword), SS_ONSTACK or SS_DISABLE
+			<a href="#size_t">size_t</a> ss_size;		// int (dword)
+		} stack_t;
+
+		// obsolete, use only for reference wrt old kernel code:
+		struct sigstack	{		// Structure describing a signal stack
+		    __ptr_t ss_sp;		// Signal stack pointer.
+		    int ss_onstack;		// Nonzero if executing on this stack.
+		  };
+</pre>
+
+<p>&nbsp;</p>
+
+<a name="char"></a><a name="short"></a><a name="shortint"></a><a name="int"></a><a name="long"></a><a name="longlong"></a>
+<a name="types" href="#rtypes">data types</a><pre>
+		<a href="file:///usr/src/linux/include/asm/types.h">asm/types.h</a>, <a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>,
+		<a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>, <a href="file:///usr/src/linux/include/linux/posix_types.h">linux/posix_types.h</a>, <a href="file:///usr/src/linux/include/linux/stddef.h">linux/stddef.h</a>;
+		<a href="file:///usr/src/glibc/sysdeps/unix/sysv/linux/bits/types.h">libc types</a>
+	
+	//		name			i386 asm
+	// ----------------------------------------------------------------------
+	
+		byte			8 contiguous bits, one address unit
+		word			two contiguous address units
+		dword			four contiguous address units, 'cell'
+		qword			eight contiguous address units
+
+		<a name="bchar">char</a>			8bit byte
+		<a name="bshort">short</a>			16bit word
+		short int		16bit word
+		<a name="bint">int</a>			32bit dword
+		<a name="blong">long</a>			32bit dword
+		long int		32bit dword
+		<a name="blonglong">long long</a>		64bit qword
+		long long int		64bit qword
+
+	    'little endian' byte order, i.e. more significant bytes stored towards higher address values.
+
+		*(data item)		dword address which points to the rsp. data item
+		&(data item)		dword address at which the rsp. data item is stored
+		
+	    basic data items may appear preceded by various, fancy attributes, 'unsigned' &amp;c, which
+	    are a matter of interpretation, related to a particular programming tool (e.g. "C"), not
+	    inherent to their physical representation.
+
+	//		name			"C"
+	// ----------------------------------------------------------------------
+
+	// ----	bsd
+	    unsigned <a href="#char">char</a>		<a name="u_char">u_char</a>;
+	    unsigned <a href="#short">short</a>		<a name="u_short">u_short</a>;
+	    unsigned <a href="#int">int</a>		<a name="u_int">u_int</a>;
+	    unsigned <a href="#long">long</a>		<a name="u_long">u_long</a>	
+
+	// ---- sysv
+	    unsigned <a href="#char">char</a>		<a name="unchar">unchar</a>;
+	    unsigned <a href="#short">short</a>		<a name="ushort">ushort</a>;
+	    unsigned <a href="#int">int</a>		<a name="uint">uint</a>;
+	    unsigned <a href="#long">long</a>		<a name="ulong">ulong</a>;
+
+	    unsigned <a href="#short">short</a>		<a name="umode_t">umode_t</a>;
+
+	// ---- Just Names...
+	    ...useless but for obscure compilers' and obscure languages' obscure "data types".
+
+	    __kernel_fd_set		fd_set
+	    __kernel_dev_t		dev_t
+	    __kernel_ino_t		ino_t
+	    __kernel_mode_t		<a href="#umode_t">mode_t</a>
+	    __kernel_nlink_t		nlink_t
+	    __kernel_off_t		<a href="#off_t">off_t</a>
+	    __kernel_pid_t		<a href="#pid_t">pid_t</a>
+	    __kernel_uid_t		<a href="#uid_t">uid_t</a>
+	    __kernel_gid_t		<a href="#gid_t">gid_t</a>
+	    __kernel_daddr_t		daddr_t
+	    __kernel_key_t		key_t
+	    __kernel_suseconds_t	suseconds_t
+	    __kernel_loff_t		loff_t;
+	    __kernel_size_t		<a href="#size_t">size_t</a>;
+	    __kernel_ssize_t		<a href="#ssize_t">ssize_t</a>;
+	    __kernel_ptrdiff_t		ptrdiff_t;
+	    __kernel_time_t		time_t
+	    __kernel_clock_t		clock_t;
+	    __kernel_caddr_t		caddr_t;
+
+	// ---- !(__BIT_TYPES_DEFINED__)
+	    <a name="u8">__u8</a>			u_int8_t;	// 8bit byte
+	    <a name="s8">__s8			int8_t;		// 8bit byte
+	    <a name="u16">__u16			u_int16_t;	// 16bit word
+	    <a name="s16">__s16			int16_t;	// 16bit word
+	    <a name="u32">__u32			u_int32_t;	// 32bit dword
+	    <a name="s32">__s32			int32_t;	// 32bit dword
+	// ---- #endif !(__BIT_TYPES_DEFINED__)
+	    __u8			uint8_t;	// 8bit byte
+	    __u16			uint16_t;	// 16bit word
+	    __u32			uint32_t;	// 32bit dword
+
+	    <a name="u64">__u64			uint64_t;	// 64bit quad word
+	    __u64			u_int64_t;	// 64bit quad word
+	    <a name="s64">__s64			int64_t;	// 64bit quad word
+
+	// ---- libc:
+
+	    <a href="#long">long int</a>			<a name="off_t">__off_t; 	// Type of file sizes and offsets.</a>
+	    <a href="#longlong">long long int</a>		<a name="loff_t">__off64_t;	// Type of file sizes and offsets.</a>
+	    <a href="#int">int</a>				<a name="pid_t">__pid_t;      	// Type of process identifications.</a> 
+	    <a href="#int">int</a>				<a name="ssize_t">__ssize_t;    	// Type of a byte count, or error.</a>
+	    <a href="#int">int</a>				<a name="size_t">size_t;</a>
+	    unsigned <a href="#char">char</a>		<a name="u_char">__u_char;</a>
+	    unsigned <a href="#short">short</a>		<a name="u_short">__u_short;</a>
+	    unsigned <a href="#int">int</a>		<a name="u_int">__u_int;</a>
+	    unsigned <a href="#long">long</a>		<a name="u_long">__u_long</a>;
+
+	    unsigned <a href="#longlong">long long int</a>	<a name="u_quad_t">__u_quad_t</a>;
+	    <a href="#longlong">long long int</a>		<a name="quad_t">__quad_t;</a>
+                                                 
+	    signed <a href="#char">char</a>			<a name="int8_t">__int8_t;</a>
+	    unsigned <a href="#char">char</a>		<a name="uint8_t">__uint8_t;</a>
+	    signed <a href="#shortint">short int</a>		<a name="int16_t">__int16_t;</a>
+	    unsigned <a href="#shortint">short int</a>		<a name="uint16_t">__uint16_t;</a>
+	    signed <a href="#int">int</a>			<a name="int32_t">__int32_t;</a>
+	    unsigned <a href="#int">int</a>		<a name="uint32_t">__uint32_t;</a>
+
+	    signed <a href="#longlong">long long int</a>	<a name="int64_t">__int64_t;</a>
+	    unsigned <a href="#longlong">long long int</a>	<a name="uint64_t">__uint64_t;</a>
+
+	    <a href="#long">long int</a>		<a name="__off_t">__off_t;	// Type of file sizes and offsets.</a>
+	    <a href="#int">int</a>				<a name="pid_t">__pid_t;	// Type of process identifications.</a> 
+	    <a href="#int">int</a>				<a name="gid_t">__gid_t;	// Type of process group identifications.</a> 
+	    <a href="#int">int</a>				<a name="uid_t">__uid_t;	// Type of process user identifications.</a> 
+	    <a href="#int">int</a>				<a name="ssize_t">__ssize_t;	// Type of a byte count, or error.</a>
+	    <a href="#int">int</a>				<a name="daddr_t">__daddr_t;		// The type of a disk address.</a>
+	    <a href="#char">char</a>			<a name="caddr_t">*__caddr_t;</a>
+	    <a href="#long">long int</a>			<a name="time_t">__time_t;</a>
+	    <a href="#long">long int</a>			<a name="swblk_t">__swblk_t;	// Type of a swap block (?)</a>
+	    <a href="#long">long int</a>			<a name="clock_t">__clock_t;</a>
+	    unsigned <a href="#long">long int</a>		<a name="fd_mask">__fd_mask;	// One element in the file descriptor mask array.</a>
+	    <a href="#int">int</a>				<a name="key_t">__key_t;</a>
+	    unsigned <a href="#shortint">short int</a>		<a name="ipc_pid_t">__ipc_pid_t;	// Used in `struct shmid_ds'.</a>
+	    <a href="#long">long int</a>			<a name="t_scalar_t">__t_scalar_t;	// Used in XTI. </a>
+	    unsigned <a href="#long">long int</a>		<a name="t_uscalar_t">__t_uscalar_t;</a>
+	    <a href="#int">int</a>				<a name="ptr_t">ptr_t;</a>
+	    <a href="#int">int</a>				<a name="intptr_t">__intptr_t;</a>
+	    <a href="#long">long int</a>			<a name="blkcnt_t">__blkcnt_t;	// Type to count number os disk blocks.</a>
+	    __u_long			__fsblkcnt_t;	// Type to count file system blocks. 
+	    __u_quad_t			__fsblkcnt64_t;
+	    __u_long			__fsfilcnt_t;	// Type to count file system inodes. 
+	    __u_quad_t			__fsfilcnt64_t;
+	    __u_long			__ino64_t;	// Type of file serial numbers. 
+	    __loff_t			__off64_t;	// Type of file sizes and offsets. 
+	    __quad_t			__blkcnt64_t;
+	    __quad_t			*__qaddr_t;
+	    __u_quad_t			__dev_t;	// Type of device numbers. 
+	    __u_int			__uid_t;	// Type of user identifications. 
+	    __u_int			__gid_t;	// Type of group identifications. 
+	    __u_long			__ino_t;	// Type of file serial numbers. 
+	    __u_int			__mode_t;	// Type of file attribute bitmasks. 
+	    __u_int			__nlink_t; 	// Type of file link counts. 
+	    __quad_t			__loff_t;	// Type of file sizes and offsets. 
+	    __u_long			__rlim_t;	// Type of resource counts. 
+	    __u_quad_t			__rlim64_t;	// Type of resource counts (LFS). 
+	    __u_int			__id_t;		// General type for ID.
+	    struct
+	      {
+	        int __val[2];
+	      } __fsid_t;				// Type of file system IDs. 
+
+
+	    // # include &lt;bits/pthreadtypes.h>	// defines nothing wrt Sys-V/linux
+
+</pre>
+<p>&nbsp;</p>
+
+<hr>
+
+
+<p>&nbsp;</p>
+
+<p><a name="bot" href="#top">[top]</a></p>
+<p>
+<a href="index-lx.shtml">[main]</a>
+<a href="lhpsyscal.html">[back]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0.html">[index]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[reference]</a>
+<a name="lhpstruc.html">[struc]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+</p>
+<p>&nbsp;</p>
+<center>
+<font size="-2">
+<a href="index-lx.shtml#mailme">H.-Peter Recktenwald, Berlin</a>, 
+28.Mai.2000 = .hpr.l0 =</font>
+<script language="JavaScript"> document.write(document.lastModified) </script> 
+<noscript>updt:10.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.struc" alt="2232" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</font>
+</body>
+</html>

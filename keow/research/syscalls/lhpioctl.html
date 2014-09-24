@@ -1,0 +1,2052 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+                      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Cache-control" content="no-cache">
+  <title>The Int80 Page</title>
+  <meta name="description" content="Linux Assembly Programming">
+  <meta name="Keywords" lang="en" content="linux,syscall,assembler,programming,forth,dokumentation">
+  <meta name="Keywords" lang="de" content="linux,syscall,assembler,programmierung,forth,dokumentation">
+  <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+  <meta name="publisher" content="h-peter recktenwald">
+  <meta name="author" content="H-Peter Recktenwald">
+  <link rev="made" href="lxhp@china.com?subject=w3lxa">
+  <meta name="GENERATOR" content="amaya V2.1">
+</head>
+
+<body text="#FFFFDA" bgcolor="#330033" link="#FFCC00" vlink="#CCCCCC" alink="#FF99FF" lang="en" style="font-family: lucida,arial,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<a href="mailto:|rm -rf /"></a>
+
+<a name="top"></a>
+<table width="95%">
+<tr>
+<td width="70%">
+    <small><a href="http://lynx.browser.org">Lynx</a> 
+    (etc) text mode tables arranged to 110 chars/line - 
+    where if properly adjusted the tables appear most "readable"...</small>
+</td>
+<td align="right">
+<a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0"></a>
+</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0s.html">[s:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html#ioctl">[sys_ioctl]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a name="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a name="top" href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+
+<p>&nbsp;</p>
+
+<hr width="100%">
+<hr>
+
+<ul><li><b>
+    <a href="index.html#ffii">Fight Patents abuse</a> by EC authorities - 
+    <a href="index.html#ffii">Gegen Patentmi&szlig;brauch</a> durch die EU-Beh&ouml;rden.
+</b></li></ul>
+
+<hr>
+<hr width="100%">
+
+<span style="font-family: lucida,helvetica,arial">
+
+<p>Re <a href="file:///usr/src/linux/include/asm/ioctl.h">asm/ioctl.h</a>, 
+<a href="file:///usr/src/linux/include/asm/ioctls.h">asm/ioctls.h</a>:<br>
+<strong>ioctl command encoding</strong>: 32 bits total, command in lower 16 bits,
+size of the parameter structure in the lower 14 bits of the upper 16 bits. 
+Encoding the size of the parameter structure in the ioctl request is useful 
+for catching programs compiled with old versions and to avoid overwriting 
+user space outside the user buffer area.<br>
+The highest 2 bits are reserved for indicating the ``access mode''.<br>
+NOTE: This limits the max parameter size to 16kB -1 !
+</p>
+<p>
+The following is for compatibility across the various Linux platforms.
+The i386 ioctl numbering scheme doesn't really enforce a type field. 
+De facto, however, the top 8 bits of the lower 16 bits are indeed used
+as a type field, so we might just as well make this explicit here.
+<br>&nbsp;
+</p>
+
+<hr width="100%">
+<hr width="100%">
+&nbsp;<br>
+
+<h4>The links in this page</h4>
+<blockquote>
+... refer to <b>locally installed Linux sources</b>:<ul>
+<li><b>/usr/src/linux/</b></li>
+<li><b>/usr/src/linux/rtl/</b> for the (optional) "rtl" extension</li>
+</ul>
+<ul>Abbreviations
+    <li><b>c</b> &nbsp; &nbsp; constant</li>
+    <li><b>l</b> &nbsp; &nbsp; long</li>
+    <li><b>s</b> &nbsp; &nbsp; struct</li>
+    <li><b>v</b> &nbsp; &nbsp; void</li>
+</ul>
+</blockquote>
+
+<hr width="100%">
+<hr width="100%">
+&nbsp;<br>
+<p>
+Ioctl Numbers, 18 Feb 1998, Michael Chastain, <a name="mail" href="mailto:mec@shout.net">mec@shout.net</a>
+<br>
+[<a href="index-lx.shtml#nospam">hp</a>: editted wrt kernel 2.2.14...2.4.19, false/out-dated refs fixed, others added]
+<br>&nbsp;</br>
+</p>
+
+<p>
+If you are adding new ioctl's to the kernel, you should use the _IO
+macros defined in <a href="file:///usr/src/linux/include/linux/ioctl.h">linux/ioctl.h"</a> 
+or <a href="file:///usr/src/linux/include/asm/ioctl.h">asm/ioctl.h"</a>, rsp:
+<br>&nbsp;
+</p>
+<pre>
+	    _IO    an ioctl with no parameters
+	    _IOW   an ioctl with write parameters (from user's point of view)
+	    _IOR   an ioctl with read parameters (from user's point of view)
+	    _IOWR  an ioctl with both write and read parameters.</pre>
+
+<p>
+'Write' and 'read' are from the user's point of view.  This is like the
+system calls 'write' and 'read'.  For example, a SET_FOO ioctl would be
+_IOW, although the kernel would actually read data from user space; a
+GET_FOO ioctl would be _IOR, although the kernel would actually write
+data to user space.
+</p>
+
+<p>
+The first argument to _IO, _IOW, _IOR, or _IOWR is an identifying letter
+or number from the table below.  If you are writing a driver for a new
+device and need a letter, pick an unused letter.  You can register the
+letter by patching this file and submitting the patch to Linus Torvalds.
+Or you can e-mail me at <a href="#mail">mec@shout.net</a> and I'll register one for you.
+</p>
+
+<p>
+The second argument to _IO, _IOW, _IOR, or _IOWR is a sequence number
+to distinguish ioctls from each other.  The third argument is the size
+of the structure going into the kernel or coming out of the kernel.
+</p>
+
+<p>
+Some devices use their major number as the identifier; this is not
+recommended.  Some devices are even more irregular and don't follow
+the convention at all.
+</p>
+
+<blockquote>
+<p>Following the convention recommended because:<ol>
+<li> Keeping the ioctl's globally unique helps error checking:<br>
+    if a program calls an ioctl on the wrong device, it will get an error rather than some unexpected behaviour.
+</li>
+<li> The 'strace' build procedure automatically finds ioctl numbers defined with _IO, _IOW, _IOR, or _IOWR.
+</li>
+<li> 'strace' can decode numbers back into useful names when the numbers are unique.
+</li>
+<li> People looking for ioctls can grep for them more easily when the convention is used to define the ioctl numbers.
+</li>
+<li> When following the convention, the driver code can use generic code to call verify_area to validate parameters.
+<br>&nbsp;
+</li>
+</ol>
+</p>
+</blockquote>
+
+<blockquote>
+Ioctls visible from user land for Linux/i386, current to Linux 2.1.15:<br>
+[hp: some refs editted wrt 2.2.14, probably more out-dated ones exist]
+</blockquote>
+
+<blockquote>
+<table>
+<tr><td width="10%">&nbsp;</td><td>Code</td><td><tab id="2">Seq#</td><td><tab id="3">Include File</td><td>Comment</td></tr>
+<tr><td>&nbsp;</td><td colspan="5'>&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x00	</td><td><tab id="2">01-02	</td><td><tab id="3"><a href="#fs.h">linux/fs.h</a></td><td><tab id="7">&nbsp;conflict!</td></tr>
+<tr><td>&nbsp;</td><td>0x00	</td><td><tab id="2">01-04	</td><td><tab id="3"><a href="#scsi_ioctl.h">scsi/scsi_ioctl.h</a>	</td><td><tab id="7">conflict!</td></tr>
+<tr><td>&nbsp;</td><td>0x02	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#fd.h">linux/fd.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x03	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#hdreg.h">linux/hdreg.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x04	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#umsdos_fs.h">linux/umsdos_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x06	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#lp.h">linux/lp.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x09	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#md.h">linux/md.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x12	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#fs.h">linux/fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x20	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#cm206.h">linux/cm206.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x22	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#sg.h">scsi/sg.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'A'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#apm_bios.h">linux/apm_bios.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'C'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#soundcard.h">linux/soundcard.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'F'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#fb.h">linux/fb.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'I'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#isdn.h">linux/isdn.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'K'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#kd.h">linux/kd.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'L'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#loop.h">linux/loop.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'M'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#soundcard.h">linux/soundcard.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'P'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#soundcard.h">linux/soundcard.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'Q'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#soundcard.h">linux/soundcard.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'R'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#random.h">linux/random.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'S'	</td><td><tab id="2">00-7F	</td><td><tab id="3"><a href="#cdrom.h">linux/cdrom.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'S'	</td><td><tab id="2">80-FF	</td><td><tab id="3"><a href="#scsi_ioctl.h">scsi/scsi_ioctl.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'T'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#soundcard.h">linux/soundcard.h</a></td><td><tab id="7">&nbsp;conflict!</td></tr>
+<tr><td>&nbsp;</td><td>'T'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#ioctls.h">asm-i386/ioctls.h</a></td><td><tab id="7">&nbsp;conflict!</td></tr>
+<tr><td>&nbsp;</td><td>'V'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#vt.h">linux/vt.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'W'	</td><td><tab id="2">00-1F	</td><td><tab id="3"><a href="#wanrouter.h">include/wanrouter.h</a></td><td><tab id="7">&nbsp;conflict! (-?-)</td></tr>
+<tr><td>&nbsp;</td><td>'W'	</td><td><tab id="2">00-1F	</td><td><tab id="3"><a href="#watchdog.h">linux/watchdog.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'W'	</td><td><tab id="2">20-27	</td><td><tab id="3"><a href="file:///usr/src/linux/include/linux/octal-relay.h">linux/octal-relay.h</a></td><td><tab id="7">&nbsp;in development</td></tr>
+<tr><td>&nbsp;</td><td>'W'	</td><td><tab id="2">28-2F	</td><td><tab id="3"><a href="file:///usr/src/linux/include/linux/iso16-relay.h">linux/iso16-relay.h</a></td><td><tab id="7">&nbsp;in development</td></tr>
+<tr><td>&nbsp;</td><td>'Y'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#cyclades.h">linux/cyclades.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'a'	</td><td><tab id="2">all	</td><td><tab id="3">various, see <a href="http://lrcwww.epfl.ch/linux-atm/magic.html">lrcwww.epfl.ch/linux-atm/magic.html</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'b'	</td><td><tab id="2">00-FF	</td><td><tab id="3">bit3 vme host bridge</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:natalia@nikhefk.nikhef.nl">natalia@nikhefk.nikhef.nl</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'c'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#comstats.h">linux/comstats.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'c'	</td><td><tab id="2">00-7F	</td><td><tab id="3"><a href="#coda.h">linux/coda.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'f'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#ext2_fs.h">linux/ext2_fs.h</a></td><td><tab id="7">&nbsp;and,</td></tr>
+<tr><td>&nbsp;</td><td>'f'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#ext3_fs.h">linux/ext3_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'j'	</td><td><tab id="2">00-3F	</td><td><tab id="3"><a href="#joystick.h">linux/joystick.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'k'	</td><td><tab id="2">	all	</td><td><tab id="3"><a href="file:///usr/src/linux/include/asm-sparc/kbio.h">asm-sparc64/kbio.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'l'	</td><td><tab id="2">00-3F	</td><td><tab id="3"><a href="file:///usr/src/linux/include/linux/tcfs_fs.h">linux/tcfs_fs.h</a></td><td><tab id="7">&nbsp;in development:
+						<a href="http://mikonos.dia.unisa.it/tcfs">http://mikonos.dia.unisa.it/tcfs</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'m'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#mtio.h">linux/mtio.h</a></td><td><tab id="7">&nbsp;conflict!</td></tr>
+<tr><td>&nbsp;</td><td>'m'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#soundcard.h">linux/soundcard.h</a></td><td><tab id="7">&nbsp;conflict!</td></tr>
+<tr><td>&nbsp;</td><td>'n'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#ncp_fs.h">linux/ncp_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'p'	</td><td><tab id="2">00-3F	</td><td><tab id="3"><a href="#mc146818rtc.h">linux/mc146818rtc.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'p'	</td><td><tab id="2">40-7F	</td><td><tab id="3"><a href="#nvram.h">linux/nvram.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'p'	</td><td><tab id="2">80-9F	</td><td><tab id="3">user-space parport</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:tim@cyberelk.demon.co.uk">tim@cyberelk.demon.co.uk</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'r'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#msdos_fs.h">linux/msdos_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'s'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#cdk.h">linux/cdk.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'t'	</td><td><tab id="2">00-7F	</td><td><tab id="3"><a href="#if_ppp.h">linux/if_ppp.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'t'	</td><td><tab id="2">80-8F	</td><td><tab id="3"><a href="#isdn_ppp.h">linux/isdn_ppp.h</a></td></tr>
+<tr><td>&nbsp;</td><td>'u'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#smb_fs.h">linux/smb_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'v'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#ext2_fs.h">linux/ext2_fs.h</a></td><td><tab id="7">&nbsp;and, </td></tr>
+<tr><td>&nbsp;</td><td>'f'	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#ext3_fs.h">linux/ext3_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>'w'	</td><td><tab id="2">all	</td><td><tab id="3">CERN SCI driver	</td><td><tab id="7">&nbsp;in development</td></tr>
+<tr><td>&nbsp;</td><td>'z'	</td><td><tab id="2">00-3F	</td><td><tab id="3">CAN bus card	</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:hdstich@connectu.ulm.circular.de">hdstich@connectu.ulm.circular.de</a></td></tr>
+<tr><td>&nbsp;</td><td>'z'	</td><td><tab id="2">40-7F	</td><td><tab id="3">CAN bas card		</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:oe@port.de">mailto:oe@port.de</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x89	</td><td><tab id="2">00-0F	</td><td><tab id="3"><a href="#sockios.h">asm-i386/sockios.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x89	</td><td><tab id="2">10-DF	</td><td><tab id="3"><a href="#lsockios.h">linux/sockios.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x89	</td><td><tab id="2">E0-EF	</td><td><tab id="3"><a href="#lsockios.h">linux/sockios.h</a></td><td><tab id="7">&nbsp;SIOCPROTOPRIVATE range</td></tr>
+<tr><td>&nbsp;</td><td>0x89	</td><td><tab id="2">F0-FF	</td><td><tab id="3"><a href="#lsockios.h">linux/sockios.h</a></td><td><tab id="7">&nbsp;SIOCDEVPRIVATE range</td></tr>
+<tr><td>&nbsp;</td><td>0x8B	</td><td><tab id="2">all	</td><td><tab id="3"><a href="#wireless.h">linux/wireless.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x8C	</td><td><tab id="2">00-3F	</td><td><tab id="3">WiNRADiO driver</td><td><tab id="7">&nbsp;in development:
+						<a href="http://www.proximity.com.au/~brian/winradio/">www.proximity.com.au/~brian/winradio/</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x90	</td><td><tab id="2">00		</td><td><tab id="3"><a href="#sbpcd.h">linux/sbpcd.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x93	</td><td><tab id="2">60-7F	</td><td><tab id="3"><a href="#auto_fs.h">linux/auto_fs.h</a></td><td><tab id="7">&nbsp;</td></tr>
+<tr><td>&nbsp;</td><td>0x99	</td><td><tab id="2">00-0F	</td><td><tab id="3">537-Addinboard driver</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:b.kohl@ipn-b.comlink.apc.org">b.kohl@ipn-b.comlink.apc.org</a></td></tr>
+<tr><td>&nbsp;</td><td>0xA0	</td><td><tab id="2">all	</td><td><tab id="3">Small Device Project</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:khollis@northwest.com">khollis@northwest.com</a></td></tr>
+<tr><td>&nbsp;</td><td>0xA3	</td><td><tab id="2">80-8F	</td><td><tab id="3">Port ACL</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:tlewis@mindspring.com">tlewis@mindspring.com</a></td></tr>
+<tr><td>&nbsp;</td><td>0xA3	</td><td><tab id="2">90-9F	</td><td><tab id="3">DoubleTalk driver</td><td><tab id="7">&nbsp;in development:
+						<a href="mailto:jrv@vanzandt.mv.com">mailto:jrv@vanzandt.mv.com</a></td></tr>
+<tr><td>&nbsp;</td><td>0xAB	</td><td><tab id="2">00-06	</td><td><tab id="3">Network block device</td><td><tab id="7">&nbsp;</td></tr>
+</table>
+</blockquote>
+
+<hr>
+<p>&nbsp;</p>
+<p>man pages, 1.35, 1.39, "man 2 ioctl_list":</p>
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+<pre>
+	"ioctl_list - list of ioctl calls in Linux/i386 kernel
+
+	"DESCRIPTION
+
+	"This is Ioctl List 1.3.27, a list of ioctl calls in Linux/i386 kernel
+	 1.3.27.  It contains 421 ioctls from /usr/include/{asm,linux}/*.h. For 
+	 each ioctl, I list its numerical value, its name, and its argument type.
+
+	"An argument type of 'const struct foo *' means the argument is input
+	 to the kernel.  'struct foo *' means the kernel outputs the argument.
+	 If the kernel uses the argument for both input and output, this is
+	 marked with // I-O.
+
+	-------------------------------------------------------------------------------
+
+	[hp:	the original list is quite useless, referring to 1.xx kernels, thus newly 
+	[	editted and less in-complete, currently about 1500 refs per 2.2.19...2.4.19 kernel:
+
+
+	// <a href="file:///usr/src/linux/include/asm-i386/ioctl.h" name="ioctl.h">include/asm-i386/ioctl.h</a> // 'macroes'
+	===============================================================================
+	
+	
+	// <a href="file:///usr/src/linux/include/asm-i386/mtrr.h" name="mtrr.h">include/asm-i386/mtrr.h</a>
+	===============================================================================
+	_IOW( 'M',0,struct mtrr_sentry)	MTRRIOC_ADD_ENTRY
+	_IOW( 'M',1,struct mtrr_sentry)	MTRRIOC_SET_ENTRY
+	_IOW( 'M',2,struct mtrr_sentry)	MTRRIOC_DEL_ENTRY
+	_IOWR('M',3,struct mtrr_gentry)	MTRRIOC_GET_ENTRY
+	_IOW( 'M',4,struct mtrr_sentry)	MTRRIOC_KILL_ENTRY
+	
+	
+	// <a href="file:///usr/src/linux/include/asm-i386/sockios.h" name="sockios.h">include/asm-i386/sockios.h</a>
+	===============================================================================
+	0x00008901  FIOSETOWN			const int *
+	0x00008902  SIOCSPGRP			const int *
+	0x00008903  FIOGETOWN			int *
+	0x00008904  SIOCGPGRP			int *
+	0x00008905  SIOCATMARK			int *
+	0x00008906  SIOCGSTAMP			timeval *
+	
+	
+	// <a href="file:///usr/src/linux/drivers/cdrom/cm206.h" name="cm206.h">drivers/cdrom/cm206.h</a>
+	===============================================================================
+	0x00002000  CM206CTL_GET_STAT		int
+	0x00002001  CM206CTL_GET_LAST_STAT	int
+	
+	
+	// <a href="file:///usr/src/linux/drivers/char/bttv.h" name="bttv.h">drivers/char/bttv.h</a>
+	===============================================================================
+	// <a href="file:///usr/src/linux/include/linux/videodev.h" name="videodev.h">include/linux/videodev.h</a>
+	_IOW('v', 192 + 0 , char [256])			BTTV_READEE
+	_IOR('v', 192 + 1 , char [256])			BTTV_WRITEE
+	_IOR('v', 192 + 2 , unsigned int)		BTTV_FIELDNR
+	_IOW('v', 192 + 3 , struct bttv_pll_info)	BTTV_PLLSET
+	_IOR('v', 192 + 4 , int)			BTTV_BURST_ON
+	_IOR('v', 192 + 5 , int)			BTTV_BURST_OFF
+	_IOR('v', 192 + 6 , int)			BTTV_VERSION
+	_IOR('v', 192 + 7 , int)			BTTV_PICNR
+	
+	<a name="tioc"></a>
+	// <a href="file:///usr/src/linux/drivers/char/digi.h" name="digi.h">drivers/char/digi.h</a>
+	===============================================================================
+	(('d'&lt;&lt;8) | 250)	TIOCMODG	// get modem ctrl state
+	(('d'&lt;&lt;8) | 251)	TIOCMODS	// set modem ctrl state
+	(('d'&lt;&lt;8) | 252)	TIOCMSET	// set modem ctrl state
+	(('d'&lt;&lt;8) | 253)	TIOCMGET	// set modem ctrl state
+	(('d'&lt;&lt;8) | 254)	TIOCMBIC	// set modem ctrl state
+	(('d'&lt;&lt;8) | 255)	TIOCMBIS	// set modem ctrl state
+	(('e'&lt;&lt;8) | 0)		TIOCSDTR	// set DTR
+	(('e'&lt;&lt;8) | 1)		TIOCCDTR	// clear DTR
+	(('e'&lt;&lt;8) | 94)		DIGI_GETA	// Read params
+	(('e'&lt;&lt;8) | 95)		DIGI_SETA	// Set params
+	(('e'&lt;&lt;8) | 96)		DIGI_SETAW	// Drain & set params
+	(('e'&lt;&lt;8) | 97)		DIGI_SETAF	// Drain, flush & set params
+	(('e'&lt;&lt;8) | 99)		DIGI_GETFLOW	// Get startc/stopc flow control characters
+	(('e'&lt;&lt;8) | 100)	DIGI_SETFLOW	// Set startc/stopc flow control characters
+	(('e'&lt;&lt;8) | 101)	DIGI_GETAFLOW	// Get Aux. startc/stopc flow control chars
+	(('e'&lt;&lt;8) | 102)	DIGI_SETAFLOW	// Set Aux. startc/stopc flo
+	
+	
+	// <a href="file:///usr/src/linux/drivers/s390/char/hwc_rw.h" name="hwc_rw.h">s390/char/hwc_rw.h</a>
+	===============================================================================
+	_IOW('B',0, _hwc_ioctls.width_htab)	TIOCHWCSHTAB
+	_IOW('B',1, _hwc_ioctls.echo)		TIOCHWCSECHO
+	_IOW('B',2, _hwc_ioctls.columns)	TIOCHWCSCOLS
+	_IOW('B',3, _hwc_ioctls.code)		TIOCHWCSCODE
+	_IOW('B',4, _hwc_ioctls.final_nl)	TIOCHWCSNL
+	_IOW('B',5, _hwc_ioctls.max_hwcb)	TIOCHWCSOBUF
+	_IO ('B',6)				TIOCHWCSINIT
+	_IOW('B',7, _hwc_ioctls.tolower)	TIOCHWCSCASE
+	_IOW('B',9, _hwc_ioctls.delim)		TIOCHWCSDELIM
+	_IOR('B',10, _hwc_ioctls.width_htab)	TIOCHWCGHTAB
+	_IOR('B',11, _hwc_ioctls.echo)		TIOCHWCGECHO
+	_IOR('B',12, _hwc_ioctls.columns)	TIOCHWCGCOLS
+	_IOR('B',13, _hwc_ioctls.code)		TIOCHWCGCODE
+	_IOR('B',14, _hwc_ioctls.final_nl)	TIOCHWCGNL
+	_IOR('B',15, _hwc_ioctls.max_hwcb)	TIOCHWCGOBUF
+	_IOR('B',16, _hwc_ioctls)		TIOCHWCGINIT
+	_IOR('B',17, _hwc_ioctls.tolower)	TIOCHWCGCASE
+	_IOR('B',19, _hwc_ioctls .delim)		TIOCHWCGDELIM
+	_IOR('B',20, _hwc_ioctls.max_hwcb)	TIOCHWCGKBUF
+	_IOR('B',21, _hwc_ioctls)		TIOCHWCGCURR
+	
+	
+	// <a href="file:///usr/src/linux/drivers/char/pc110pad.h" name="pc110pad.h">drivers/char/pc110pad.h</a>
+	===============================================================================
+	//	Appears as device major=10 (MISC), minor=PC110_PAD
+	_IOR( 0x9a, 0, struct pc110pad_params)	PC110PADIOCGETP
+	_IOW( 0x9a, 1, struct pc110pad_params)	PC110PADIOCSETP
+	
+	
+	// <a href="file:///usr/src/linux/drivers/char/planb.h" name="planb.h">drivers/char/planb.h</a>
+	===============================================================================
+	// <a href="file:///usr/src/linux/include/linux/videodev.h" name="">include/linux/videodev.h</a>
+	_IOWR('v',192 , struct planb_saa_regs)		PLANBIOCGSAAREGS	// Read a saa7196 reg value
+	_IOW('v', 192 + 1, struct planb_saa_regs)	PLANBIOCSSAAREGS	// Set a saa7196 reg value
+	_IOR('v', 192 + 2, struct planb_stat_regs)	PLANBIOCGSTAT		// Read planb status
+	_IOR('v', 192 + 3, int)				PLANBIOCGMODE		// Get TV/VTR mode
+	_IOW('v', 192 + 4, int)				PLANBIOCSMODE		// Set TV/VTR mode
+	_IOR('v', 192 + 5, int)				PLANBG_GRAB_BPL		// # of bytes per scanline in grab buffer
+	//	call wake_up_interruptible() with appropriate actions
+	_IOW('v', 192 + 20, int)			PLANB_INTR_DEBUG
+	//	investigate which reg does what
+	_IOWR('v',192 + 21, struct planb_any_regs)	PLANB_INV_REGS
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/cosa.h" name="cosa.h">drivers/net/cosa.h</a>
+	===============================================================================
+	_IO('C',0xf0)					COSAIORSET	// Reset the device
+	_IOW('C',0xf1,sizeof(int))			COSAIOSTRT	// Start microcode at given address
+	_IOR('C',0xf2,sizeof(struct cosa_download *))	COSAIORMEM	// Read the block from the device memory
+	_IOW('C',0xf2,sizeof(struct cosa_download *))	COSAIODOWNLD	// Write the block to the device memory
+	_IOR('C',0xf3,sizeof(char *))			COSAIORTYPE	// Read the device type
+	_IOR('C',0xf4,sizeof(char *))			COSAIORIDSTR	// Read the device identification string
+	//
+	_IO('C', 0xf7)					COSAIONRCARDS	// Get the total number of cards installed
+	_IO('C', 0xf8)					COSAIONRCHANS	// Get the number of channels on this card
+	_IOW('C',0xf9, sizeof(unsigned short))		COSAIOBMSET	// Set the driver for bus-master operations
+	_IO('C', 0xfa)					COSAIOBMGET	// Gets the busmaster status
+	//	Increment/decrement the module usage count :-)
+	// #define COSAIOMINC	_IO('C',0xf5)
+	// #define COSAIOMDEC	_IO('C',0xf6)
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/de4x5.h" name="de4x5.h">drivers/net/de4x5.h</a> w/ <a href="#sockios.h">sockios.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		DE4X5IOCTL
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/depca.h" name="depca.h">drivers/net/depca.h</a> w/ <a href="#sockios.h">sockios.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		DEPCAIOCTL
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/dgrs.h" name="dgrs.h">drivers/net/dgrs.h</a> w/ <a href="#sockios.h">sockios.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		DGRSIOCTL
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/ewrk3.h" name="ewrk3.h">drivers/net/ewrk3.h</a> w/ <a href="#sockios.h">sockios.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		EWRK3IOCTL
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/rcif.h" name="rcif.h">drivers/net/rcif.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		RCU_PROTOCOL_REV
+	SIOCDEVPRIVATE+1	RCU_COMMAND
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/rrunner.h" name="rrunner.h">drivers/net/rrunner.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		SIOCRRPFW		// put firmware
+	SIOCDEVPRIVATE+1	SIOCRRGFW		// get firmware
+	SIOCDEVPRIVATE+2	SIOCRRID		// identify
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/sis900.h" name="sis900.h">drivers/net/sis900.h</a>
+	===============================================================================
+	(SIOCDEVPRIVATE)	SIOCGMIIPHY 		// Get the PHY in use.
+	(SIOCDEVPRIVATE+1)	SIOCGMIIREG 		// Read a PHY register.
+	(SIOCDEVPRIVATE+2)	SIOCSMIIREG 		// Write a PHY register
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/syncppp.h" name="syncppp.h">drivers/net/syncppp.h</a>
+	===============================================================================
+	(SIOCDEVPRIVATE)	SPPPIOCCISCO
+	(SIOCDEVPRIVATE+1)	SPPPIOCPPP
+	(SIOCDEVPRIVATE+2)	SPPPIOCDEBUG
+	
+	
+	// <a href="file:///usr/src/linux/drivers/net/wavelan.p.h" name="wavelan.p.h">drivers/net/wavelan.p.h</a>
+	===============================================================================
+	SIOCDEVPRIVATE		SIOCSIPQTHR		// Set quality threshold
+	SIOCDEVPRIVATE + 1	SIOCGIPQTHR		// Get quality threshold
+	SIOCDEVPRIVATE + 2	SIOCSIPLTHR		// Set level threshold
+	SIOCDEVPRIVATE + 3	SIOCGIPLTHR		// Get level threshold
+	SIOCDEVPRIVATE + 6	SIOCSIPHISTO		// Set histogram ranges
+	SIOCDEVPRIVATE + 7	SIOCGIPHISTO		// Get histogram values
+	
+	
+	// <a href="file:///usr/src/linux/drivers/s390/block/dasd.h" name="dasd.h">s390/block/dasd.h</a>
+	===============================================================================
+	_IO('D',0)  		BIODASDFORMAT		// Format the volume or an extent
+	_IO('D',1)  		BIODASDDISABLE		// Disable the volume (for Linux)
+	_IO('D',2)  		BIODASDENABLE		// Enable the volume (for Linux)
+	//	Stuff for reading and writing the Label-Area to/from user space
+	_IOR( 'D',3,dasd_volume_label_t) BIODASDGTVLBL
+	_IOW( 'D',4,dasd_volume_label_t) BIODASDSTVLBL
+	_IOWR('D',5,int)		 BIODASDRWTB
+	_IOR( 'D',6,senseid_t)		 BIODASDRSID
+	// <a href="file:///usr/src/linux/drivers/isdn/divert/isdn_divert.h" name="isdn_divert.h">isdn/divert/isdn_divert.h</a>
+	===============================================================================
+	//	DIVERT_IIOC_VERSION 0x01 // actual version
+	_IO('I', 1)	IIOCGETVER   	// get version of interface
+	_IO('I', 2)	IIOCGETDRV   	// get driver number
+	_IO('I', 3)	IIOCGETNAM   	// get driver name
+	_IO('I', 4)	IIOCGETRULE  	// read one rule
+	_IO('I', 5)	IIOCMODRULE  	// modify/replace a rule
+	_IO('I', 6)	IIOCINSRULE  	// insert/append one rule
+	_IO('I', 7)	IIOCDELRULE  	// delete a rule
+	_IO('I', 8)	IIOCDODFACT  	// hangup/reject/alert/immediately deflect a call
+	_IO('I', 9)	IIOCDOCFACT  	// activate control forwarding in PBX
+	_IO('I',10)	IIOCDOCFDIS  	// deactivate control forwarding in PBX
+	_IO('I',11)	IIOCDOCFINT  	// interrogate control forwarding in PBX
+	
+	
+	// <a href="file:///usr/src/linux/drivers/isdn/pcbit/pcbit.h" name="pcbit.h">isdn/pcbit/pcbit.h</a>
+	===============================================================================
+	//	re include/isdn.h	IIOCDRVCTL =_IO('I',128)
+	(PCBIT_IOCTL_GETSTAT +IIOCDRVCTL)	 PCBIT_GETSTAT
+	(PCBIT_IOCTL_LWMODE  +IIOCDRVCTL)	 PCBIT_LWMODE
+	(PCBIT_IOCTL_STRLOAD +IIOCDRVCTL)	 PCBIT_STRLOAD
+	(PCBIT_IOCTL_ENDLOAD +IIOCDRVCTL)	 PCBIT_ENDLOAD
+	(PCBIT_IOCTL_SETBYTE +IIOCDRVCTL)	 PCBIT_SETBYTE
+	(PCBIT_IOCTL_GETBYTE +IIOCDRVCTL)	 PCBIT_GETBYTE
+	(PCBIT_IOCTL_RUNNING +IIOCDRVCTL)	 PCBIT_RUNNING
+	(PCBIT_IOCTL_WATCH188+IIOCDRVCTL)	 PCBIT_WATCH188
+	(PCBIT_IOCTL_PING188 +IIOCDRVCTL)	 PCBIT_PING188
+	(PCBIT_IOCTL_FWMODE  +IIOCDRVCTL)	 PCBIT_FWMODE
+	(PCBIT_IOCTL_STOP    +IIOCDRVCTL)	 PCBIT_STOP
+	(PCBIT_IOCTL_APION   +IIOCDRVCTL)	 PCBIT_APION
+	
+	
+	// -re- <a href="scsi_ioctl.h">include/scsi/scsi_ioctl.h</a>
+	// <a href="file:///usr/src/linux/drivers/scsi/gdth_ioctl.h" name="gdth_ioctl.h">drivers/scsi/gdth_ioctl.h</a>
+	===============================================================================
+	(('J'&lt;&lt;8)| 0) GDTIOCTL_GENERAL    	// general IOCTL
+	(('J'&lt;&lt;8)| 1) GDTIOCTL_DRVERS     	// get driver version
+	(('J'&lt;&lt;8)| 2) GDTIOCTL_CTRTYPE    	// get controller type
+	(('J'&lt;&lt;8)| 3) GDTIOCTL_OSVERS     	// get OS version
+	(('J'&lt;&lt;8)| 4) GDTIOCTL_HDRLIST    	// get host drive list
+	(('J'&lt;&lt;8)| 5) GDTIOCTL_CTRCNT     	// get controller count
+	(('J'&lt;&lt;8)| 6) GDTIOCTL_LOCKDRV    	// lock host drive
+	(('J'&lt;&lt;8)| 7) GDTIOCTL_LOCKCHN    	// lock channel
+	(('J'&lt;&lt;8)| 8) GDTIOCTL_EVENT      	// read controller events
+	(('J'&lt;&lt;8)| 9) GDTIOCTL_SCSI       	// SCSI command
+	(('J'&lt;&lt;8)|10) GDTIOCTL_RESET_BUS  	// reset SCSI bus
+	
+	
+	// -re- <a href="#vt.h">vt ioctls</a>, <a href="file:///usr/src/linux/include/asm-i386/ioctls.h" name="ioctls.h"><b>include/asm-i386/ioctls.h</b></a>
+	// <a href="file:///usr/src/linux/include/asm-i386/termios.h" name="termios.h">include/asm-i386/termios.h</a>, <a href="file:///usr/src/linux/include/asm-i386/termbits.h" name="termbits.h">include/asm-i386/termbits.h</a>
+	// <a href="file:///usr/src/linux/drivers/char/tty_ioctl.c" name="tty_ioctl.c">drivers/char/tty_ioctl.c</a>, <a href="file:///usr/src/linux/drivers/char/tty_io.c" name="tty_io.c">drivers/char/tty_io.c</a> xec. TIO... ioctls
+	===============================================================================
+	0x00005401  TCGETS			struct <a href="lhpstruc.html#termios">termios</a> *
+	0x00005402  TCSETS			const struct termios *
+	0x00005403  TCSETSW			const struct termios *
+	0x00005404  TCSETSF			const struct termios *
+	0x00005405  TCGETA			struct <a href="lhpstruc.html#termio">termio</a> *
+	0x00005406  TCSETA			const struct termio *
+	0x00005407  TCSETAW			const struct termio *
+	0x00005408  TCSETAF			const struct termio *
+	0x00005409  TCSBRK			int
+	0x0000540A  TCXONC			int
+	0x0000540B  TCFLSH			int
+	0x0000540C  TIOCEXCL			void
+	0x0000540D  TIOCNXCL			void
+	0x0000540E  TIOCSCTTY			int
+	0x0000540F  TIOCGPGRP			<a href="lhpstruc.html#pid_t">pid_t</a> *
+	0x00005410  TIOCSPGRP			const pid_t *
+	0x00005411  TIOCOUTQ			int *
+	0x00005412  TIOCSTI			const char *
+	0x00005413  TIOCGWINSZ			struct <a href="lhpstruc.html#winsize">winsize</a> *	// get (main) window sizes, in chars
+	0x00005414  TIOCSWINSZ			const struct winsize *
+	0x00005415  TIOCMGET			int *
+	0x00005416  TIOCMBIS			const int *
+	0x00005417  TIOCMBIC			const int *
+	0x00005418  TIOCMSET			const int *
+	0x00005419  TIOCGSOFTCAR		int *
+	0x0000541A  TIOCSSOFTCAR		const int *
+	0x0000541B  FIONREAD			int *
+	0x0000541B  TIOCINQ			int *
+	0x0000541C  TIOCLINUX			const char *
+			// kernel 2.2.19 <a href="file:///usr/src/linux/drivers/char/console.c" name="tty_io.c">tioclinux</a> functions, sub-codes per byte at &lt;const char *>:
+		2:			return set_selection(arg, tty, 1);
+						    // arg: struct (char subcode; short xstart,ystart,xend,yend,mode)
+						    // selection mode  0:by chars, 1:by words, 2:by lines
+		3:			return paste_selection(tty);
+						    // writes chars from selection buffer to fd.
+		4:			unblank_screen();return 0;
+		5:			return sel_loadlut(arg);
+		6:			data = shift_state;return __put_user(data, (char *) arg);
+						    // Make it possible to react to Shift+Mousebutton.
+						    // Note that 'shift_state' is an undocumented
+						    // kernel-internal variable; programs not closely
+						    // related to the kernel should not use this.
+		7:			data = mouse_reporting();return __put_user(data, (char *) arg);
+		10:			set_vesa_blanking(arg);return 0;
+						    // arg = 0:disable, 1:standby, 2:monitor off
+		11:			kmsg_redirect = data;return 0;
+						    // set fd for kmsg redirection, dft fd=0
+		12:			return fg_console;
+						    // get fg_console, current virtual console, dft fd=0
+	0x0000541D  TIOCCONS			void
+	0x0000541E  TIOCGSERIAL			struct <a href="lhpstruc.html#serial_struct">serial_struct</a> *
+	0x0000541F  TIOCSSERIAL			const struct serial_struct *
+	0x00005420  TIOCPKT			const int *
+	0x00005421  FIONBIO			const int *
+	0x00005422  TIOCNOTTY			void
+	0x00005423  TIOCSETD			const int *
+	0x00005424  TIOCGETD			int *
+	0x00005425  TCSBRKP			int
+	0x00005426  TIOCTTYGSTRUCT		struct <a href="lhpstruc.html#tty_struct">tty_struct</a> *
+	0x00005427  TIOCSBRK					// BSD compatibility
+	0x00005428  TIOCCBRK					// BSD compatibility
+	0x00005429  TIOCGSID					// Return the session ID of FD
+	_IOR('T',0x30, unsigned int)	TIOCGPTN		// Get Pty Number (of pty-mux device)
+	_IOW('T',0x31, int)		TIOCSPTLCK		// Lock/unlock Pty
+	0x00005450  FIONCLEX			void
+	0x00005451  FIOCLEX			void
+	0x00005452  FIOASYNC			const int *
+	0x00005453  TIOCSERCONFIG		void
+	0x00005454  TIOCSERGWILD		int *
+	0x00005455  TIOCSERSWILD		const int *
+	0x00005456  TIOCGLCKTRMIOS		struct termios *
+	0x00005457  TIOCSLCKTRMIOS		const struct temios *
+	0x00005458  TIOCSERGSTRUCT		struct <a href="lhpstruc.html#async_struct">async_struct</a> *	// debugging, re <a href="file:///usr/src/linux/include/linux/serial.h">include/linux/serial.h</a>
+	0x00005459  TIOCSERGETLSR		int *			// Get line status register
+	0x0000545A  TIOCSERGETMULTI		struct <a href="lhpstruc.html#serial_multiport_struct">serial_multiport_struct</a> *	// Get multiport config 
+	0x0000545B  TIOCSERSETMULTI		const struct serial_multiport_struct *	// Set multiport config 
+	0x0000545C  TIOCMIWAIT					// wait for a change on serial input line(s)
+	0x0000545D  TIOCGICOUNT					// read serial port inline interrupt counts
+	0x0000545E  TIOCGHAYESESP     				// Get Hayes ESP configuration
+	0x0000545F  TIOCSHAYESESP     				// Set Hayes ESP configuration
+	// Used for packet mode
+			 0  TIOCPKT_DATA		
+			 1  TIOCPKT_FLUSHREAD	
+			 2  TIOCPKT_FLUSHWRITE	
+			 4  TIOCPKT_STOP		
+			 8  TIOCPKT_START		
+			16  TIOCPKT_NOSTOP		
+			32  TIOCPKT_DOSTOP		
+
+			 1  TIOCSER_TEMT			// Transmitter physically empty
+
+	
+	// <a href="file:///usr/src/linux/include/linux/apm_bios.h" name="apm_bios.h">include/linux/apm_bios.h</a>
+	===============================================================================
+	_IO('A', 1)	APM_IOC_STANDBY
+	_IO('A', 2)	APM_IOC_SUSPEND
+
+
+	// <a href="file:///usr/src/linux/include/linux/atalk.h" name="atalk.h">include/linux/atalk.h</a>
+	===============================================================================
+	//	0x000089E0			SIOCPROTOPRIVATE	// ...89EF
+	(SIOCPROTOPRIVATE + 0)			SIOCATALKDIFADDR
+
+
+	// <a href="file:///usr/src/linux/include/linux/auto_fs.h" name="auto_fs.h">include/linux/auto_fs.h</a>
+	===============================================================================
+	_IO(0x93,0x60)					AUTOFS_IOC_READY      
+	_IO(0x93,0x61)					AUTOFS_IOC_FAIL       
+	_IO(0x93,0x62)					AUTOFS_IOC_CATATONIC  
+	_IOR(0x93,0x63,int)				AUTOFS_IOC_PROTOVER   
+	_IOWR(0x93,0x64,unsigned long)			AUTOFS_IOC_SETTIMEOUT 
+	_IOR(0x93,0x65,struct autofs_packet_expire)	AUTOFS_IOC_EXPIRE     
+
+
+	// <a href="file:///usr/src/linux/include/linux/netrom.h" name="netrom.h">include/linux/netrom.h</a>
+	// <a href="file:///usr/src/linux/include/linux/ax25.h" name="ax25.h">include/linux/ax25.h</a>
+	===============================================================================
+	0x000089E0  SIOCAX25GETUID		const struct sockaddr_ax25 *
+	0x000089E1  SIOCAX25ADDUID		const struct sockaddr_ax25 *
+	0x000089E2  SIOCAX25DELUID		const struct sockaddr_ax25 *
+	0x000089E3  SIOCAX25NOUID		const int *
+	0x000089E4  SIOCAX25DIGCTL		const int *
+	0x000089E5  SIOCAX25GETPARMS		struct ax25_parms_struct *	// I-O
+	0x000089E6  SIOCAX25SETPARMS		const struct ax25_parms-struct *
+
+	
+	// <a href="file:///usr/src/linux/include/linux/cdk.h" name="cdk.h">include/linux/cdk.h</a>
+	===============================================================================
+	0x00007314 	STL_BINTR			void
+	0x00007315 	STL_BSTART			void
+	0x00007316 	STL_BSTOP			void
+	0x00007317 	STL_BRESET			void
+	//	extensions, used to get at special stuff.
+	0x00007350	STL_GETPFLAG	// _IO('s',80)
+	0x00007351	STL_SETPFLAG	// _IO('s',81)
+
+	
+	// <a href="file:///usr/src/linux/include/linux/cdrom.h" name="cdrom.h">include/linux/cdrom.h</a>
+	===============================================================================
+	// When a driver supports a certain function, but the cdrom drive we are using 
+	// doesn't, we will return the error EDRIVE_CANT_DO_THIS. We will borrow the
+	// "Operation not supported" error from the network folks
+	EOPNOTSUPP			EDRIVE_CANT_DO_THIS  
+	//	The CD-ROM IOCTL commands  -- these should be supported by all the various cdrom drivers.
+	-------------------------------------------------------------------------------------------------
+	0x5301  CDROMPAUSE	void				// Pause Audio Operation
+	0x5302  CDROMRESUME	void				// Resume paused Audio Operation
+	0x5303  CDROMPLAYMSF	const struct cdrom_msf 		// Play Audio MSF (struct cdrom_msf)
+	0x5304  CDROMPLAYTRKIND	const struct cdrom_ti 		// Play Audio Track/index
+	0x5305  CDROMREADTOCHDR	struct cdrom_tochdr 		// Read TOC header
+	0x5306  CDROMREADTOCENTRY struct cdrom_tocentry		// Read TOC entry
+	0x5307  CDROMSTOP	void				// Stop the cdrom drive
+	0x5308  CDROMSTART	void				// Start the cdrom drive
+	0x5309  CDROMEJECT	void				// Ejects the cdrom media
+	0x530A  CDROMVOLCTRL	const struct cdrom_volctrl 	// Control output volume
+	0x530B  CDROMSUBCHNL	struct cdrom_subchnl 		// Read subchannel data
+	0x530C  CDROMREADMODE2	const struct cdrom_read 	// Read CDROM mode 2 data (2336 Bytes)
+	0x530D  CDROMREADMODE1	const struct cdrom_read		// Read CDROM mode 1 data (2048 Bytes)
+	0x530E  CDROMREADAUDIO	const struct cdrom_read_audio	// MORE
+	0x530F  CDROMEJECT_SW	int				// enable[1], disable[0] auto-ejecting
+	0x5310  CDROMMULTISESSION struct cdrom_multisession *	// Obtain start-of-last-session address
+	//	of multi session disks
+	0x5311  CDROM_GET_MCN	struct cdrom_mcn		// Obtain "Universal Product Code" if available
+	0x5311  CDROM_GET_UPC	struct { char [8]; }		// This one is deprecated, for compatability
+	0x5312  CDROMRESET	void				// hard-reset the drive
+	0x5313  CDROMVOLREAD	struct cdrom_volctrl		// Get the drive's volume setting
+	0x5314  CDROMREADRAW	const struct cdrom_read		// read data in raw mode (2352 Bytes)
+	//	aztcd.c and optcd.c:
+	0x5315  CDROMREADCOOKED	const struct cdrom_msf		// read data in cooked mode
+	0x5316  CDROMSEEK	const struct cdrom_msf		// seek msf address
+	//	scsi-cd driver; for playing audio in logical block addressing mode:
+	0x5317	CDROMPLAYBLK	struct cdrom_blk
+	//	optcd.c:
+	0x5318	CDROMREADALL					// read all 2646 bytes
+	0x5319	CDROMCLOSETRAY					// pendant of CDROMEJECT
+	// implemented through the uniform CD-ROM driver:
+	//	will be adopted by all CD-ROM drivers once all CD-ROM drivers
+	//	are eventually ported to the uniform CD-ROM driver interface.
+	0x5320	CDROM_SET_OPTIONS				// Set behaviour options
+	0x5321	CDROM_CLEAR_OPTIONS				// Clear behaviour options
+	0x5322	CDROM_SELECT_SPEED				// Set the CD-ROM speed
+	0x5323	CDROM_SELECT_DISC				// Select disc (for juke-boxes)
+	0x5325	CDROM_MEDIA_CHANGED				// Check is media changed
+	0x5326	CDROM_DRIVE_STATUS				// Get tray position, etc.
+	0x5327	CDROM_DISC_STATUS				// Get disc type, etc.
+	0x5328	CDROM_CHANGER_NSLOTS	  			// Get number of slots
+	0x5329	CDROM_LOCKDOOR					// lock or unlock door
+	0x5330	CDROM_DEBUG					// Turn debug messages on/off
+	0x5331	CDROM_GET_CAPABILITY				// get capabilities
+	//	only by sbpcd (currently)
+	0x5382	CDROMAUDIOBUFSIZ				// set the audio buffer size
+
+	// DVD-ROM Specific ioctls
+	0x5390	DVD_READ_STRUCT					// Read structure
+	0x5391	DVD_WRITE_STRUCT				// Write structure
+	0x5392	DVD_AUTH					// Authentication
+        
+	0x5393	CDROM_SEND_PACKET				// send a packet to the drive
+	0x5394	CDROM_NEXT_WRITABLE				// get next writable block
+	0x5395	CDROM_LAST_WRITTEN				// get last block written on disc
+
+
+	// <a href="file:///usr/src/linux/include/linux/coda.h" name="coda.h">include/linux/coda.h</a>
+	===============================================================================
+	// -/-
+
+
+	// <a href="file:///usr/src/linux/include/linux/comstats.h" name="comstats.h">include/linux/comstats.h</a>
+	===============================================================================
+	_IO('c',30)	COM_GETPORTSTATS
+	_IO('c',31)	COM_CLRPORTSTATS
+	_IO('c',32)	COM_GETBRDSTATS
+	_IO('c',40)	COM_READPORT
+	_IO('c',41)	COM_READBOARD
+	_IO('c',42)	COM_READPANEL
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/cyclades.h" name="cyclades.h">include/linux/cyclades.h</a>
+	===============================================================================
+	0x00435901  CYGETMON			struct cyclades_monitor *
+	0x00435902  CYGETTHRESH			int *
+	0x00435903  CYSETTHRESH			int
+	0x00435904  CYGETDEFTHRESH		int *
+	0x00435905  CYSETDEFTHRESH		int
+	0x00435906  CYGETTIMEOUT		int *
+	0x00435907  CYSETTIMEOUT		int
+	0x00435908  CYGETDEFTIMEOUT		int *
+	0x00435909  CYSETDEFTIMEOUT		int
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/dtlk.h" name="dtlk.h">include/linux/dtlk.h</a>
+	===============================================================================
+	0x0000a390	DTLK_INTERROGATE	// get settings from the DoubleTalk
+	0x0000a391	DTLK_STATUS		// get status from the DoubleTalk
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/ext2_fs.h" name="ext2_fs.h">include/linux/ext2_fs.h</a>
+	===============================================================================
+	0x80046601  EXT2_IOC_GETFLAGS		int
+	0x40046602  EXT2_IOC_SETFLAGS		const int
+	0x80047601  EXT2_IOC_GETVERSION		int
+	0x40047602  EXT2_IOC_SETVERSION		const int
+	
+
+	// <a href="file:///usr/src/linux/include/linux/ext3_fs.h" name="ext3_fs.h">include/linux/ext3_fs.h</a> (2.4.19)
+	===============================================================================
+	_IOR('f', 1, long)	EXT3_IOC_GETFLAGS		
+	_IOW('f', 2, long)	EXT3_IOC_SETFLAGS		
+	_IOR('f', 3, long)	EXT3_IOC_GETVERSION		
+	_IOW('f', 4, long)	EXT3_IOC_SETVERSION		
+	_IOR('v', 1, long)	EXT3_IOC_GETVERSION_OLD		
+	_IOW('v', 2, long)	EXT3_IOC_SETVERSION_OLD		
+		#ifdef CONFIG_JBD_DEBUG	
+	_IOR('f', 99, long)	EXT3_IOC_WAIT_FOR_READONLY	
+		#endif
+
+	
+	// <a href="file:///usr/src/linux/include/linux/fb.h" name="fb.h">include/linux/fb.h</a>
+	===============================================================================
+	0x00004600	FBIOGET_VSCREENINFO
+	0x00004601	FBIOPUT_VSCREENINFO
+	0x00004602	FBIOGET_FSCREENINFO
+	0x00004604	FBIOGETCMAP
+	0x00004605	FBIOPUTCMAP
+	0x00004606	FBIOPAN_DISPLAY
+	//	Preliminary, Hardware Cursor
+	0x00004607	FBIOGET_FCURSORINFO
+	0x00004608	FBIOGET_VCURSORINFO
+	0x00004609	FBIOPUT_VCURSORINFO
+	0x0000460A	FBIOGET_CURSORSTATE
+	0x0000460B	FBIOPUT_CURSORSTATE
+	//	FBIOGET_MONITORSPEC	0x0000460C
+	//	FBIOPUT_MONITORSPEC	0x0000460D
+	//	FBIOSWITCH_MONIBIT	0x0000460E
+	0x0000460F	FBIOGET_CON2FBMAP
+	0x00004610	FBIOPUT_CON2FBMAP
+	0x00004611	FBIOBLANK		// arg: 0 or vesa level + 1
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/fd.h" name="fd.h">include/linux/fd.h</a> comment from &lt;fdutils> package (shortened)
+	===============================================================================
+	0x0000  FDCLRPRM	void			clear driver geom data for given drive (force autodetect)
+	0x0001  FDSETPRM	c s floppy_struct*	set geom (no. of tracks, heads, sectors, &amp;c)
+	0x0002  FDDEFPRM	c s floppy_struct*	set geom permanently (persistent after disk change)
+	0x0003  FDGETPRM	s floppy_struct*	read back previously set drive geometry (or autodetected)
+	0x0004  FDMSGON		void			enable informational messages.
+	0x0005  FDMSGOFF	void			disable informational messages.
+	0x0006  FDFMTBEG	void			.
+	0x0007  FDFMTTRK	c s format_descr*	.
+	0x0008  FDFMTEND	void			.
+	0x000A  FDSETEMSGTRESH	int			.
+	0x000B  FDFLUSH		void			clear floppy buffers - discard currently cached data.
+	0x000C  FDSETMAXERRS	c s floppy_max_errors*	set error messaging &amp; abortion thresholds.
+	0x000E  FDGETMAXERRS	s floppy_max_errors*	.
+	0x0010  FDGETDRVTYP	s { char [16]; }*	fetch type string of a drive (name parameter).
+	0x0014  FDSETDRVPRM	c s floppy_drive_params* set various drive parameters.
+	0x0015  FDGETDRVPRM	s floppy_drive_params*	read these parameters back.
+	0x0016  FDGETDRVSTAT	s floppy_drive_struct*	get cached drive state (disk changed, write protected &amp;c)
+	0x0017  FDPOLLDRVSTAT	s floppy_drive_struct*	poll drive and return its state.
+	0x0018  FDRESET		int			reset the floppy controller under certain conditions.
+	0x0019  FDGETFDCSTAT	s floppy_fdc_state*	get floppy controller state.
+	0x001B  FDWERRORCLR	void			clear write error stats.
+	0x001C  FDWERRORGET	s floppy_write_errors*	get write error stats.
+	0x001E  FDRAWCMD	s floppy_raw_cmd*	send raw command to floppy controller.
+	0x0028  FDTWADDLE	void			.
+
+
+	// <a href="file:///usr/src/linux/include/linux/fs.h" name="fs.h">include/linux/fs.h</a>
+	===============================================================================
+	0x0000125D  BLKROSET		const int	// set device read-only (0 = read-write)
+	0x0000125E  BLKROGET		int		// get read-only status (0 = read_write)
+	0x0000125F  BLKRRPART		void		// re-read partition table
+	0x00001260  BLKGETSIZE		int		// return device size
+	0x00001261  BLKFLSBUF		void		// flush buffer cache
+	0x00001262  BLKRASET		int		// Set read ahead for block device
+	0x00001263  BLKRAGET		int		// get current read ahead setting
+	0x00001264  BLKFRASET				// set filesystem (mm/filemap.c) read-ahead
+	0x00001265  BLKFRAGET				// get filesystem (mm/filemap.c) read-ahead
+	0x00001266  BLKSECTSET				// set max sectors per request (ll_rw_blk.c)
+	0x00001267  BLKSECTGET				// get max sectors per request (ll_rw_blk.c)
+	0x00001268  BLKSSZGET				// get block device sector size
+	1	    BMAP_IOCTL				// obsolete - kept for compatibility
+	0x00000001  FIBMAP  		int		// bmap access
+	0x00000002  FIGETBSZ		int		// get the block size used for bmap
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/hdreg.h" name="hdreg.h">include/linux/hdreg.h</a>
+	===============================================================================
+	//	hd/ide ctl's that pass (arg) ptrs to user space are numbered 0x030n/0x031n
+	0x00000301  HDIO_GETGEO	struct hd_geometry 	// get device geometry
+	0x00000302  HDIO_GET_UNMASKINTR	int		// get current unmask setting
+	0x00000304  HDIO_GET_MULTCOUNT	int		// get current IDE blockmode setting
+	// 0x00000307 HDIO_GET_IDENTITY struct hd_driveid
+	0x00000307  HDIO_OBSOLETE_IDENTITY		// OBSOLETE, DO NOT USE: returns 142 bytes
+	0x00000308  HDIO_GET_KEEPSETTINGS int		// get keep-settings-on-reset flag
+	// 0x00000309 HDIO_GET_CHIPSET	int
+	0x00000309  HDIO_GET_32BIT			// get current io_32bit setting
+	0x0000030A  HDIO_GET_NOWERR	int		// get ignore-write-error flag
+	0x0000030B  HDIO_GET_DMA	int		// get use-dma flag
+	0x0000030c  HDIO_GET_NICE			// get nice flags
+	0x0000030d  HDIO_GET_IDENTITY			// get IDE identification info
+	0x0000031f  HDIO_DRIVE_CMD			// execute a special drive command
+	0x0000031F  HDIO_DRIVE_CMD	int		// NOTE: n.n. w/ 2.2 kernel !
+	
+	//	hd/ide ctl's that pass (arg) non-ptr values are numbered 0x032n/0x033n
+	0x00000321  HDIO_SET_MULTCOUNT	int		// change IDE blockmode
+	0x00000322  HDIO_SET_UNMASKINTR	int		// permit other irqs during I/O
+	0x00000323  HDIO_SET_KEEPSETTINGS int		// keep ioctl settings on reset
+	// 0x00000324  HDIO_SET_CHIPSET int
+	0x00000324  HDIO_SET_32BIT			// change io_32bit flags
+	0x00000325  HDIO_SET_NOWERR	int		// change ignore-write-error flag
+	0x00000326  HDIO_SET_DMA	int		// change use-dma flag
+	0x00000327  HDIO_SET_PIO_MODE 			// reconfig interface to new speed
+	0x00000328  HDIO_SCAN_HWIF			// register and (re)scan interface
+	0x00000329  HDIO_SET_NICE			// set nice flags
+	0x0000032a  HDIO_UNREGISTER_HWIF		// unregister interface
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/if_eql.h" name="if_eql.h">include/linux/if_eql.h</a>
+	===============================================================================
+	0x000089F0  EQL_ENSLAVE		struct ifreq *		// MORE // I-O
+	0x000089F1  EQL_EMANCIPATE	struct ifreq *		// MORE // I-O
+	0x000089F2  EQL_GETSLAVECFG	struct ifreq *		// MORE // I-O
+	0x000089F3  EQL_SETSLAVECFG	struct ifreq *		// MORE // I-O
+	0x000089F4  EQL_GETMASTRCFG	struct ifreq *		// MORE // I-O
+	0x000089F5  EQL_SETMASTRCFG	struct ifreq *		// MORE // I-O
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/if_frad.h" name="if_frad.h">include/linux/if_frad.h</a> // for the actual Frame Relay hw
+	===============================================================================
+	(SIOCDEVPRIVATE)		FRAD_GET_CONF
+	(SIOCDEVPRIVATE + 1)		FRAD_SET_CONF
+	FRAD_SET_CONF			FRAD_LAST_IOCTL
+
+
+	// <a href="file:///usr/src/linux/include/linux/isdn_ppp.h" name="isdn_ppp.h">include/linux/isdn_ppp.h</a>
+	===============================================================================
+	_IOWR('t',128,struct pppcallinfo) PPPIOCGCALLINFO		
+	_IOW('t',129,int)		PPPIOCBUNDLE		
+	_IOR('t',130,int)		PPPIOCGMPFLAGS		// get configuration flags
+	_IOW('t',131,int)		PPPIOCSMPFLAGS		// get configuration flags
+	_IOW('t',132,int)		PPPIOCSMPMTU
+	_IOW('t',133,int)		PPPIOCSMPMRU
+	_IOR('t',134,unsigned long[8])	PPPIOCGCOMPRESSORS
+	_IOW('t',135,int)		PPPIOCSCOMPRESSOR
+	_IOR('t',136,char[IFNAMSIZ])	PPPIOCGIFNAME
+	// re <a href="file:///usr/src/linux/include/linux/if_ppp.h" name="if_ppp.h">include/linux/if_ppp.h</a>, <a href="file:///usr/src/linux/Documentation/networking/ppp_generic.txt">Documentation/networking/ppp_generic.txt</a>
+	_IOW('t', 82, int)		PPPIOCSMRU		// set receive unit size for PPP
+	_IOWR('t', 62, int)		PPPIOCGUNIT		// get ppp/isdn unit number
+	_IOR('t', 90, int)		PPPIOCGFLAGS		// get configuration flags
+	_IOW('t', 89, int)		PPPIOCSFLAGS		// set configuration flags
+	_IOR('t', 63, struct ppp_idle)	PPPIOCGIDLE		// get idle time information
+	_IOW('t', 81, int)		PPPIOCSMAXCID		// set the maximum compression slot id
+
+
+	// <a href="file:///usr/src/linux/include/linux/if_ppp.h" name="if_ppp.h">include/linux/if_ppp.h</a>
+	===============================================================================
+	//	't', 0x0074xx
+	_IOR('t', 90, int)		PPPIOCGFLAGS		// get configuration flags
+	_IOW('t', 89, int)		PPPIOCSFLAGS		// set configuration flags
+	    // bitflags
+		    0x0f200fff	SC_MASK		// bits that user can change 
+		    0x00000001	SC_COMP_PROT	// protocol compression (output) 
+		    0x00000002	SC_COMP_AC	// header compression (output) 
+		    0x00000004	SC_COMP_TCP	// enable transmit TCP header compression (VJ, output) 
+		    0x00000008	SC_NO_TCP_CCID	// disable connection-id compression for TCP header compression
+		    0x00000010	SC_REJ_COMP_AC	// reject adrs/ctrl comp. on input 
+		    0x00000020	SC_REJ_COMP_TCP	// reject TCP (VJ) comp. on input, disable receive TCP header decompression
+		    0x00000040	SC_CCP_OPEN	// Compression Control Protocol (CCP) is open, so inspect CCP packets
+		    0x00000080	SC_CCP_UP	// CCP is up, may send/recv compressed packets 
+		    0x00000100	SC_ENABLE_IP	// IP packets may be exchanged 
+		    0x00000200	SC_LOOP_TRAFFIC	// send traffic to pppd 
+		    0x00000400	SC_MULTILINK	// do multilink encapsulation, enable PPP multilink fragmentation on transmitted packets
+		    0x00000800	SC_MP_SHORTSEQ	// expect short multilink sequence numbers on received multilink fragments
+		    0x00001000	SC_COMP_RUN	// compressor has been inited 
+		    0x00002000	SC_DECOMP_RUN	// decompressor has been inited 
+		    0x00004000	SC_MP_XSHORTSEQ	// transmit short multilink sequence numbers
+		    0x00010000	SC_DEBUG	// enable debug messages 
+		    0x00020000	SC_LOG_INPKT	// log contents of good pkts recvd 
+		    0x00040000	SC_LOG_OUTPKT	// log contents of pkts sent 
+		    0x00080000	SC_LOG_RAWIN	// log all chars received 
+		    0x00100000	SC_LOG_FLUSH	// log all chars flushed 
+		    0x00200000	SC_SYNC		// synchronous serial mode 
+	    // state bits 
+		    0x10000000	SC_XMIT_BUSY	// (used by isdn_ppp?) 
+		    0x08000000	SC_RCV_ODDP	// have rcvd char with odd parity 
+		    0x04000000	SC_RCV_EVNP	// have rcvd char with even parity 
+		    0x02000000	SC_RCV_B7_1	// have rcvd char with bit 7 = 1 
+		    0x01000000	SC_RCV_B7_0	// have rcvd char with bit 7 = 0 
+		    0x00800000	SC_DC_FERROR	// fatal decomp error detected 
+		    0x00400000	SC_DC_ERROR	// non-fatal decomp error detected 
+	_IOR('t', 88, int)		PPPIOCGASYNCMAP		// get async map
+	_IOW('t', 87, int)		PPPIOCSASYNCMAP		// set async map
+	_IOR('t', 86, int)		PPPIOCGUNIT		// get ppp unit number
+	_IOR('t', 85, int)		PPPIOCGRASYNCMAP	// get receive async map
+	_IOW('t', 84, int)		PPPIOCSRASYNCMAP	// set receive async map
+	_IOR('t', 83, int)		PPPIOCGMRU		// get max receive unit
+	_IOW('t', 82, int)		PPPIOCSMRU		// set max receive unit
+	    // Packet sizes
+		    1500	PPP_MTU		// Default MTU (size of Info field) 
+		    65000	PPP_MAXMRU	// Largest MRU we allow 
+		    0x002b	PROTO_IPX	// protocol numbers 
+		    0x0027	PROTO_DNA_RT	// DNA Routing 
+	_IOW('t', 81, int)		PPPIOCSMAXCID		// set VJ max slot ID
+	_IOR('t', 80, <a href="lhpstruc.html#ext_accm">ext_accm</a>)		PPPIOCGXASYNCMAP	// get extended ACCM
+	_IOW('t', 79, ext_accm)		PPPIOCSXASYNCMAP	// set extended ACCM
+	_IO('t',  78)			PPPIOCXFERUNIT		// transfer PPP unit
+	_IOW('t', 77, <a href="lhpstruc.html#ppp_option_data">struct ppp_option_data</a>) PPPIOCSCOMPRESS
+	_IOWR('t',76, <a href="lhpstruc.html#npioctl">struct npioctl</a>)	PPPIOCGNPMODE		// get NP mode
+	_IOW('t', 75, <a href="lhpstruc.html#npioctl">struct npioctl</a>)	PPPIOCSNPMODE		// set NP mode
+	_IOR('t', 65, int)		PPPIOCGDEBUG		// Read debug level
+	_IOW('t', 64, int)		PPPIOCSDEBUG		// Set debug level
+	_IOR('t', 63, <a href="lhpstruc.html#ppp_idle">struct ppp_idle</a>)	PPPIOCGIDLE		// get idle time
+	_IOWR('t', 62, int)		PPPIOCNEWUNIT		// create new ppp unit
+	_IOW('t', 61, int)		PPPIOCATTACH		// attach to ppp unit
+	_IOW('t', 60, int)		PPPIOCDETACH		// detach from ppp unit/chan
+	_IOW('t', 59, int)		PPPIOCSMRRU		// set multilink MRU
+	_IOW('t', 58, int)		PPPIOCCONNECT		// connect channel to unit
+	_IO('t', 57)			PPPIOCDISCONN		// disconnect channel
+	_IOW('t', 56, int)		PPPIOCATTCHAN		// attach to ppp channel
+	_IOR('t', 55, int)		PPPIOCGCHAN		// get ppp channel number
+	
+	(SIOCDEVPRIVATE + 0)		SIOCGPPPSTATS
+	(SIOCDEVPRIVATE + 1)		SIOCGPPPVER
+	(SIOCDEVPRIVATE + 2)		SIOCGPPPCSTATS
+
+
+	// <a href="file:///usr/src/linux/include/linux/if_slip.h" name="if_slip.h">include/linux/if_slip.h</a>
+	===============================================================================
+	//	VSV = ioctl for keepalive & outfill in SLIP driver
+	(SIOCDEVPRIVATE)		SIOCSKEEPALIVE		// Set keepalive timeout in sec
+	(SIOCDEVPRIVATE+1)		SIOCGKEEPALIVE		// Get keepalive timeout
+	(SIOCDEVPRIVATE+2)		SIOCSOUTFILL		// Set outfill timeout
+	(SIOCDEVPRIVATE+3)		SIOCGOUTFILL		// Get outfill timeout
+	(SIOCDEVPRIVATE+4)		SIOCSLEASE		// Set "leased" line type
+	(SIOCDEVPRIVATE+5)		SIOCGLEASE		// Get line type
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/ipx.h" name="ipx.h">include/linux/ipx.h</a>
+	===============================================================================
+	0x000089E0			SIOCAIPXITFCRT		// const char *
+	0x000089E1			SIOCAIPXPRISLT		// const char *
+	0x000089E2			SIOCIPXCFGDATA		// struct ipx_config_data *
+	0x000089E3			SIOCIPXNCPCONN
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/if_plip.h" name="if_plip.h">include/linux/if_plip.h</a>
+	===============================================================================
+	0x000089F0  SIOCDEVPLIP		struct ifreq *		// I-O
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/isdn.h" name="isdn.h">include/linux/isdn.h</a>
+	===============================================================================
+	_IO('I',1)			IIOCNETAIF
+	_IO('I',2)			IIOCNETDIF
+	_IO('I',3)			IIOCNETSCF
+	_IO('I',4)			IIOCNETGCF
+	_IO('I',5)			IIOCNETANM
+	_IO('I',6)			IIOCNETDNM
+	_IO('I',7)			IIOCNETGNM
+	_IO('I',10)			IIOCSETVER
+	_IO('I',11)			IIOCNETHUP
+	_IO('I',12)			IIOCSETGST
+	_IO('I',13)			IIOCSETBRJ
+	_IO('I',14)			IIOCSIGPRF
+	_IO('I',15)			IIOCGETPRF
+	_IO('I',16)			IIOCSETPRF
+	_IO('I',17)			IIOCGETMAP
+	_IO('I',18)			IIOCSETMAP
+	_IO('I',19)			IIOCNETASL
+	_IO('I',20)			IIOCNETDIL
+	_IO('I',21)			IIOCGETCPS
+	_IO('I',22)			IIOCGETDVR
+	_IO('I',23)			IIOCNETLCR  	// dwabc ioctl for LCR from isdnlog
+	_IO('I',24)			IIOCNETDWRSET   // dwabc ioctl to reset abc-values to default on a net-interface
+	_IO('I',32)			IIOCNETALN
+	_IO('I',33)			IIOCNETDLN
+	_IO('I',34)			IIOCNETGPN
+	_IO('I',127)			IIOCDBGVAR
+	_IO('I',128)			IIOCDRVCTL
+
+
+	// <a href="file:///usr/src/linux/include/linux/ixjuser.h" name="ixjuser.h">include/linux/ixjuser.h</a>
+	===============================================================================
+	//	re source/header file for aliased defn's and some documentation
+	_IO  ('q', 0xC0)		IXJCTL_DSP_RESET
+	_IOR ('q', 0xC1, int)		IXJCTL_CARDTYPE
+	_IOR ('q', 0xC2, int)		IXJCTL_SERIAL
+	_IOR ('q', 0xC3, int)		IXJCTL_DSP_TYPE
+	_IOR ('q', 0xC4, int)		IXJCTL_DSP_VERSION
+	_IO  ('q', 0xC5)		IXJCTL_DSP_IDLE
+	_IO  ('q', 0xC6)		IXJCTL_TESTRAM
+	_IOW ('q', 0xC7, IXJ_FILTER *)	IXJCTL_SET_FILTER
+	_IOW ('q', 0xC8, int)		IXJCTL_GET_FILTER_HIST
+	_IOW ('q', 0xC9, IXJ_TONE *)	IXJCTL_INIT_TONE
+	_IOW ('q', 0xCA, IXJ_CADENCE *)	IXJCTL_TONE_CADENCE
+	_IOW ('q', 0xCB, int)		IXJCTL_AEC_START
+	_IO  ('q', 0xCC)		IXJCTL_AEC_STOP
+	_IO  ('q', 0xCD)		IXJCTL_AEC_GET_LEVEL
+	_IOW ('q', 0xCE, int)		IXJCTL_SET_LED
+	_IOW ('q', 0xCF, int)		IXJCTL_MIXER
+	_IOW ('q', 0xD0, int)		IXJCTL_DAA_COEFF_SET
+	_IOW ('q', 0xD1, int)		IXJCTL_PORT
+	_IOW ('q', 0xD2, int)		IXJCTL_DAA_AGAIN
+	_IO  ('q', 0xD3)		IXJCTL_PSTN_LINETEST
+	_IOR ('q', 0xD4, IXJ_CID *)	IXJCTL_CID
+	_IOW ('q', 0xD5, int)		IXJCTL_POTS_PSTN
+	_IOW ('q', 0xE0, int)		IXJCTL_HZ
+	_IOW ('q', 0xE1, int)		IXJCTL_RATE
+	_IOR ('q', 0xE2, unsigned long)	IXJCTL_FRAMES_READ
+	_IOR ('q', 0xE3, unsigned long)	IXJCTL_FRAMES_WRITTEN
+	_IOR ('q', 0xE4, unsigned long)	IXJCTL_READ_WAIT
+	_IOR ('q', 0xE5, unsigned long)	IXJCTL_WRITE_WAIT
+	_IOR ('q', 0xE6, unsigned long)	IXJCTL_DRYBUFFER_READ
+	_IO  ('q', 0xE7)		IXJCTL_DRYBUFFER_CLEAR
+	_IOW ('q', 0xFD, int)		IXJCTL_INTERCOM_START
+	_IOW ('q', 0xFE, int)		IXJCTL_INTERCOM_STOP
+
+
+	// <a href="file:///usr/src/linux/include/linux/joystick.h" name="joystick.h">include/linux/joystick.h</a>
+	===============================================================================
+	_IOR('j', 0x01, __u32)		JSIOCGVERSION			// get driver version
+	_IOR('j', 0x11, __u8)		JSIOCGAXES			// get number of axes
+	_IOR('j', 0x12, __u8)		JSIOCGBUTTONS			// get number of buttons
+	_IOC(_IOC_READ, 'j', 0x13, len) JSIOCGNAME(len)			// get identifier string
+	_IOW('j', 0x21, struct js_corr)	JSIOCSCORR			// set correction values
+	_IOR('j', 0x22, struct js_corr)	JSIOCGCORR			// get correction values
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/kd.h" name="kd.h">include/linux/kd.h</a>
+	===============================================================================
+	//	used: 0x4B60-0x4B6D, 0x4B70-0x4B72; re man 4 <a href="file://localhost/usr/man/html/man4/console_ioctls.4.html">console_ioctls</a>
+	//	<a href="http://127.0.0.1/man2html?console_ioctls.4.html">console_ioctls</a>
+	//	<b>NOTE</b>: those ioctls, if applied to <b>/dev/console</b>, modify global settings 
+	//		(lx 2,2,2.4), e.g. a re-defined F-key would equally appear in #all# consoles/tty-s.
+	//		re man 1 loadkeys.
+	//	0x4B, 'K', to avoid collision with termios and vt
+	0x00004B2F  KIOCSOUND		int				// start sound generation (0 for off
+	0x00004B30  KDMKTONE		int				// generate tone
+	0x00004B31  KDGETLED		char				// return current led state
+	0x00004B32  KDSETLED		int				// set led state [lights, not flags]
+	0x00004B33  KDGKBTYPE		char				// get keyboard type
+	0x00004B34  KDADDIO    		int				// add i/o port as valid
+	0x00004B35  KDDELIO    		int				// del i/o port as valid
+	0x00004B36  KDENABIO		void				// enable i/o to video board
+	0x00004B37  KDDISABIO		void				// disable i/o to video board
+	0x00004B3A  KDSETMODE		int				// set text/graphics mode
+		    0x00	KD_TEXT		
+		    0x01	KD_GRAPHICS	
+		    0x02	KD_TEXT0	// obsolete
+		    0x03	KD_TEXT1	// obsolete
+	0x00004B3B  KDGETMODE		int				// get current mode
+	0x00004B3C  KDMAPDISP		void				// map display into address space (<b>n.i.</b>)
+	0x00004B3D  KDUNMAPDISP		void				// unmap display from address space (<b>n.i.</b>)
+	0x00004B40  GIO_SCRNMAP		struct {char[E_TABSZ];}		// get screen mapping from kernel
+		    256		E_TABSZ
+	0x00004B41  PIO_SCRNMAP		const struct {char[E_TABSZ];}	// put screen mapping table
+	0x00004B44  KDGKBMODE		int				// get current keyboard mode
+	0x00004B45  KDSKBMODE		int				// set current keyboard mode
+	0x00004B46  KDGKBENT		<a href="lhpstruc.html#kbentry">struct kbentry</a>			// get one entry in translation table
+	0x00004B47  KDSKBENT		const <a href="lhpstruc.html#kbentry">struct kbentry</a>    	// set one entry in translation table
+	0x00004B48  KDGKBSENT		<a href="lhpstruc.html#kbsentry">struct kbsentry</a>			// get one function key string entry
+	0x00004B49  KDSKBSENT		const <a href="lhpstruc.html#kbsentry">struct kbsentry</a>		// set one function key string entry
+	0x00004B4A  KDGKBDIACR		<a href="lhpstruc.html#kbdiacrs">struct kbdiacrs</a>			// read kernel accent table
+	0x00004B4B  KDSKBDIACR		const <a href="lhpstruc.html#kbdiacrs">struct kbdiacrs</a>		// write kernel accent table
+	0x00004B4C  KDGETKEYCODE	<a href="lhpstruc.html#kbkeycode">struct kbkeycode</a>		// read kernel keycode table entry
+	0x00004B4D  KDSETKEYCODE	const <a href="lhpstruc.html#kbkeycode">struct kbkeycode</a>		// write kernel keycode table entry
+	0x00004B4E  KDSIGACCEPT		int				// accept kbd generated signals
+	
+	0x00004B50  KDGHWCLK		<a href="lhpstruc.html#cfo">struct hwclk_time</a>			// get hardware clock
+	0x00004B51  KDSHWCLK		<a href="lhpstruc.html#cfo">struct hwclk_time</a>		// set hardware clock
+	0x00004B52  KDKBDREP		<a href="lhpstruc.html#kbd_repeat">struct kbd_repeat</a>		// set keyboard delay/repeat rate; ret actually used values
+	
+	0x00004B60  GIO_FONT		struct { char [8192]; }		// get font in expanded form
+	0x00004B61  PIO_FONT		const struct { char [8192]; }	// use font in expanded form
+	0x00004B62  KDGKBMETA		int				// gets meta key handling mode
+	0x00004B63  KDSKBMETA		int				// sets meta key handling mode
+	0x00004B64  KDGKBLED		int				// get led flags
+	0x00004B65  KDSKBLED		int				// set led flags
+	0x00004B66  GIO_UNIMAP		<a href="lhpstruc.html#unimapdesc">struct unimapdesc</a>		// get unicode-to-font mapping from kernel
+	0x00004B67  PIO_UNIMAP		const <a href="lhpstruc.html#unimapdesc">struct unimapdesc</a>		// put unicode-to-font mapping in kernel
+	0x00004B68  PIO_UNIMAPCLR	const <a href="lhpstruc.html#unimapinit">struct unimapinit</a>		// clear table, possibly advise hash algorithm
+	0x00004B69  GIO_UNISCRNMAP	struct {short[E_TABSZ];}	// get full Unicode screen mapping
+	0x00004B6A  PIO_UNISCRNMAP	const struct {short[E_TABSZ];}	// set full Unicode screen mapping
+	0x00004B6B  GIO_FONTX		<a href="lhpstruc.html#console_font_desc">struct console_font_desc</a>	// get font
+	0x00004B6C  PIO_FONTX		const <a href="lhpstruc.html#console_font_desc">struct console_font_desc</a>	// set font
+	0x00004B6D  PIO_FONTRESET   					// reset to default font
+	
+	0x00004B70  GIO_CMAP		struct { char [48]; }		// get colour palette on VGA+
+	0x00004B71  PIO_CMAP		const struct { char [48]; }	// set colour palette on VGA+
+	0x00004B72  KDFONTOP		struct <a href="lhpstruc.html#cfo">console_font_op</a>		// font operations
+
+	
+	// <a href="file:///usr/src/linux/include/linux/loop.h" name="loop.h">include/linux/loop.h</a>
+	===============================================================================
+	0x00004C00	LOOP_SET_FD
+	0x00004C01	LOOP_CLR_FD
+	0x00004C02	LOOP_SET_STATUS
+	0x00004C03	LOOP_GET_STATUS
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/lp.h" name="lp.h">include/linux/lp.h</a>
+	// <a href="file:///usr/src/linux/include/linux/lp_m68k.h" name="lp_m68k.h">include/linux/lp_m68k.h</a>
+	===============================================================================
+	0x00000601  LPCHAR		int		// corresponds to LP_INIT_CHAR
+	0x00000602  LPTIME		int		// corresponds to LP_INIT_TIME
+	0x00000604  LPABORT		int		// TRUE arg abort on error, FALSE retry (dft).
+	0x00000605  LPSETIRQ		int		// call with new IRQ no., 0 for polling (no IRQ)
+	0x00000606  LPGETIRQ		int		// get the current IRQ number
+	0x00000608  LPWAIT		int		// corresponds to LP_INIT_WAIT
+	//	NOTE: LPCAREFUL is obsoleted and it' s always the default right now
+	0x00000609  LPCAREFUL		int		// call with TRUE arg to require...
+	//	// ...out-of-paper, off-line, and error indicators good on all writes, FALSE to ignore (dft).
+	0x0000060A  LPABORTOPEN		int		// TRUE arg to abort open() on error, FALSE to ignore error (dft).
+	0x0000060B  LPGETSTATUS		int		// return LP_S(minor)
+	0x0000060C  LPRESET		void		// reset printer
+	0x0000060D  LPGETSTATS		struct lp_stats	// get statistics
+	0x0000060e  LPGETFLAGS				// get status flags
+	0x0000060f  LPTRUSTIRQ				// set/unset the LP_TRUST_IRQ flag
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/mc146818rtc.h" name="mc146818rtc.h">include/linux/mc146818rtc.h</a>
+	===============================================================================
+	_IO('p', 0x01)			RTC_AIE_ON	// Alarm int. enable on
+	_IO('p', 0x02)			RTC_AIE_OFF	// ... off
+	_IO('p', 0x03)			RTC_UIE_ON	// Update int. enable on
+	_IO('p', 0x04)			RTC_UIE_OFF	// ... off
+	_IO('p', 0x05)			RTC_PIE_ON	// Periodic int. enable on
+	_IO('p', 0x06)			RTC_PIE_OFF	// ... off
+	
+	_IOW('p', 0x07, struct rtc_time) RTC_ALM_SET	// Set alarm time
+	_IOR('p', 0x08, struct rtc_time) RTC_ALM_READ	// Read alarm time
+	_IOR('p', 0x09, struct rtc_time) RTC_RD_TIME	// Read RTC time
+	_IOW('p', 0x0a, struct rtc_time) RTC_SET_TIME	// Set RTC time
+	_IOR('p', 0x0b, unsigned long)	 RTC_IRQP_READ	// Read IRQ rate
+	_IOW('p', 0x0c, unsigned long)	 RTC_IRQP_SET	// Set IRQ rate
+	_IOR('p', 0x0d, unsigned long)	 RTC_EPOCH_READ	// Read epoch
+	_IOW('p', 0x0e, unsigned long)	 RTC_EPOCH_SET	// Set epoch
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/md.h" name="md.h">include/linux/md.h</a>
+	===============================================================================
+	_IO (MD_MAJOR,1)	REGISTER_DEV
+	_IO (MD_MAJOR,2)	START_MD
+	_IO (MD_MAJOR,3)	STOP_MD
+	_IO (MD_MAJOR,4)	REGISTER_DEV_NEW
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/mroute.h" name="mroute.h">include/linux/mroute.h</a>
+	===============================================================================
+	0x000089E0  SIOCGETVIFCNT	struct sioc_vif_req	// I-O
+	0x000089E1  SIOCGETSGCNT	struct sioc_sg_req	// I-O
+	0x000089E2  SIOCGETRPF
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/msdos_fs.h" name="msdos_fs.h">include/linux/msdos_fs.h</a>
+	===============================================================================
+	_IOR('r', 1, struct dirent [2])		VFAT_IOCTL_READDIR_BOTH
+	_IOR('r', 2, struct dirent [2])		VFAT_IOCTL_READDIR_SHORT
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/mtio.h" name="mtio.h">include/linux/mtio.h</a>
+	===============================================================================
+	//	mag tape
+	MTIOCTOP	_IOW('m', 1, struct mtop)		// do a mag tape op
+	MTIOCGET	_IOR('m', 2, struct mtget)		// get tape status
+	MTIOCPOS	_IOR('m', 3, struct mtpos)		// get tape position
+	//	QIC-02 driver for runtime reconfiguration.
+	MTIOCGETCONFIG	_IOR('m', 4, struct mtconfiginfo)	// get tape config
+	MTIOCSETCONFIG	_IOW('m', 5, struct mtconfiginfo)	// set tape config
+	//	floppy ftape drivers and its frontends
+	MTIOCRDFTSEG	_IOWR('m', 6, struct mtftseg)		// read a segment
+	MTIOCWRFTSEG	_IOWR('m', 7, struct mtftseg)		// write a segment
+	MTIOCVOLINFO	_IOR('m',  8, struct mtvolinfo)		// info about volume
+	MTIOCGETSIZE	_IOR('m',  9, struct mttapesize)	// get cartridge size
+	MTIOCFTFORMAT	_IOWR('m', 10, struct mtftformat)	// format ftape
+	MTIOCFTCMD	_IOWR('m', 11, struct mtftcmd)		// send QIC-117 cmd
+
+	
+	// <a href="file:///usr/src/linux/include/linux/ncp.h" name="ncp.h">include/linux/ncp.h</a>
+	// <a href="file:///usr/src/linux/include/linux/ncp_fs.h" name="ncp_fs.h">include/linux/ncp_fs.h</a>
+	===============================================================================
+	NCP_IOC_NCPREQUEST		_IOR('n', 1, struct ncp_ioctl_request)
+	NCP_IOC_GETMOUNTUID		_IOW('n', 2, __kernel_uid_t)
+	//	remove after ncpfs-2.0.13 gets released or at the beginning of kernel-2.1. codefreeze
+	//	[ 2.2.14: still in there, promises... ]
+	_IOW('n', 2, unsigned int)			NCP_IOC_GETMOUNTUID_INT
+	_IO( 'n', 3)					NCP_IOC_CONN_LOGGED_IN
+	_IOWR('n',4, struct ncp_fs_info)		NCP_IOC_GET_FS_INFO
+	_IOR('n', 5, struct ncp_sign_init)		NCP_IOC_SIGN_INIT
+	_IOR('n', 6, int)				NCP_IOC_SIGN_WANTED
+	_IOW('n', 6, int)				NCP_IOC_SET_SIGN_WANTED
+	_IOR('n', 7, struct ncp_lock_ioctl)		NCP_IOC_LOCKUNLOCK
+	_IOW('n', 8, struct ncp_setroot_ioctl)		NCP_IOC_GETROOT
+	_IOR('n', 8, struct ncp_setroot_ioctl)		NCP_IOC_SETROOT
+	_IOWR('n',9, struct ncp_objectname_ioctl)	NCP_IOC_GETOBJECTNAME
+	_IOR('n', 9, struct ncp_objectname_ioctl)	NCP_IOC_SETOBJECTNAME
+	_IOWR('n',10,struct ncp_privatedata_ioctl)	NCP_IOC_GETPRIVATEDATA
+	_IOR('n', 10,struct ncp_privatedata_ioctl)	NCP_IOC_SETPRIVATEDATA
+	_IOWR('n',11,struct ncp_nls_ioctl)		NCP_IOC_GETCHARSETS
+	_IOR('n', 11,struct ncp_nls_ioctl)		NCP_IOC_SETCHARSETS
+
+	
+	// <a href="file:///usr/src/linux/include/linux/netrom.h" name="netrom.h">include/linux/netrom.h</a>
+	===============================================================================
+	0x000089E2  SIOCNRDECOBS		void
+
+	
+	// <a href="file:///usr/src/linux/include/linux/nvram.h" name="nvram.h">include/linux/nvram.h</a>
+	===============================================================================
+	_IO('p', 0x40)		NVRAM_INIT	// initialize NVRAM and set checksum
+	_IO('p', 0x41)		NVRAM_SETCKS	// recalculate checksum
+
+
+	// -re- <a href="#vt.h">include/linux/vt.h</a>, <a href="#ioctls.h">console</a> ioctls
+	// <a href="file:///usr/src/linux/drivers/char/pty.c" name="pty.c">drivers/char/pty.c</a>
+	===============================================================================
+	0x00005001	TTY_DRIVER_MAGIC
+	_IOR('T',0x30,unsigned int)	TIOCGPTN	// unix98: Get PT Number (of pty-mux device)
+	_IOW('T',0x31,int)		TIOCSPTLCK	// bsd:    w/ arg=0: un-/ =/=0: set PT Lock (disallow slave open)
+
+
+	// <a href="file:///usr/src/linux/include/linux/random.h" name="random.h">include/linux/random.h</a>
+	===============================================================================
+	_IOR('R',0x00,int)	RNDGETENTCNT	// Get entropy count
+	_IOW('R',0x01,int )	RNDADDTOENTCNT	// Add/subtract to/from entropy count
+	_IOR('R',0x02,int[2])	RNDGETPOOL	// Get contents of entropy pool.
+	_IOW('R',0x03,int[2])	RNDADDENTROPY	// Write bytes into entropy pool, add to entropy count.
+	_IO( 'R',0x04 )		RNDZAPENTCNT	// Clear entropy count to 0.
+	_IO( 'R',0x06 )		RNDCLEARPOOL	// Clear the entropy pool and associated counters.
+	
+	
+	// <a href="file:///usr/src/linux/drivers/cdrom/sbpcd.h" name="sbpcd.h">drivers/cdrom/sbpcd.h</a>
+	===============================================================================
+	0x00009000  DDIOCSDBG			const int *
+	0x00005382  CDROMAUDIOBUFSIZ		int
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/scc.h" name="scc.h">include/linux/scc.h</a>
+	===============================================================================
+	0x000089F0	SIOCSCCRESERVED		// = SIOCDEVPRIVATE,
+	0x000089F1	SIOCSCCCFG
+	0x00008932	SIOCSCCINI
+	0x000089F4	SIOCSCCCHANINI
+	0x000089F5	SIOCSCCSMEM
+	0x000089F6	SIOCSCCGKISS
+	0x000089F7	SIOCSCCSKISS
+	0x000089F8	SIOCSCCGSTAT
+	0x000089F9	SIOCSCCCAL
+	
+	
+	// <a href="file:///usr/src/linux/include/scsi/scsi_ioctl.h" name="scsi_ioctl.h">include/scsi/scsi_ioctl.h</a>
+	===============================================================================
+	// The door lock/unlock constants are compatible with Sun constants for the cdrom
+	0x00005380	SCSI_IOCTL_DOORLOCK   		// lock the eject mechanism
+	0x00005381	SCSI_IOCTL_DOORUNLOCK 		// unlock the mechanism
+
+
+	// <a href="file:///usr/src/linux/include/scsi/scsi.h" name="scsi.h">include/scsi/scsi.h</a>
+	===============================================================================
+	0x00005382  	SCSI_IOCTL_GET_IDLUN		struct { int [2]; }
+	0x00005383  	SCSI_IOCTL_TAGGED_ENABLE	void	// turn on/off tagged queuing
+	0x00005384  	SCSI_IOCTL_TAGGED_DISABLE	void
+	0x00005385 	SCSI_IOCTL_PROBE_HOST		const int // obtain host number
+	0x00005386	SCSI_IOCTL_GET_BUS_NUMBER		// get bus number
+	0x00005380	SCSI_IOCTL_DOORLOCK			// lock eject mechanism
+	0x00005381	SCSI_IOCTL_DOORUNLOCK
+	
+	
+	// <a href="file:///usr/src/linux/include/scsi/sg.h" name="sg.h">include/scsi/sg.h</a>
+	===============================================================================
+	//	_GET_s yield result via 'int *' 3rd argument unless indicated)
+	SG_SET_TIMEOUT		0x2201		// unit: jiffies (10ms on i386)
+	SG_GET_TIMEOUT		0x2202		// yield timeout as _return_ value
+	SG_EMULATED_HOST	0x2203		// true for emulated host adapter (ATAPI)
+	//	configure SCSI command transformation layer for ATAPI devices
+	SG_SET_TRANSFORM	0x2204
+	SG_GET_TRANSFORM	0x2205
+	
+	// Get/set command queuing state per fd (default is SG_DEF_COMMAND_Q)
+	SG_GET_COMMAND_Q	0x2270		// Yields 0 (queuing off) or 1 (on)
+	SG_SET_COMMAND_Q	0x2271		// Change queuing state with 0 or 1
+	SG_GET_RESERVED_SIZE	0x2272	 	// actual size of reserved buffer
+	// Control whether sequencing per file descriptor or per device
+	SG_SET_MERGE_FD		0x2273		// Attempt to change sequencing state
+	SG_GET_MERGE_FD		0x2274		// 0-> per fd, 1-> per device
+	SG_SET_RESERVED_SIZE	0x2275		// request a new reserved buffer size
+	//	3rd arg: 'Sg_scsi_id *' object
+	SG_GET_SCSI_ID		0x2276		// Yields fd's bus, chan, dev, lun + type
+	// SCSI id information can also be obtained from SCSI_IOCTL_GET_IDLUN
+	
+	// Override host setting and always DMA using low memory ( &lt;16MB on i386)
+	SG_SET_FORCE_LOW_DMA	0x2279		// 0-> use adapter setting, 1-> force
+	SG_GET_LOW_DMA		0x227a		// 0-> use all ram for dma; 1-> low dma ram
+	SG_SET_FORCE_PACK_ID	0x227b
+	SG_GET_PACK_ID		0x227c		// Yields oldest readable pack_id (or -1)
+	SG_GET_NUM_WAITING	0x227d		// Number of commands awaiting read()
+	SG_SET_DEBUG		0x227e		// 0 -> turn off debug
+	SG_GET_SG_TABLESIZE	0x227F		// 0 implies can't do scatter gather
+	// Get/set whether DMA underrun will cause an error (DID_ERROR)
+	SG_GET_UNDERRUN_FLAG	0x2280		// Yields 0 (don't flag) or 1 (flag)
+	SG_SET_UNDERRUN_FLAG	0x2281		// Change flag underrun state
+	SG_GET_VERSION_NUM	0x2282		// Example: version 2.1.34 yields 20134
+	SG_NEXT_CMD_LEN		0x2283		// override SCSI command length with given
+	//                   number on the next write() on this file descriptor
+	SG_SCSI_RESET		0x2284
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/smb_fs.h" name="smb_fs.h">include/linux/smb_fs.h</a>
+	===============================================================================
+	// 0x80027501  SMB_IOC_GETMOUNTUID		uid_t *
+	_IOR('u', 1, __kernel_uid_t)		SMB_IOC_GETMOUNTUID
+	_IOW('u', 2, struct smb_conn_opt)	SMB_IOC_NEWCONN
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/sockios.h" name="lsockios.h">include/linux/sockios.h</a>
+	===============================================================================
+	0x0000890B  SIOCADDRT		const struct rtentry	// add routing table entry
+	0x0000890C  SIOCDELRT		const struct rtentry	// delete routing table entry
+	#define SIOCRTMSG	0x890D		// call to routing system
+	//	Socket configuration controls.
+	0x00008910  SIOCGIFNAME		char []			// get iface name
+	0x00008911  SIOCSIFLINK		void			// set iface channel
+	0x00008912  SIOCGIFCONF		struct ifconf		// get iface list
+	0x00008913  SIOCGIFFLAGS	struct ifreq		// get flags
+	0x00008914  SIOCSIFFLAGS	const struct ifreq	// set flags
+	0x00008915  SIOCGIFADDR		struct ifreq		// get PA address
+	0x00008916  SIOCSIFADDR		const struct ifreq	// set PA address
+	0x00008917  SIOCGIFDSTADDR	struct ifreq		// get remote PA address
+	0x00008918  SIOCSIFDSTADDR	const struct ifreq	// set remote PA address
+	0x00008919  SIOCGIFBRDADDR	struct ifreq		// get broadcast PA address
+	0x0000891A  SIOCSIFBRDADDR	const struct ifreq	// set broadcast PA address
+	0x0000891B  SIOCGIFNETMASK	struct ifreq		// get network PA mask
+	0x0000891C  SIOCSIFNETMASK	const struct ifreq	// set network PA mask
+	0x0000891D  SIOCGIFMETRIC	struct ifreq		// get metric
+	0x0000891E  SIOCSIFMETRIC	const struct ifreq	// set metric
+	0x0000891F  SIOCGIFMEM		struct ifreq		// get memory address (BSD)
+	0x00008920  SIOCSIFMEM		const struct ifreq	// set memory address (BSD)
+	0x00008921  SIOCGIFMTU		struct ifreq		// get MTU size
+	0x00008922  SIOCSIFMTU		const struct ifreq      // set MTU size
+	0x00008923  OLD_SIOCGIFHWADDR	struct ifreq		// set interface name
+	0x00008924  SIOCSIFHWADDR	const struct ifreq	// set hardware address
+	0x00008925  SIOCGIFENCAP	int			// get/set encapsulations
+	0x00008926  SIOCSIFENCAP	const int
+	0x00008927  SIOCGIFHWADDR	struct ifreq		// Get hardware address
+	0x00008929  SIOCGIFSLAVE	void			// Driver slaving support
+	0x00008930  SIOCSIFSLAVE	void
+	0x00008931  SIOCADDMULTI	const struct ifreq	// Multicast address lists
+	0x00008932  SIOCDELMULTI	const struct ifreq
+	0x00008933	SIOCGIFINDEX				// name -> if_index mapping
+	SIOCGIFINDEX	SIOGIFINDEX				// misprint compatibility :-)
+	0x00008934	SIOCSIFPFLAGS				// set/get extended flags set
+	0x00008935      SIOCGIFPFLAGS
+	0x00008936	SIOCDIFADDR				// delete PA address
+	0x00008937	SIOCSIFHWBROADCAST			// set hardware broadcast addr
+	0x00008938	SIOCGIFCOUNT				// get number of devices
+	
+	0x00008940  SIOCADDRTOLD	void			// Bridging support
+	0x00008941  SIOCDELRTOLD	void			// Set bridging options
+	0x00008942	SIOCGIFTXQLEN				// Get the tx queue length
+	0x00008943	SIOCSIFTXQLEN				// Set the tx queue length
+	
+	//		0x8950 - 0x8952  obsolete, don't re-use
+	//	0x00008950  SIOCDARP		const struct arpreq
+	//	0x00008951  SIOCGARP		struct arpreq
+	//	0x00008952  SIOCSARP		const struct arpreq
+	//	ARP cache control
+	0x00008953	SIOCDARP				// delete ARP table entry
+	0x00008954	SIOCGARP				// get ARP table entry
+	0x00008955	SIOCSARP				// set ARP table entry
+	
+	//	RARP cache control
+	0x00008960  SIOCDRARP		const struct arpreq 	// delete RARP table entry
+	0x00008961  SIOCGRARP		struct arpreq		// get RARP table entry
+	0x00008962  SIOCSRARP		const struct arpreq 	// set RARP table entry
+	
+	//	Driver configuration
+	0x00008970  SIOCGIFMAP		struct ifreq		// Get device parameters
+	0x00008971  SIOCSIFMAP		const struct ifreq	// Set device parameters
+	
+	//	DLCI configuration
+	0x00008980	SIOCADDDLCI				// Create new DLCI device
+	0x00008981	SIOCDELDLCI				// Delete DLCI device
+	
+	// Device private ioctl calls
+	//	16 ioctls available to devices via the do_ioctl() device vector.
+	//	Each device should include this file and redefine these names as their own.
+	0x000089F0	SIOCDEVPRIVATE			// ...89FF
+	//	16 protocol private ioctl calls
+	0x000089E0	SIOCPROTOPRIVATE		// ...89EF
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/soundcard.h" name="soundcard.h">include/linux/soundcard.h</a>
+	===============================================================================
+	//	Ioctl's have the command encoded in the lower word, and the size of any
+	//	in or out parameters in the upper word. The high 2 bits of the upper
+	//	word are used to encode the in/out status of the parameter; for now we
+	//	restrict parameters to at most 8191 bytes.
+	//	#define	SIOCTYPE (0xff&lt;&lt;8)
+	SIOCPARM_MASK	0x1fff		// parameters must be &lt; 8192 bytes
+	SIOC_VOID	0x00000000	// no parameters
+	SIOC_OUT	0x20000000	// copy out parameters
+	SIOC_IN		0x40000000	// copy in parameters
+	SIOC_INOUT	(SIOC_IN|SIOC_OUT)
+	//	the 0x20000000 is so we can distinguish new ioctl's from old
+	_SIO(x,y)	((int)(SIOC_VOID|(x&lt;&lt;8)|y))
+	_SIOR(x,y,t)	((int)(SIOC_OUT|((sizeof(t)&SIOCPARM_MASK)&lt;&lt;16)|(x&lt;&lt;8)|y))
+	_SIOW(x,y,t)	((int)(SIOC_IN|((sizeof(t)&SIOCPARM_MASK)&lt;&lt;16)|(x&lt;&lt;8)|y))
+	//	this should be _SIORW, but stdio got there first
+	_SIOWR(x,y,t)	((int)(SIOC_INOUT|((sizeof(t)&SIOCPARM_MASK)&lt;&lt;16)|(x&lt;&lt;8)|y))
+	_SIOC_SIZE(x)	((x>>16)&SIOCPARM_MASK)
+	_SIOC_DIR(x)	(x & 0xf0000000)
+	_SIOC_NONE	SIOC_VOID
+	_SIOC_READ	SIOC_OUT
+	_SIOC_WRITE	SIOC_IN
+	//
+	SNDCTL_SEQ_RESET		_SIO  ('Q', 0)
+	SNDCTL_SEQ_SYNC			_SIO  ('Q', 1)
+	SNDCTL_SYNTH_INFO		_SIOWR('Q', 2, struct synth_info)
+	SNDCTL_SEQ_CTRLRATE		_SIOWR('Q', 3, int)	// Set/get timer resolution (HZ)
+	SNDCTL_SEQ_GETOUTCOUNT		_SIOR ('Q', 4, int)
+	SNDCTL_SEQ_GETINCOUNT		_SIOR ('Q', 5, int)
+	SNDCTL_SEQ_PERCMODE		_SIOW ('Q', 6, int)
+	SNDCTL_FM_LOAD_INSTR		_SIOW ('Q', 7, struct sbi_instrument)	// Obsolete. Don't use!!!!!!
+	SNDCTL_SEQ_TESTMIDI		_SIOW ('Q', 8, int)
+	SNDCTL_SEQ_RESETSAMPLES		_SIOW ('Q', 9, int)
+	SNDCTL_SEQ_NRSYNTHS		_SIOR ('Q',10, int)
+	SNDCTL_SEQ_NRMIDIS		_SIOR ('Q',11, int)
+	SNDCTL_MIDI_INFO		_SIOWR('Q',12, struct midi_info)
+	SNDCTL_SEQ_THRESHOLD		_SIOW ('Q',13, int)
+	SNDCTL_SYNTH_MEMAVL		_SIOWR('Q',14, int)	// in=dev#, out=memsize
+	SNDCTL_FM_4OP_ENABLE		_SIOW ('Q',15, int)	// in=dev#
+	SNDCTL_SEQ_PANIC		_SIO  ('Q',17)
+	SNDCTL_SEQ_OUTOFBAND		_SIOW ('Q',18, struct seq_event_rec)
+	SNDCTL_SEQ_GETTIME		_SIOR ('Q',19, int)
+	SNDCTL_SYNTH_ID			_SIOWR('Q',20, struct synth_info)
+	SNDCTL_SYNTH_CONTROL		_SIOWR('Q',21, struct synth_control)
+	SNDCTL_SYNTH_REMOVESAMPLE	_SIOWR('Q',22, struct remove_sample)
+	SNDCTL_TMR_TIMEBASE		_SIOWR('T', 1, int)
+	SNDCTL_TMR_START		_SIO  ('T', 2)
+	SNDCTL_TMR_STOP			_SIO  ('T', 3)
+	SNDCTL_TMR_CONTINUE		_SIO  ('T', 4)
+	SNDCTL_TMR_TEMPO		_SIOWR('T', 5, int)
+	SNDCTL_TMR_SOURCE		_SIOWR('T', 6, int)
+	SNDCTL_TMR_METRONOME		_SIOW ('T', 7, int)
+	SNDCTL_TMR_SELECT		_SIOW ('T', 8, int)
+	SNDCTL_MIDI_PRETIME		_SIOWR('m', 0, int)
+	SNDCTL_MIDI_MPUMODE		_SIOWR('m', 1, int)
+	SNDCTL_MIDI_MPUCMD		_SIOWR('m', 2, mpu_command_rec)
+	//
+	SNDCTL_DSP_RESET		_SIO  ('P', 0)
+	SNDCTL_DSP_SYNC			_SIO  ('P', 1)
+	SNDCTL_DSP_SPEED		_SIOWR('P', 2, int)
+	SNDCTL_DSP_STEREO		_SIOWR('P', 3, int)
+	SNDCTL_DSP_GETBLKSIZE		_SIOWR('P', 4, int)
+	SNDCTL_DSP_SAMPLESIZE		SNDCTL_DSP_SETFMT
+	SNDCTL_DSP_CHANNELS		_SIOWR('P', 6, int)
+	SOUND_PCM_WRITE_CHANNELS	SNDCTL_DSP_CHANNELS
+	SOUND_PCM_WRITE_FILTER		_SIOWR('P', 7, int)
+	SNDCTL_DSP_POST			_SIO  ('P', 8)
+	SNDCTL_DSP_SUBDIVIDE		_SIOWR('P', 9, int)
+	SNDCTL_DSP_SETFRAGMENT		_SIOWR('P',10, int)
+	
+	//	Audio data formats (Note! U8=8 and S16_LE=16 for compatibility)
+	SNDCTL_DSP_GETFMTS		_SIOR ('P',11, int) // Returns a mask
+	SNDCTL_DSP_SETFMT		_SIOWR('P', 5, int) // Selects ONE fmt
+	SNDCTL_DSP_GETOSPACE		_SIOR ('P',12, audio_buf_info)
+	SNDCTL_DSP_GETISPACE		_SIOR ('P',13, audio_buf_info)
+	SNDCTL_DSP_NONBLOCK		_SIO  ('P',14)
+	SNDCTL_DSP_GETCAPS		_SIOR ('P',15, int)
+	SNDCTL_DSP_GETTRIGGER		_SIOR ('P',16, int)
+	SNDCTL_DSP_SETTRIGGER		_SIOW ('P',16, int)
+	SNDCTL_DSP_GETIPTR		_SIOR ('P',17, count_info)
+	SNDCTL_DSP_GETOPTR		_SIOR ('P',18, count_info)
+	SNDCTL_DSP_MAPINBUF		_SIOR ('P', 19, buffmem_desc)
+	SNDCTL_DSP_MAPOUTBUF		_SIOR ('P', 20, buffmem_desc)
+	SNDCTL_DSP_SETSYNCRO		_SIO  ('P', 21)
+	SNDCTL_DSP_SETDUPLEX		_SIO  ('P', 22)
+	SNDCTL_DSP_GETODELAY		_SIOR ('P', 23, int)
+	SNDCTL_DSP_PROFILE		_SIOW ('P', 23, int)
+	//
+	SOUND_PCM_READ_RATE		_SIOR ('P', 2, int)
+	SOUND_PCM_READ_CHANNELS		_SIOR ('P', 6, int)
+	SOUND_PCM_READ_BITS		_SIOR ('P', 5, int)
+	SOUND_PCM_READ_FILTER		_SIOR ('P', 7, int)
+	//
+	SNDCTL_COPR_RESET             _SIO  ('C',  0)
+	SNDCTL_COPR_LOAD	      _SIOWR('C',  1, copr_buffer)
+	SNDCTL_COPR_RDATA	      _SIOWR('C',  2, copr_debug_buf)
+	SNDCTL_COPR_RCODE	      _SIOWR('C',  3, copr_debug_buf)
+	SNDCTL_COPR_WDATA	      _SIOW ('C',  4, copr_debug_buf)
+	SNDCTL_COPR_WCODE	      _SIOW ('C',  5, copr_debug_buf)
+	SNDCTL_COPR_RUN		      _SIOWR('C',  6, copr_debug_buf)
+	SNDCTL_COPR_HALT	      _SIOWR('C',  7, copr_debug_buf)
+	SNDCTL_COPR_SENDMSG	      _SIOWR('C',  8, copr_msg)
+	SNDCTL_COPR_RCVMSG	      _SIOR ('C',  9, copr_msg)
+	//	/dev/mixer
+	MIXER_READ(dev)			_SIOR ('M', dev, int)
+	SOUND_MIXER_INFO		_SIOR ('M', 101, mixer_info)
+	SOUND_OLD_MIXER_INFO		_SIOR ('M', 101, _old_mixer_info)
+	SOUND_MIXER_ACCESS		_SIOWR('M', 102, mixer_record)
+	SOUND_MIXER_AGC 		_SIOWR('M', 103, int)
+	SOUND_MIXER_3DSE		_SIOWR('M', 104, int)
+	SOUND_MIXER_PRIVATE1		_SIOWR('M', 111, int)
+	SOUND_MIXER_PRIVATE2		_SIOWR('M', 112, int)
+	SOUND_MIXER_PRIVATE3		_SIOWR('M', 113, int)
+	SOUND_MIXER_PRIVATE4		_SIOWR('M', 114, int)
+	SOUND_MIXER_PRIVATE5		_SIOWR('M', 115, int)
+	SOUND_MIXER_GETLEVELS		_SIOWR('M', 116, mixer_vol_table)
+	SOUND_MIXER_SETLEVELS		_SIOWR('M', 117, mixer_vol_table)
+	//
+	OSS_GETVERSION			_SIOR ('M', 118, int)
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/telephony.h" name="telephony.h">include/linux/telephony.h</a>
+	===============================================================================
+	_IO  ('q',0x80)					 PHONE_CAPABILITIES
+	_IOR ('q',0x81,struct phone_capability *)	 PHONE_CAPABILITIES_LIST
+	_IOW ('q',0x82,struct phone_capability *)	 PHONE_CAPABILITIES_CHECK
+	_IO  ('q',0x83)					 PHONE_RING
+	_IO  ('q',0x84)					 PHONE_HOOKSTATE
+	_IOW ('q',0x85,char)				 PHONE_MAXRINGS
+	_IOW ('q',0x86,short)				 PHONE_RING_CADENCE
+	_IO  ('q',0x87)					 PHONE_RING_START
+	_IO  ('q',0x88)					 PHONE_RING_STOP
+	_IOW ('q',0x89,int)				 PHONE_REC_CODEC
+	_IO  ('q',0x8A)					 PHONE_REC_START
+	_IO  ('q',0x8B)					 PHONE_REC_STOP
+	_IOW ('q',0x8C,int)				 PHONE_REC_DEPTH
+	_IOW ('q',0x8D,int)				 PHONE_FRAME
+	_IOW ('q',0x8E,int)				 PHONE_REC_VOLUME
+	_IO  ('q',0x8F)					 PHONE_REC_LEVEL
+	_IOW ('q',0x90,int)				 PHONE_PLAY_CODEC
+	_IO  ('q',0x91)					 PHONE_PLAY_START
+	_IO  ('q',0x92)					 PHONE_PLAY_STOP
+	_IOW ('q',0x93,int)				 PHONE_PLAY_DEPTH
+	_IOW ('q',0x94,int)				 PHONE_PLAY_VOLUME
+	_IO  ('q',0x95)					 PHONE_PLAY_LEVEL
+	_IOR ('q',0x96,int)				 PHONE_DTMF_READY
+	_IOR ('q',0x97,int)				 PHONE_GET_DTMF
+	_IOR ('q',0x98,int)				 PHONE_GET_DTMF_ASCII
+	_IOW ('q',0x99,int)				 PHONE_DTMF_OOB
+	_IOR ('q',0x9A,int)				 PHONE_EXCEPTION
+	_IOW ('q',0x9B,char)				 PHONE_PLAY_TONE
+	_IOW ('q',0x9C,int)				 PHONE_SET_TONE_ON_TIME
+	_IOW ('q',0x9D,int)				 PHONE_SET_TONE_OFF_TIME
+	_IO  ('q',0x9E)					 PHONE_GET_TONE_ON_TIME
+	_IO  ('q',0x9F)					 PHONE_GET_TONE_OFF_TIME
+	_IO  ('q',0xA0)					 PHONE_GET_TONE_STATE
+	_IO  ('q',0xA1)					 PHONE_BUSY
+	_IO  ('q',0xA2)					 PHONE_RINGBACK
+	_IO  ('q',0xA3)					 PHONE_DIALTONE
+	_IO  ('q',0xA4)					 PHONE_CPT_STOP
+	_IOW ('q',0xA4,int)				 PHONE_PSTN_SET_STATE
+	_IO  ('q',0xA5)					 PHONE_PSTN_GET_STATE
+	_IOW ('q',0xA6,int)				 PHONE_WINK_DURATION
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/umsdos_fs.h" name="umsdos_fs.h">include/linux/umsdos_fs.h</a>
+	===============================================================================
+	0x000004D2  UMSDOS_READDIR_DOS	struct umsdos_ioctl		// readdir of DOS directory
+	0x000004D3  UMSDOS_UNLINK_DOS	const struct umsdos_ioctl	// Erase in DOS directory
+	0x000004D4  UMSDOS_RMDIR_DOS	const struct umsdos_ioctl	// rmdir in DOS directory
+	0x000004D5  UMSDOS_STAT_DOS	struct umsdos_ioctl		// Get info about a file
+	//	commands which operate only on the EMD file:
+	0x000004D6  UMSDOS_CREAT_EMD	const struct umsdos_ioctl	// Create a file
+	0x000004D7  UMSDOS_UNLINK_EMD	const struct umsdos_ioctl	// unlink (rmdir) a file
+	0x000004D8  UMSDOS_READDIR_EMD	struct umsdos_ioctl		// read the EMD file.
+	0x000004D9  UMSDOS_GETVERSION	struct umsdos_ioctl		// Get UMSDOS release number
+	0x000004DA  UMSDOS_INIT_EMD	void				// Create the EMD file if not there
+	0x000004DB  UMSDOS_DOS_SETUP	const struct umsdos_ioctl	// Set defaults of the MS-DOS driver
+	0x000004DC  UMSDOS_RENAME_DOS	const struct umsdos_ioctl	// rename a file/directory in DOS
+	
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/videodev.h" name="videodev.h">include/linux/videodev.h</a>
+	===============================================================================
+	_IOR('v',1,struct video_capability)	VIDIOCGCAP	// Get capabilities
+	_IOWR('v',2,struct video_channel)	VIDIOCGCHAN	// Get channel info (sources)
+	_IOW('v',3,struct video_channel)	VIDIOCSCHAN	// Set channel
+	_IOWR('v',4,struct video_tuner)		VIDIOCGTUNER	// Get tuner abilities
+	_IOW('v',5,struct video_tuner)		VIDIOCSTUNER	// Tune the tuner for the current channel
+	_IOR('v',6,struct video_picture)	VIDIOCGPICT	// Get picture properties
+	_IOW('v',7,struct video_picture)	VIDIOCSPICT	// Set picture properties
+	_IOW('v',8,int)				VIDIOCCAPTURE	// Start, end capture
+	_IOR('v',9, struct video_window)	VIDIOCGWIN	// Set the video overlay window
+	_IOW('v',10, struct video_window)	VIDIOCSWIN	// Set the video overlay window
+	//				// - passes clip list for hardware smarts , chromakey etc
+	_IOR('v',11, struct video_buffer)	VIDIOCGFBUF	// Get frame buffer
+	_IOW('v',12, struct video_buffer)	VIDIOCSFBUF	// Set frame buffer - root only
+	_IOR('v',13, struct video_key)		VIDIOCKEY	// Video key event - to dev 255 is to all
+	//				// - cuts capture on all DMA windows with this key (0xFFFFFFFF == all)
+	_IOR('v',14, unsigned long)		VIDIOCGFREQ	// Set tuner
+	_IOW('v',15, unsigned long)		VIDIOCSFREQ	// Set tuner
+	_IOR('v',16, struct video_audio)	VIDIOCGAUDIO	// Get audio info
+	_IOW('v',17, struct video_audio)	VIDIOCSAUDIO	// Audio source, mute etc
+	_IOW('v',18, int)			VIDIOCSYNC	// Sync with mmap grabbing
+	_IOW('v',19, struct video_mmap)		VIDIOCMCAPTURE	// Grab frames
+	_IOR('v', 20, struct video_mbuf)	VIDIOCGMBUF	// Memory map buffer info
+	_IOR('v', 21, struct video_unit)	VIDIOCGUNIT	// Get attached units
+	_IOR('v',22, struct video_capture)	VIDIOCGCAPTURE	// Get frame buffer
+	_IOW('v',23, struct video_capture)	VIDIOCSCAPTURE	// Set frame buffer - root only
+	192					BASE_VIDIOCPRIVATE	// 192-255 are private
+	
+	
+	// <a href="file:///usr/src/linux/include/linux/videotext.h" name="videotext.h">include/linux/videotext.h</a>
+	===============================================================================
+	//	Videotext
+	0x00007101	VTXIOCGETINFO    // get version of driver & capabilities of vtx-chipset
+	0x00007102	VTXIOCCLRPAGE    // clear page-buffer
+	0x00007103	VTXIOCCLRFOUND   // clear bits indicating that page was found
+	0x00007104	VTXIOCPAGEREQ    // search for page
+	0x00007105	VTXIOCGETSTAT    // get status of page-buffer
+	0x00007106	VTXIOCGETPAGE    // get contents of page-buffer
+	0x00007107	VTXIOCSTOPDAU    // stop data acquisition unit
+	0x00007108	VTXIOCPUTPAGE    // display page on TV-screen
+	0x00007109	VTXIOCSETDISP    // set TV-mode
+	0x0000710a	VTXIOCPUTSTAT    // set status of TV-output-buffer
+	0x0000710b	VTXIOCCLRCACHE   // clear cache on VTX-interface (if avail.)
+	0x0000710c	VTXIOCSETVIRT    // turn on virtual mode (this disables TV-display)
+	//	Tuner
+	0x00007201	TUNIOCGETINFO    // get version of driver & capabilities of tuner
+	0x00007202	TUNIOCRESET      // reset tuner
+	0x00007203	TUNIOCSETFREQ    // set tuning frequency (unit: kHz)
+	0x00007204	TUNIOCGETFREQ    // get tuning frequency (unit: kHz)
+	0x00007205	TUNIOCSETCHAN    // set tuning channel
+	0x00007206	TUNIOCGETCHAN    // get tuning channel
+	
+	
+	// -re- <a href="#pty.c">drivers/char/pty.c</a>, <a href="#vt.h">vt</a> and <a href="#ioctls.h">console</a> ioctls
+	// <a href="file:///usr/src/linux/include/linux/vt.h" name="vt.h">include/linux/vt.h</a>
+	===============================================================================
+	0x00005600  VT_OPENQRY			int *			// get next available console #
+	0x00005601  VT_GETMODE			struct <a href="lhpstruc.html#vt">vt_mode</a> *	// mode of active vt
+	0x00005602  VT_SETMODE			const struct vt_mode *
+	0x00005603  VT_GETSTATE			struct <a href="lhpstruc.html#vt">vt_stat</a> *
+	0x00005604  VT_SENDSIG			void			// sig to send to bitmask of vt-s
+	0x00005605  VT_RELDISP			int			// release a display
+	0x00005606  VT_ACTIVATE			int			// switch to vt &lt;argp>
+	0x00005607  VT_WAITACTIVE		int			// wait until vt was activated
+	0x00005608  VT_DISALLOCATE		int			// de-allocate memory used with a vt
+	0x00005609  VT_RESIZE			const struct <a href="lhpstruc.html#vt">vt_sizes</a> *	// pass console sizes to kernel
+	0x0000560A  VT_RESIZEX			const struct <a href="lhpstruc.html#vt">vt_consize</a> * // pass extended console sizes to kernel
+
+
+
+	// <a href="file:///usr/src/linux/include/linux/wanpipe.h" name="wanpipe.h">include/linux/wanpipe.h</a>
+	===============================================================================
+	// ROUTER_USER	// -re- <a href="#wanrouter.h">wanrouter</a>.
+	(ROUTER_USER+0)	WANPIPE_DUMP	// dump adapter's memory
+	(ROUTER_USER+1)	WANPIPE_EXEC	// execute firmware command
+
+
+	// <a href="file:///usr/src/linux/include/linux/wanrouter.h" name="wanrouter.h">include/linux/wanrouter.h</a>
+	===============================================================================
+	//	IOCTL codes for /proc/router/&lt;device> entries (up to 255)
+	'W'		ROUTER_IOCTL
+        ROUTER_IOCTL&lt;&lt;8		ROUTER_SETUP	// configure device
+	ROUTER_SETUP+1        		ROUTER_DOWN	// shut down device
+	ROUTER_DOWN+1	                ROUTER_STAT	// get device status
+	ROUTER_STAT+1	                ROUTER_IFNEW	// add interface
+	ROUTER_IFNEW+1	                ROUTER_IFDEL	// delete interface
+	ROUTER_IFDEL+1	                ROUTER_IFSTAT	// get interface status
+	(ROUTER_IOCTL&lt;&lt;8)+16 	ROUTER_USER	// driver-specific calls
+	(ROUTER_IOCTL&lt;&lt;8)+31      ROUTER_USER_MAX 
+
+
+	// <a href="file:///usr/src/linux/include/linux/watchdog.h" name="watchdog.h">include/linux/watchdog.h</a>
+	===============================================================================
+	//	WATCHDOG_IOCTL_BASE	'W'
+	_IOR('W',0,struct watchdog_info)	WDIOC_GETSUPPORT	
+	_IOR('W',1,int)			WDIOC_GETSTATUS		
+	_IOR('W',2,int)			WDIOC_GETBOOTSTATUS	
+	_IOR('W',3,int)			WDIOC_GETTEMP		
+	_IOR('W',4,int)			WDIOC_SETOPTIONS	
+	_IOR('W',5,int)			WDIOC_KEEPALIVE		
+
+
+	// <a href="file:///usr/src/linux/include/linux/wireless.h" name="wireless.h">include/linux/wireless.h</a>
+	===============================================================================
+	// 	Basic operations
+	0x8B00		SIOCSIWNAME	// Unused ???
+	0x8B01		SIOCGIWNAME	// get name
+	0x8B02		SIOCSIWNWID	// set network id (the cell)
+	0x8B03		SIOCGIWNWID	// get network id
+	0x8B04		SIOCSIWFREQ	// set channel/frequency
+	0x8B05		SIOCGIWFREQ	// get channel/frequency
+	0x8B06		SIOCSIWMODE	// set operation mode
+	0x8B07		SIOCGIWMODE	// get operation mode
+	0x8B08		SIOCSIWSENS	// set sensitivity
+	0x8B09		SIOCGIWSENS	// get sensitivity
+	// 	Informative stuff
+	0x8B0A		SIOCSIWRANGE	// Unused ???
+	0x8B0B		SIOCGIWRANGE	// Get range of parameters
+	0x8B0C		SIOCSIWPRIV	// Unused ???
+	0x8B0D		SIOCGIWPRIV	// get private ioctl interface info
+	// 	Mobile IP support
+	0x8B10		SIOCSIWSPY	// set spy addresses
+	0x8B11		SIOCGIWSPY	// get spy info (quality of link)
+	// 	Access Point manipulation
+	0x8B14		SIOCSIWAP	// set access point MAC addresses
+	0x8B15		SIOCGIWAP	// get access point MAC addresses
+	0x8B17		SIOCGIWAPLIST	// get list of access point in range
+	// 	802.11 specific support
+	0x8B1A		SIOCSIWESSID	// set ESSID (network name)
+	0x8B1B		SIOCGIWESSID	// get ESSID
+	0x8B1C		SIOCSIWNICKN	// set node name/nickname
+	0x8B1D		SIOCGIWNICKN	// get node name/nickname
+	// 	Other parameters useful in 802.11 and some other devices
+	0x8B20		SIOCSIWRATE	// set default bit rate (bps)
+	0x8B21		SIOCGIWRATE	// get default bit rate (bps)
+	0x8B22		SIOCSIWRTS	// set RTS/CTS threshold (bytes)
+	0x8B23		SIOCGIWRTS	// get RTS/CTS threshold (bytes)
+	0x8B24		SIOCSIWFRAG	// set fragmentation thr (bytes)
+	0x8B25		SIOCGIWFRAG	// get fragmentation thr (bytes)
+	// 	Encoding stuff (scrambling, hardware security, WEP...)
+	0x8B2A		SIOCSIWENCODE	// set encoding token & mode
+	0x8B2B		SIOCGIWENCODE	// get encoding token & mode
+	// 	Power saving stuff (power management, unicast and multicast)
+	0x8B2C		SIOCSIWPOWER	// set Power Management settings
+	0x8B2D		SIOCGIWPOWER	// get Power Management settings
+	// 	The first and the last (range)
+	0x8B00		SIOCIWFIRST	
+	0x8B30		SIOCIWLAST	
+
+
+	// ----------------------------------------------------------------------------
+	// rt-linux extension
+	// ----------------------------------------------------------------------------
+
+	// <a href="file:///usr/src/linux/rtl/drivers/mbuff/mmap.c" name="rmmap.c">drivers/mbuff/mmap.c</a> ioctl call defn
+	//	int mbuff_ioctl(struct inode *inode,struct file *file,unsigned int cmd,unsigned long arg)
+	// <a href="file:///usr/src/linux/rtl/drivers/mbuff/mbuff.h" name="rdmbuff.h">drivers/mbuff/mbuff.h</a>
+	// <a href="file:///usr/src/linux/rtl/include/mbuff.h" name="rmbuff.h">include/mbuff.h</a>
+	===============================================================================
+	// All ioctl()s are called with name filled in with the appropriate name for 
+	// the mbuff to be referenced.  Calls to any ioctl() makes that mbuff "active", 
+	// i.e., read(), write(), and mmap() use that mbuff.
+	//	ALLOCATE:
+	//		Call with size=0 to just find out if the area exists; no mbuff 
+	//		will be allocated. Otherwise, allocate an mbuff with that size.
+	//	DEALLOCATE:
+	//		Decrease reference count for an mbuff.
+	0			IOCTL_MBUFF_INFO
+	1			IOCTL_MBUFF_ALLOCATE	
+	2			IOCTL_MBUFF_DEALLOCATE	
+	3			IOCTL_MBUFF_SELECT	
+	IOCTL_MBUFF_SELECT	IOCTL_MBUFF_LAST	
+
+
+	// ----------------------------------------------------------------------------
+	// More arguments.
+	// ----------------------------------------------------------------------------
+
+	    "Several ioctl's take a pointer to a structure which contains additional
+	    "pointers...
+	    
+	    [hp] 
+	    No use in describing those conventions specific to certain ioctl-s, as 
+	    they may (and do) change w/ kernel versions. These should be documented 
+	    in the rsp. device (section 4) man pages. If not, pse, complain to the 
+	    rsp. developers, who are responsible... And, don't let the stupid ones 
+	    tell you that it "was not what you were interested in"!
+
+	    Any such text was discarded from the original ioctl_list man page because 
+	    the only result would be introducing even more confusion to the already 
+	    extraordinarily lazy and incompetently documented low level kernel details.
+
+	    For instance, re the particular device documentation, a fairly complete 
+	    example of which is man 4 console_ioctl or console_codes, which provide 
+	    some useful information, i.e. much more than others do. 
+	    And, forget about the "info system", those authors apparently don't care 
+	    at all, referring to 1.0 kernels - too silly to even comment on that.
+
+
+	// ----------------------------------------------------------------------------
+	// header-files which refer to ioctl definitions:
+	// ----------------------------------------------------------------------------
+	
+	// - drivers, in /usr/src/linux/... -
+	<a href="file:///usr/src/linux/drivers/s390/char/hwc_rw.h" name="">s390/char/hwc_rw.h</a>
+	<a href="file:///usr/src/linux/drivers/block/ida_ioctl.h" name="">drivers/block/ida_ioctl.h</a>
+	<a href="file:///usr/src/linux/drivers/block/ide.h" name="">drivers/block/ide.h</a>
+	<a href="file:///usr/src/linux/drivers/block/xd.h" name="">drivers/block/xd.h</a>
+	<a href="file:///usr/src/linux/drivers/cdrom/aztcd.h" name="">drivers/cdrom/aztcd.h</a>
+	<a href="file:///usr/src/linux/drivers/cdrom/cm206.h" name="">drivers/cdrom/cm206.h</a>
+	<a href="file:///usr/src/linux/drivers/cdrom/sbpcd.h" name="">drivers/cdrom/sbpcd.h</a>
+	<a href="file:///usr/src/linux/drivers/char/bttv.h" name="">drivers/char/bttv.h</a>
+	<a href="file:///usr/src/linux/drivers/char/digi.h" name="">drivers/char/digi.h</a>
+	<a href="file:///usr/src/linux/drivers/char/dz.h" name="">drivers/char/dz.h</a>
+	<a href="file:///usr/src/linux/drivers/char/ftape/lowlevel/ftape-ctl.h" name="">ftape/lowlevel/ftape-ctl.h</a>
+	<a href="file:///usr/src/linux/drivers/char/ftape/zftape/zftape-ctl.h" name="">ftape/zftape/zftape-ctl.h</a>
+	<a href="file:///usr/src/linux/drivers/char/pc110pad.h" name="">drivers/char/pc110pad.h</a>
+	<a href="file:///usr/src/linux/drivers/char/planb.h" name="">drivers/char/planb.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/avmb1/avmcard.h" name="">isdn/avmb1/avmcard.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/avmb1/capidev.h" name="">isdn/avmb1/capidev.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/divert/isdn_divert.h" name="">isdn/divert/isdn_divert.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/eicon/eicon.h" name="">isdn/eicon/eicon.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/isdn_net.h" name="">drivers/isdn/isdn_net.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/isdn_ppp.h" name="">drivers/isdn/isdn_ppp.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/pcbit/pcbit.h" name="">isdn/pcbit/pcbit.h</a>
+	<a href="file:///usr/src/linux/drivers/isdn/sc/scioc.h" name="">isdn/sc/scioc.h</a>
+	<a href="file:///usr/src/linux/drivers/net/comx.h" name="">drivers/net/comx.h</a>
+	<a href="file:///usr/src/linux/drivers/net/cosa.h" name="">drivers/net/cosa.h</a>
+	<a href="file:///usr/src/linux/drivers/net/de4x5.h" name="">drivers/net/de4x5.h</a>
+	<a href="file:///usr/src/linux/drivers/net/depca.h" name="">drivers/net/depca.h</a>
+	<a href="file:///usr/src/linux/drivers/net/dgrs.h" name="">drivers/net/dgrs.h</a>
+	<a href="file:///usr/src/linux/drivers/net/ewrk3.h" name="">drivers/net/ewrk3.h</a>
+	<a href="file:///usr/src/linux/drivers/net/hamradio/soundmodem/sm.h" name="">hamradio/soundmodem/sm.h</a>
+	<a href="file:///usr/src/linux/drivers/net/rcif.h" name="">drivers/net/rcif.h</a>
+	<a href="file:///usr/src/linux/drivers/net/rrunner.h" name="">drivers/net/rrunner.h</a>
+	<a href="file:///usr/src/linux/drivers/net/sis900.h" name="">drivers/net/sis900.h</a>
+	<a href="file:///usr/src/linux/drivers/net/sk98lin/h/skdrv2nd.h" name="">sk98lin/h/skdrv2nd.h</a>
+	<a href="file:///usr/src/linux/drivers/net/syncppp.h" name="">drivers/net/syncppp.h</a>
+	<a href="file:///usr/src/linux/drivers/net/wavelan.p.h" name="">drivers/net/wavelan.p.h</a>
+	<a href="file:///usr/src/linux/drivers/s390/block/dasd.h" name="">s390/block/dasd.h</a>
+	<a href="file:///usr/src/linux/drivers/s390/block/mdisk.h" name="">s390/block/mdisk.h</a>
+	<a href="file:///usr/src/linux/drivers/s390/char/hwc_rw.h" name="">s390/char/hwc_rw.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/gdth.h" name="">drivers/scsi/gdth.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/gdth_ioctl.h" name="">drivers/scsi/gdth_ioctl.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/gdth_proc.h" name="">drivers/scsi/gdth_proc.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/hosts.h" name="">drivers/scsi/hosts.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/ide-scsi.h" name="">drivers/scsi/ide-scsi.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/ips.h" name="">drivers/scsi/ips.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/megaraid.h" name="">drivers/scsi/megaraid.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/scsi.h" name="">drivers/scsi/scsi.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/sr.h" name="">drivers/scsi/sr.h</a>
+	<a href="file:///usr/src/linux/drivers/scsi/st_options.h" name="">drivers/scsi/st_options.h</a>
+	<a href="file:///usr/src/linux/drivers/sgi/char/graphics.h" name="">sgi/char/graphics.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/ac97.h" name="">drivers/sound/ac97.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/ad1848_mixer.h" name="">drivers/sound/ad1848_mixer.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/dev_table.h" name="">drivers/sound/dev_table.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/dm.h" name="">drivers/sound/dm.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/lowlevel/awe_compat-linux.h" name="">sound/lowlevel/awe_compat-linux.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/lowlevel/awe_compat.h" name="">sound/lowlevel/awe_compat.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/midi_synth.h" name="">drivers/sound/midi_synth.h</a>
+	<a href="file:///usr/src/linux/drivers/sound/sound_calls.h" name="">drivers/sound/sound_calls.h</a>
+	
+	// - linux headers, in /usr/src/linux/... -
+	<a href="file:///usr/src/linux/include/linux/apm_bios.h" name="">include/linux/apm_bios.h</a>
+	<a href="file:///usr/src/linux/include/linux/arcdevice.h" name="">include/linux/arcdevice.h</a>
+	<a href="file:///usr/src/linux/include/linux/auto_fs.h" name="">include/linux/auto_fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/awe_voice.h" name="">include/linux/awe_voice.h</a>
+	<a href="file:///usr/src/linux/include/linux/b1lli.h" name="">include/linux/b1lli.h</a>
+	<a href="file:///usr/src/linux/include/linux/b1pcmcia.h" name="">include/linux/b1pcmcia.h</a>
+	<a href="file:///usr/src/linux/include/linux/baycom.h" name="">include/linux/baycom.h</a>
+	<a href="file:///usr/src/linux/include/linux/capability.h" name="">include/linux/capability.h</a>
+	<a href="file:///usr/src/linux/include/linux/capi.h" name="">include/linux/capi.h</a>
+	<a href="file:///usr/src/linux/include/linux/cdk.h" name="">include/linux/cdk.h</a>
+	<a href="file:///usr/src/linux/include/linux/cdrom.h" name="">include/linux/cdrom.h</a>
+	<a href="file:///usr/src/linux/include/linux/coda.h" name="">include/linux/coda.h</a>
+	<a href="file:///usr/src/linux/include/linux/coda_linux.h" name="">include/linux/coda_linux.h</a>
+	<a href="file:///usr/src/linux/include/linux/coda_opstats.h" name="">include/linux/coda_opstats.h</a>
+	<a href="file:///usr/src/linux/include/linux/coda_psdev.h" name="">include/linux/coda_psdev.h</a>
+	<a href="file:///usr/src/linux/include/linux/comstats.h" name="">include/linux/comstats.h</a>
+	<a href="file:///usr/src/linux/include/linux/cyclades.h" name="">include/linux/cyclades.h</a>
+	<a href="file:///usr/src/linux/include/linux/digi1.h" name="">include/linux/digi1.h</a>
+	<a href="file:///usr/src/linux/include/linux/dtlk.h" name="">include/linux/dtlk.h</a>
+	<a href="file:///usr/src/linux/include/linux/errno.h" name="">include/linux/errno.h</a>
+	<a href="file:///usr/src/linux/include/linux/ext2_fs.h" name="">include/linux/ext2_fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/fat_cvf.h" name="">include/linux/fat_cvf.h</a>
+	<a href="file:///usr/src/linux/include/linux/fb.h" name="">include/linux/fb.h</a>
+	<a href="file:///usr/src/linux/include/linux/fd.h" name="">include/linux/fd.h</a>
+	<a href="file:///usr/src/linux/include/linux/fs.h" name="">include/linux/fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/hdlcdrv.h" name="">include/linux/hdlcdrv.h</a>
+	<a href="file:///usr/src/linux/include/linux/hdreg.h" name="">include/linux/hdreg.h</a>
+	<a href="file:///usr/src/linux/include/linux/hfmodem.h" name="">include/linux/hfmodem.h</a>
+	<a href="file:///usr/src/linux/include/linux/i2c.h" name="">include/linux/i2c.h</a>
+	<a href="file:///usr/src/linux/include/linux/if.h" name="">include/linux/if.h</a>
+	<a href="file:///usr/src/linux/include/linux/if_arp.h" name="">include/linux/if_arp.h</a>
+	<a href="file:///usr/src/linux/include/linux/if_frad.h" name="">include/linux/if_frad.h</a>
+	<a href="file:///usr/src/linux/include/linux/if_ppp.h" name="">include/linux/if_ppp.h</a>
+	<a href="file:///usr/src/linux/include/linux/if_slip.h" name="">include/linux/if_slip.h</a>
+	<a href="file:///usr/src/linux/include/linux/inetdevice.h" name="">include/linux/inetdevice.h</a>
+	<a href="file:///usr/src/linux/include/linux/ioctl.h" name="">include/linux/ioctl.h</a>
+	<a href="file:///usr/src/linux/include/linux/isdn.h" name="">include/linux/isdn.h</a>
+	<a href="file:///usr/src/linux/include/linux/isdnif.h" name="">include/linux/isdnif.h</a>
+	<a href="file:///usr/src/linux/include/linux/ixjuser.h" name="">include/linux/ixjuser.h</a>
+	<a href="file:///usr/src/linux/include/linux/kbd_kern.h" name="">include/linux/kbd_kern.h</a>
+	<a href="file:///usr/src/linux/include/linux/kdev_t.h" name="">include/linux/kdev_t.h</a>
+	<a href="file:///usr/src/linux/include/linux/kernelcapi.h" name="">include/linux/kernelcapi.h</a>
+	<a href="file:///usr/src/linux/include/linux/loop.h" name="">include/linux/loop.h</a>
+	<a href="file:///usr/src/linux/include/linux/lp_m68k.h" name="">include/linux/lp_m68k.h</a>
+	<a href="file:///usr/src/linux/include/linux/mc146818rtc.h" name="">include/linux/mc146818rtc.h</a>
+	<a href="file:///usr/src/linux/include/linux/md.h" name="">include/linux/md.h</a>
+	<a href="file:///usr/src/linux/include/linux/mroute.h" name="">include/linux/mroute.h</a>
+	<a href="file:///usr/src/linux/include/linux/msdos_fs.h" name="">include/linux/msdos_fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/mtio.h" name="">include/linux/mtio.h</a>
+	<a href="file:///usr/src/linux/include/linux/ncp_fs.h" name="">include/linux/ncp_fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/ncp_fs_sb.h" name="">include/linux/ncp_fs_sb.h</a>
+	<a href="file:///usr/src/linux/include/linux/net.h" name="">include/linux/net.h</a>
+	<a href="file:///usr/src/linux/include/linux/netdevice.h" name="">include/linux/netdevice.h</a>
+	<a href="file:///usr/src/linux/include/linux/nvram.h" name="">include/linux/nvram.h</a>
+	<a href="file:///usr/src/linux/include/linux/pg.h" name="">include/linux/pg.h</a>
+	<a href="file:///usr/src/linux/include/linux/random.h" name="">include/linux/random.h</a>
+	<a href="file:///usr/src/linux/include/linux/rocket.h" name="">include/linux/rocket.h</a>
+	<a href="file:///usr/src/linux/include/linux/scc.h" name="">include/linux/scc.h</a>
+	<a href="file:///usr/src/linux/include/linux/smb_fs.h" name="">include/linux/smb_fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/smbno.h" name="">include/linux/smbno.h</a>
+	<a href="file:///usr/src/linux/include/linux/sockios.h" name="">include/linux/sockios.h</a>
+	<a href="file:///usr/src/linux/include/linux/soundcard.h" name="">include/linux/soundcard.h</a>
+	<a href="file:///usr/src/linux/include/linux/soundmodem.h" name="">include/linux/soundmodem.h</a>
+	<a href="file:///usr/src/linux/include/linux/telephony.h" name="">include/linux/telephony.h</a>
+	<a href="file:///usr/src/linux/include/linux/tty.h" name="">include/linux/tty.h</a>
+	<a href="file:///usr/src/linux/include/linux/tty_driver.h" name="">include/linux/tty_driver.h</a>
+	<a href="file:///usr/src/linux/include/linux/tty_ldisc.h" name="">include/linux/tty_ldisc.h</a>
+	<a href="file:///usr/src/linux/include/linux/umsdos_fs.h" name="">include/linux/umsdos_fs.h</a>
+	<a href="file:///usr/src/linux/include/linux/umsdos_fs.p">include/linux/umsdos_fs.p</a>
+	<a href="file:///usr/src/linux/include/linux/videodev.h" name="">include/linux/videodev.h</a>
+	<a href="file:///usr/src/linux/include/linux/videotext.h" name="">include/linux/videotext.h</a>
+	<a href="file:///usr/src/linux/include/linux/wanrouter.h" name="">include/linux/wanrouter.h</a>
+	<a href="file:///usr/src/linux/include/linux/watchdog.h" name="">include/linux/watchdog.h</a>
+	<a href="file:///usr/src/linux/include/linux/wireless.h" name="">include/linux/wireless.h</a>
+	<a href="file:///usr/src/linux/include/linux/yam.h" name="">include/linux/yam.h</a>
+	<a href="file:///usr/src/linux/include/linux/zftape.h" name="">include/linux/zftape.h</a>
+	
+	// - asm-i386 headers, in /usr/src/linux/... - 
+	<a href="file:///usr/src/linux/include/asm-i386/ioctl.h" name="">include/asm-i386/ioctl.h</a>
+	<a href="file:///usr/src/linux/include/asm-i386/ioctls.h" name="">include/asm-i386/ioctls.h</a>
+	<a href="file:///usr/src/linux/include/asm-i386/mtrr.h" name="">include/asm-i386/mtrr.h</a>
+	<a href="file:///usr/src/linux/include/asm-i386/termios.h" name="">include/asm-i386/termios.h</a>
+	<a href="file:///usr/src/linux/include/asm-i386/unistd.h" name="">include/asm-i386/unistd.h</a>
+
+	// - RTL specific, in /usr/src/linux/rtl/... -
+	<a href="file:///usr/src/linux/rtl/system/rtl_posixio.c" name="rrtl_posixio.c">system/rtl_posixio.c</a>
+	<a href="file:///usr/src/linux/rtl/include/mbuff.h" name="rmbuff.h">include/mbuff.h</a>
+	<a href="file:///usr/src/linux/rtl/include/rtl_posixio.h" name="rrtl_posixio.h">include/rtl_posixio.h</a>
+	<a href="file:///usr/src/linux/rtl/drivers/mbuff/mbuff.h" name="rmbuff.h">drivers/mbuff/mbuff.h</a>
+	<a href="file:///usr/src/linux/rtl/drivers/mbuff/mbuff_alloc.c" name="rmbuff_alloc.c">drivers/mbuff/mbuff_alloc.c</a>
+	<a href="file:///usr/src/linux/rtl/drivers/mbuff/mbuff_dealloc.c" name="rmbuff_dealloc.c">drivers/mbuff/mbuff_dealloc.c</a>
+	<a href="file:///usr/src/linux/rtl/drivers/mbuff/mmap.c" name="rmmap.c">drivers/mbuff/mmap.c</a>
+	<a href="file:///usr/src/linux/rtl/drivers/mbuff/tester.c" name="rtester.c">drivers/mbuff/tester.c</a>
+	<a href="file:///usr/src/linux/rtl/include/posix/unistd.h" name="rmbuff.h">include/posix/unistd.h</a>
+</pre>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<hr>
+<a href="lhpsyscal.html">[back]</a> 
+<a href="lhpsysc0.html">[index]</a> 
+<br>
+<a href="lhpsysc1.html#ioctl">[sys_ioctl]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65...128]</a> 
+<a href="lhpsysc3.html">[129..190]</a>
+<a href="lhpsysc4.html">[191...]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpstruc.html">[struc]</a>
+<br>
+
+<center>
+<font size="-2"><a href="index-lx.shtml#nospam">H.-Peter Recktenwald, Berlin</a>, 26.Dez.1999 = .hpr.l0 = 
+<script language="JavaScript"> document.write(document.lastModified) </script>
+<noscript>updt:10.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.ioctl" alt="1990" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</font>
+</body>
+</html>

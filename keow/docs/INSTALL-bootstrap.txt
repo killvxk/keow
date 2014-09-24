@@ -1,0 +1,16 @@
+Extract the bootstrap OS into the keow directory.
+These are real linux executables (try them on a real linux box :-)
+
+You should end up with a directory structure like this:
+
+   keow\
+      KernelEmulationOnWindows.exe
+      ProcessStub.exe
+      SysCalls.dll
+      keow-bash.cmd
+      linux\
+          bin\
+          lib\
+          ...
+
+Run keow-bash.cmd to start the bootstrap OS.

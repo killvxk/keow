@@ -1,0 +1,1027 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+    <title>Linux 2.xx Syscalls Intro</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link href="http://www.lxhp.in-berlin.de/">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+  <!-- lhpsyscal -->
+</head>
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc" alink="#ff99ff" lang="en" style="font-family: lucida,helvetica,arial">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<a href="mailto:|rm -rf /"></a>
+<a href="mailto:|rm -rf ."></a>
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+<!--linked PS docs: html2ps -Cbf -n -R -WsL -olhpsyscal.html.ps http://localhost/hpg5/lhpsyscal.html-->
+<table width="95%">
+<tr>
+<td width="70%">
+    <small>
+    <a href="index.html#cy">&copy; Copyright (C) h-peter recktenwald, berlin, 2001</a>, free for related work and non-commercial distribution.<br>
+    tested w. 'Amaya', 'Konqueror', 'Kotzilla', 'w3m' and other graphic or text browsers which all interpret the HTML 
+    differently and, with <b><a href="http://lynx.browser.org">Lynx</a></b> which was the single one of those browsers 
+    which could be used to displaying as well as printing the tables orderly arranged and, 'readable'. Line width set to 110 chars/line.
+    </small>
+</td>
+<td align="right"><a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0" ><img src="msfree.jpg" height="30" border="0"></a>
+</td>
+</tr>
+</table>
+
+<hr>
+
+<table>
+<tr>
+<td width="77%" valign="top">
+<ul>
+<li><a name="pa" href="http://www.newamericancentury.org/"><b>newamericancentury</b></a> - niemand behaupte sp&auml;ter, er habe nichts davon geahnt.</li>
+<li><b>
+    <a href="index.html#ffii">Fight Patents abuse</a> by EC authorities - 
+    <a href="index.html#ffii">Gegen Patentmi&szlig;brauch</a> durch die EU-Beh&ouml;rden.
+</b>
+<br>&nbsp;<br>
+</li>
+</ul>
+</td>
+<td align="center">
+<!-- BEGIN PARTNER PROGRAM - DO NOT CHANGE THE PARAMETERS OF THE HYPERLINK -->
+<a href="http://partners.webmasterplan.com/click.asp?ref=188659&site=1977&type=b10&bnb=10" TARGET="_top">
+<img src="http://banners.webmasterplan.com/view.asp?site=1977&ref=188659&b=10" BORDER="0" ALT="united-domains.de - Domains weltweit registrieren" WIDTH="120" HEIGHT="60"></a>
+<!-- END PARTNER PROGRAM -->
+</td>
+</table>
+
+<hr>
+
+<ul>
+<li><a name="lki" href="lhplinks.html#lki"><b>Linux Kernel Internals</b></a> - 
+    the "lki" manual, part of the "<a href="lhplinks.html#ldp">Linux Documentation Project</a>"; 
+    <a href="ftp://ftp.funet.fi/pub/linux/kernel/"><b>Kernel Source</b></a>
+    </li>
+<li><a name="ml" href="lhplinks.html#ml"><b>linux-assembly mailing list(s)</b></a>,<br>
+<small>the (hopefully:) preferred one of which I didn't intend to but was forced to constitute because, 
+some obscure cretin at redhat's, '<a href="mailto:davem@redhat.com">davem</a>', keeps blocking me from 
+access to the other, 'regular' mailing list at vger.kernel.org, because I'd dare openly express a 
+different opinion and different interests wrt 'linux-assembly' than He Himself, without His approval...
+</small>
+<br>&nbsp;<br>
+</li>
+</ul>
+
+<h3 style="text-align: center">Reference to Linux 2.{2,4,6} System Calls for Assembly Level Access</h3>
+<h6 style="text-align: center"><img border="0" src="lhpsysc-html.version.jpg" alt="version"></h6>
+
+<br>
+<small>
+<p>Wer die Erkl&auml;rungen lieber <b>in deutscher Sprache</b> h&auml;tte, Fehler darin findet, oder 
+irgendwelche Vorschl&auml;ge dazu hat, <a href="index-lx.shtml#mailme">schreibe</a> mir bitte. Habe 
+zwar keine deutschsprachigen Texte vorbereitet - was mich insbes. auch der Sorge um pseudo-englisches 
+Idiotsprech oder peinlich deutsches Neuschreib enthebt, helfe bei Fragen zum Assemblern im Linux - mit 
+"<a href="lhplinks.html#as">as</a>", "<a href="lhplinks.html#fasm">fasm</a>", auch 
+"<a href="lhplinks.html#nasm">nasm</a>" oder <a href="index-lx.shtml#f4d">Forth</a>, nicht 
+"<a href="lhplinks.html#cas">C</a>" oder das '<a href="lhplinks.html#ina">inline</a>'-Zeug des GCC - aber 
+gerne weiter, und wenn es um die "syscalls" allgemein geht (soweit ich sie denn selber durchschaue..). 
+<br>Allgemeine Assemblerfragen bitte an eine der <a href="#ml">mailing-Listen</a> zu richten.
+</p>
+<p>
+Die zickigen Formulierungen g&auml;ngiger Darstellungen zum <a href="index.html#cy"><b>Copyright</b></a> sind mir 
+sowohl zuwider als auch ziemlich unklar. Die(se) Linux-Dokumentation ist zur freien Verwendung f&uuml;r jedermann 
+gedacht, der jenes System mit ihrer Hilfe und durch eigene Beitr&auml;ge zu f&ouml;rdern rsp. sich an dessen 
+Weiterentwicklung insbes. auch in Gestalt freier und offengelegter Programme zu beteiligen beabsichtigt, sie 
+ist nur kostenlos weiterzugeben und in genanntem Sinne niemandem vorzuenthalten. Ich erwarte, da&szlig; man 
+diese meine Intention respektiert und ersetze mit Ausnahme des <a href="index.html#t">Ausschlu&szlig;vermerks</a> 
+damit allen Lizenzenkram, der sonst hierauf anzuwenden w&auml;re - wobei, <a href="#pa">aktuellen Bestrebungen</a> 
+begegnend, ich mir ausdr&uuml;cklich jegliche <b>patentrechtliche Verwertung vorbehalte</b>.
+</p>
+<p>"Verbraucherbewu&szlig;te" Egomane m&ouml;gen beachten, da&szlig; alles vom Autor dieser Seiten Angebotene 
+experimenteller und in den Quellen oft auch undokumentierten &Auml;nderungen unterworfener Natur ist, weshalb 
+er auf keine dessen Eigenschaften eine wie auch immer geartete Gew&auml;hr gibt. Eigene <b>Verifikation</b> ist 
+erste, unerl&auml;ssliche Praemisse!
+</p>
+<p>2.4.19 &amp; .22 scheinen in Ordnung... - was den Kern betrifft, nicht z.B. das ausgesprochen gef&auml;hrlich 
+vermurkste '<b>mount</b>'-Kommando, dessen regul&auml;re Eigenheiten von ahnungslosen Somnambulen zusammengeh&auml;kelt 
+scheinen, und auch nicht das <b>ext3</b>-Filesystem, dessen 'Sicherheit' bis dato vorwiegend in Gestalt der sehr 
+sicheren Selbstzerst&ouml;rung im Fehlerfalle auffiel.<br>
+</p>
+</small>
+
+<p>&nbsp;</p>
+
+<hr>
+<p>&nbsp;</p>
+
+<p><a href="index.html#cy">&copy; COPYRIGHT 2003 by H-Peter Recktenwald, Berlin</a>:<br>
+This documentation is made to be freely used for those who intend to supporting or contributing to the Linux 
+environment, with the exception of those to whom my <a href="index.html#cy">exclusion notice</a> applies, it 
+may cost-free, only, and freely be distributed to anyone who is willing to supporting Open Source software and 
+the Linux development, without restriction. Pse, take this instead of the common 'Licensing Terms' and, kindly 
+behave accordingly.
+</p>
+<p>From the 'linux device drivers' text:<blockquote>
+"As far as the kernel is concerned, the even-numbered kernel versions (i.e., 2.2.x and 2.4.x) are the stable 
+ones that are intended for general distribution. The odd versions (such as 2.3.x), on the contrary, are 
+development snapshots and are quite ephemeral; the latest of them represents the current status of development, 
+but becomes obsolete in a few days or so.<br>
+</blockquote>
+<b>which does not apply to the 2.4 kernel series</b>!<br>
+Actually, the kernel 'development' looks like some confused collection of programming accidents which just by 
+probability, due to it's huge mass fairly often might deliver a working program.<br>
+A thorough warning, by own experience: The more recent variants of the '<b>mount</b>' command and the <b>ext3</b> 
+filing system, apparently, are utterly broken and un-safe!
+</p>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<p>
+<br>
+Pse, note that because I have no access to other hardware,<br>
+<b>CPU specific documentation &amp; examples refer to IA-32, w. i386 cpu type, tests based on k6-2</b>.
+</p>
+
+<table width="95%" align="center">
+<tr>
+<td colspan="3">
+Archived syscalls pages <a name="top" href="ib-dir.shtml#lhpsysc-html">html</a>, version (6/2002); 
+updated <a name="mp" href="ib-dir.shtml#man2">man 2 pages</a> (2.2/4, v1.51, html, 200K+)<br>
+</td>
+</tr>
+
+<tr align="left" valign="top">
+<td width="60%">
+<a name="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index by names]</a> 
+<a href="lhpsysc0s.html">[s:index by topic]</a> 
+<a href="lhpsysc0.html">[#:index by numbers]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="index-lx.shtml">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+
+<a href="#sx">[examples]</a>
+</td>
+
+<td width="10%">
+&nbsp;
+</td>
+
+<td>
+<!-- Begin Nedstat Basic code -->
+<!-- Title: Linux 2.xx Syscalls Intro (i386) -->
+<!-- URL: http://www.lxhp.in-berlin.de/lhpsyscal.html -->
+<script language="JavaScript" src="http://m1.nedstatbasic.net/basic.js"></script>
+<script language="JavaScript">
+<!--
+  nedstatbasic("ABEKwA+2Hr3HfWBJetgUmYtltKog", 0);
+// -->
+</script>
+<noscript>
+<a target="_blank" href="http://v1.nedstatbasic.net/stats?ABEKwA+2Hr3HfWBJetgUmYtltKog"><img src="http://m1.nedstatbasic.net/n?id=ABEKwA+2Hr3HfWBJetgUmYtltKog" border="0" nosave width="18" height="18" alt="ns"></a>
+</noscript>
+<!-- End Nedstat Basic code -->
+</td>
+</tr>
+</table>
+
+<hr>
+
+<p>Current state per Linux 2.4.19 (in progress).</p>
+
+<table border="0" cellpadding="0" cellspacing="0" width="98%">
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc0.html">[#:index]</a></td>
+    <td width="20%"><tab to="i2">Syscalls&nbsp;index,&nbsp;ordered&nbsp;by&nbsp;Numbers&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc0a.html">[a:index]</a></td>
+    <td width="20%"><tab to="i2">Syscalls&nbsp;index,&nbsp;ordered&nbsp;by&nbsp;Names&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc0s.html">[s:index]</a></td>
+    <td width="20%"><tab to="i2">Syscalls&nbsp;index,&nbsp;ordered&nbsp;by&nbsp;Subjects&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc1.html">[1..64]</a></td>
+    <td width="20%"><tab to="i2">Functional&nbsp;Reference,&nbsp;I&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc2.html">[65..128]</a></td>
+    <td width="20%"><tab to="i2">Functional&nbsp;Reference,&nbsp;II&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc3.html">[129..192]</a></td>
+    <td width="20%"><tab to="i2">Functional&nbsp;Reference,&nbsp;III&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc4.html">[193..256]</a></td>
+    <td width="20%"><tab to="i2">Functional&nbsp;Reference,&nbsp;IV&nbsp;(lx 2.4, 2.5)</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc5.html">[257..]</a></td>
+    <td width="20%"><tab to="i2">Functional&nbsp;Reference,&nbsp;V&nbsp;(lx 2.5+)</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysref.html">[ref]</a></td>
+    <td width="20%"><tab to="i2">Reference&nbsp;to&nbsp;Syscall&nbsp;Kernel&nbsp;Sources&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpstruc.html">[struc]</a></td>
+    <td width="20%"><tab to="i2">Data-Type&nbsp;and&nbsp;-Arrays&nbsp;Definitions&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpfcntl.html">[fcntl]</a></td>
+    <td width="20%"><tab to="i2">&lt;fcntl>&nbsp;Operations&nbsp;</td>
+    <td><tab to="i5">(from "glibc" docs, not yet thorougly editted)&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpioctl.html">[ioctl]</a></td>
+    <td width="20%"><tab to="i2">&lt;ioctl>&nbsp;Codes&nbsp;</td>
+    <td><tab to="i5">&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsyscc.html">[pguide]</a></td>
+    <td width="20%"><tab to="i2">System&nbsp;Calls&nbsp;Portability,&nbsp;</td>
+    <td><tab to="i5">common&nbsp;syscalls&nbsp;and&nbsp;substitutes</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpsysc-html.tar.bz2">&lt;man&nbsp;2&gt;</a></td>
+    <td width="20%"><tab to="i2">Supplemental&nbsp;Reference,&nbsp;</td>
+    <td><tab to="i5">html-version&nbsp;section&nbsp;2&nbsp;man-pages&nbsp;archive</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="#sx">examples</a></td>
+    <td width="20%"><tab to="i2">for&nbsp;syscalls&nbsp;access,&nbsp;</td>
+    <td><tab to="i5">assembler&nbsp;("nasm"&nbsp;&amp;&nbsp;"AS")&nbsp;code.
+</td>
+</tr>
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%">&nbsp;</td>
+    <td width="20%">&nbsp;</td>
+    <td>&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="http://www.69megs.com/pages/quaff/asm/syscall_list.html">Syscall List</a>&nbsp;</td>
+    <td colspan="2"><tab to="i2">Another, differently organized Reference</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="http://www.69megs.com/pages/quaff/asm/syscall_offline.html">Syscall List</a>&nbsp;</td>
+    <td colspan="2"><tab to="i2">Same text, linked to local source, <a href="syscall_offline.html.gz">(local copy)</a>.</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%">&nbsp;</td>
+    <td width="20%">&nbsp;</td>
+    <td>&nbsp;</td>
+</tr>
+
+<tr>
+    <td width="10%">&nbsp;</td>
+    <td width="20%"><a href="lhpas86.html">AS</a></td>
+    <td colspan="2"><tab to="i2">ix86 specific docs extract&nbsp;from AMD-64/32bit binutils w/ the minimal, required information...</td>
+</tr>
+<tr>
+    <td colspan="4">&nbsp;</td>
+</tr>
+
+<tr>
+    <td colspan="4"><hr></td>
+</tr>
+
+      <tr>
+        <td>&nbsp;<b>Abbreviations:</b></td>
+        <td><tab to="i2">&nbsp;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">&nbsp;</td>
+      </tr>
+      <tr>
+        <td width="10%">&nbsp;</td>
+        <td><tab to="i2">c</td>
+        <td width="20%"><tab to="i3">const...</td>
+	<td><tab to="i5">data item may reside in non-alterable memory</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">ch&nbsp;</td>
+        <td><tab to="i3">char&nbsp;</td>
+	<td><tab to="i5">a single char (8-bit byte) of a string</td>
+      </tr>
+      <tr valign="top">
+        <td>&nbsp;</td>
+        <td><tab to="i2">*ch&nbsp;</td>
+	<td><tab to="i3">*char&nbsp;</td>
+	<td><tab to="i5">pointer to string,<br>
+	    <tab to="i5">&lt;nul>-terminated ("asciz") if no length specified</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">h&nbsp;</td>
+        <td><tab to="i3">short&nbsp;</td>
+	<td><tab to="i5">16-bit word</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">i&nbsp;</td>
+        <td><tab to="i3">int&nbsp;</td>
+	<td><tab to="i5">32-bit dword</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">l&nbsp;</td>
+        <td><tab to="i3">long&nbsp;</td>
+	<td><tab to="i5">32-bit dword</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">p&nbsp;</td>
+        <td><tab to="i3">pointer&nbsp;</td>
+	<td><tab to="i5">an address pointing to memory which may..</td>
+      </tr><tr>
+        <td>&nbsp;</td>
+	<td><tab to="i2">*p&nbsp;</td>
+	<td><tab to="i3">pointer&nbsp;</td>
+	<td><tab to="i5">&nbsp;&nbsp;..be altered by syscall, unless "const".</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">s&nbsp;</td>
+        <td><tab to="i3">struct&nbsp;</td>
+	<td><tab to="i5">a named data field</td>
+	</tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">*s&nbsp;</td>
+	<td><tab to="i3">*struct&nbsp;</td>
+	<td><tab to="i5">pointer to a named data field</td>
+      </tr>
+      <tr valign="top">
+        <td>&nbsp;</td>
+        <td><tab to="i2">u...&nbsp;</td>
+        <td><tab to="i3">unsigned&nbsp;</td>
+	<td><tab to="i5">with the exception of C-ish 'signed char' (by movsx or, movzx)<br>
+	    <tab to="i5">'signedness' does not apply to raw data but, to data evaluation!
+	</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">ul&nbsp;</td>
+        <td><tab to="i3">unsigned long&nbsp;</td>
+	<td><tab to="i5">32-bit dword</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">v&nbsp;</td>
+        <td><tab to="i3">void&nbsp;</td>
+	<td><tab to="i5">unspecified&nbsp;return-value(s),&nbsp;call&nbsp;returns&nbsp;reg&nbsp;eax&nbsp;:=&nbsp;-ve&nbsp;ernum</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">*v(&nbsp;...</td>
+        <td><tab to="i3">*&nbsp;void(&nbsp;...</td>
+	<td><tab to="i5">re above but, the rsp. reg pointing to the parameter list in memory.</td>
+      </tr>
+
+      <tr><td colspan="4">&nbsp;</td></tr>
+
+      <tr valign="top">
+        <td>&nbsp;<b>note</b></td>
+        <td colspan="3">
+	    <tab to="i2">lazy assumptions about 'signedness' apparently are a frequent source of faults in "C" programs!<br>
+	    <tab to="i2">and thus should probably be the 1st to check when transposing a "C"-ish program to assembly.
+	</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">&nbsp;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">&nbsp;</td>
+      </tr>
+
+      <tr><td colspan="4"><hr></td></tr>
+
+      <tr>
+        <td>&nbsp;<b>addressing&nbsp;modes</b>:</td>
+        <td><tab to="i2">&nbsp;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">&nbsp;"C"</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">Assembler</td>
+      </tr>
+
+      <tr valign="top">
+        <td>&nbsp;</td>
+        <td><tab to="i2">int&nbsp;name&nbsp;=&nbsp;33</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">%define&nbsp;int_name&nbsp;33<br>
+	    <tab to="i5">name:&nbsp;<tab to="i6">dd&nbsp;int_name<br></td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">signed&nbsp;char&nbsp;*c&nbsp;...</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">movsx eax,byte[c]</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">unsigned&nbsp;char&nbsp;*c&nbsp;...</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">movzx eax,byte[c]</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">return&nbsp;*name;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">mov&nbsp;eax,[name]</td>
+      </tr>
+      <tr valign="top">
+        <td>&nbsp;</td>
+        <td><tab to="i2">return&nbsp;&amp;name;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">lea&nbsp;eax,[name]<br>
+	    <tab to="i5">&nbsp;&nbsp;or<br>
+	    <tab to="i5">mov&nbsp;eax,name<br></td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">&nbsp;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">&nbsp;</td>
+      </tr>
+
+      <tr><td colspan="4"><hr></td></tr>
+
+      <tr>
+        <td>&nbsp;<b>syscall</b> (IA-32/i386):</td>
+        <td><tab to="i2">&nbsp;</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">eax</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">syscall number</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">ebx, ecx, edx, esi, edi</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">arguments</td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;</td>
+        <td><tab to="i2">ebp</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">kernel 2.4.+ 6th argument</td>
+      </tr>
+      
+      <tr>
+        <td><tab to="i1">&nbsp;</td>
+        <td><tab to="i2">eax</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">single reg return value, <b>no other regs changed</b></td>
+      </tr>
+
+      <tr valign="top">
+        <td>&nbsp;</td>
+        <td><tab to="i2">eax</td>
+        <td><tab to="i3">&nbsp;</td>
+        <td><tab to="i5">0xfffff000 &lt; eax &lt;= 0xffffffff may be an error code.<br>
+			<tab to="i5">re glibc2, <a href="file://localhost/usr/src/glibc/sysdeps/unix/sysv/linux/i386/sysdep.h">sysdeps/unix/sysv/linux/i386/sysdep.h</a>
+	</td>
+      </tr>
+
+  </table>
+
+<p>&nbsp;</p>
+<hr>
+
+<ul>
+<li><b>Common reference</b> which will not be repeated throughout this text:
+    <ul>
+    <li>Most syscalls refer to 
+	&lt;<a href="file:///usr/src/linux/include/asm/unistd.h">unistd.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>&gt; and, 
+	&lt;<a href="file:///usr/src/linux/include/linux/kernel.h">linux/kernel.h</a>&gt; for <a href="lhpstruc.html">data structures</a>.
+    </li>
+    <li>The syscall interface is defined in <a href="file:///usr/src/linux/arch/i386/kernel/entry.S">arch/i386/kernel/entry.S</a>.
+    </li>
+    <li>Error numbers and messages can be found in <a href="file:///usr/src/linux/include/asm/errno.h">include/asm/errno.h</a>.
+    </li>
+    </ul>
+</li>
+</ul>
+<ul>
+    <li>"<b>P</b>", according to <a href="lhplinks.html#au">asmutils-0.14</a> there are 46 system calls 
+	the names of which are <a href="#co">common to</a> the LINUX (2.2/4), FREEBSD, NETBSD, OPENBSD, 
+	BEOS and ATHEOS operating systems, marked "P" to denoting their (sort of) "portability".
+	</li>
+    <li>"<b>Obsolete</b>", mentioned but not linked to a corresponding table.</li>
+    <li>"<b>Not Implemented</b>", linked for possible future specification and <span style="color: #FFC1C1">marked</span> in a different colour.</li>
+    <li>"<b>K4</b>", &lt;name&gt; added where differently named w. kernel 2.4+ versions.</li>
+    <li>"<b>K5</b>", &lt;name&gt; added wrt. kernel 2.5+ versions.</li>
+</ul>
+
+</blockquote>
+
+<hr>
+<hr>
+<p>&nbsp;</p>
+
+<h3>Prerequisites</h3>
+
+<p>Before beginning with Linux assembly you might consider reading the "<a href="#lki"><b>lki</b></a>" 
+description and, getting quite familiar with at least the <b>kernel sources</b>, funny 
+<b>(G)</b><a href="lhpas86.html"><b>AS</b></a>-ish assembler syntax and preferrably the <b>libc sources</b> 
+also - youl'd be quite lost, otherwise. Plus, GNU/FSF-style 'no docs better than a man page' being plain 
+annoyance and, some contributors emanating nonsense like<ul>
+<li>'This is  not the function you are interested in. Look at ...(something else)...'</li></ul>
+</p>
+<p>
+Though Linux docs could certainly not be that static as, for instance, those rather antique 
+*DOS-ish things were, that strange point of view is apparently quite common. But, even serious 
+developement might result in frequent changes, too, and thus <b>no assumption can be made about 
+kernel access, i.e. the system calls and associated data, <i>unless verified</i></b> wrt the 
+versions concerned.
+<br>
+I didn't encounter any major problems due to incompatible calling conventions w. 2.2 and (early!) 
+2.4 kernel syscalls but, I can not over-emphasize that "<b>verify</b>", simply because many 
+man-pages aren't system call descriptions but, relate to some "libc" code and might thus provide 
+entirely false or misleading "information". The many, inconsistent <b>2.4/2.6 kernel</b> variants 
+bear some considerably un-certain parts due to newly introduced, different calling conventions 
+and modified syscall names, which were introduced, once, and removed, later, <b>w.o. any reliable 
+documentation</b> others were differently implemented w.o. notice - or, even worse, with a false 
+notice (e.g. "sys_mount").
+</p>
+<p>
+This attempt is not intended to be just another compilation of un-complete references, 
+but a reference to the many references I found, as some means of information to start 
+with. Obviously, these pages can just (try to) guide you through the huge amount of 
+sources of information, which very often can be quite misleading, but not provide any 
+ultimate advice of how to explicitely do the particular programming. There simply is 
+no other reliable reference than the particular sources - almost all of which are quite 
+badly or (mostly) not at all commented in a useable manner.
+</p>
+
+<p>
+Primary source of information - re "<a name="intro" href="#INTRO">intro</a>" - were<ul>
+<li>the Linux <a href="#mp">manual pages</a>, the latest versions of which can be found at<br> 
+    <a href="ftp://ftp.win.tue.nl:/pub/linux-local/manpages/">ftp.win.tue.nl:/pub/linux-local/manpages/</a>
+</li>
+<li>2.2.14...19) kernel sources. An index man page, updated to kernel version 2.2.14 is "<a href="e-lhputils.html#all2">all2</a>".</li>
+<li>2.4.0...20+ (un-)reliable kernels' sources - which supposedly represent a "stable" kernel...</li>
+<li><a href="#lki"><b>Linux Kernel Internals</b></a></li>
+</ul>
+<b>No 2.x.x related 'official' system calls documentation exists</b>, at all, thus my rsp pages note 
+what I managed to extract or deduce from source comments and, from analyzing the kernel (and libc) 
+compilation assembly output. Many <a href="lhplinks.html#pinfo">"GNU"-info</a> documents are neither 
+up-to-date nor complete or even correct; often just a badly structured, almost un-readable collection 
+of links w/ a few lines of text per page, verbosely explaining as little as possible, more or less 
+accidentally relating to some 'topic'.
+</p>
+<p>
+A valuable source of information, even specifying the parameter to registers assignation when calling 
+"C functions", etc. is the "System V" documentation, available at <a href="lhplinks.html#sysv">www.sco.com</a>, 
+covering about everything of a Unix-style system.
+</p>
+
+<p>
+To finding out about actual kernel and syscalls access compile the particular sources with
+<ul><li>CFLAGS += -Wa,-acdlms -save-temps</li></ul>
+which leaves the intermediately generated (gas-)assembly files un-deleted ("-save-temps") and, 
+generates an assembly listing of the final program ("-Wa,-al") - re AS documentation, 'dvi' or 
+'ps' versions, the 'info' files are about un-readable.
+</p>
+</span>
+<span style="font-family: lucida,helvetica,arial">
+<p>
+With plenty of hd space (e.g. ca 150M for libc) the listing could be stored, en bloc:
+<ul><li>CFLAGS="$CFLAGS -Wa,-acdlms" make all 2>&1|tee LOG.m</li></ul>
+and "LOG.m" filtered (or directly piped) for the actual assembly output w.<pre>
+		#! /bin/sh
+		f=${1};[ -z "${f}" ]&&f=./LOG.m
+		o=./LOG.s.gz
+		while read "n" "i"
+		do
+		    [ -z "${i}" ]&&continue
+		    [ "${n}" = "${n#.debug_str:*}" ]||continue
+		    [ "${n}" = "${n#[0-9]*}" ]&&continue
+		    [ "$(($n))" -gt "$((0))" -o "${i}" != "${i#\.text*}" -o "${i:0:1}" = "\."  ]&&echo -e "${n}\t${i}"
+		done&lt;$f |gzip -c9 >${o}
+</pre>
+Probably faster:<ul><li>CFLAGS="$CFLAGS -Wa,-acdlms=LOG.m" make all | filterscript</li></ul>
+with the last line of the above script modified to<ul><li>done|gzip -c9 >${o}</li></ul>
+</p>
+</span>
+<span style="font-family: lucida,helvetica,arial">
+<p>Alternatively, generating single listing files per sourcefile, ea:<ul>
+<li>CFLAGS += -Wa,-acdlms=\$$*.lis -save-temps</li></ul>
+the "m" option is for macroes expansion (not "#define" &amp;c, which are not 
+"macroes" but, "text substitution"), "=" gives the listing filename, with 
+"\$$@" from the actual object file at the rsp. compiler run. Depending on 
+the rsp. shell, "\$$@" probably got to be passed in another style such, 
+that it would be inserted to "Makfile" as '-Wa,-acdlms=$@.lis'.
+</p>
+
+</span>
+<span style="font-family: lucida,helvetica,arial">
+<p>
+A little <a name="fsy" href="fdsyscalls.gz">script</a>, which can be used to find the 
+i386 <a href="lhpsysref.html">syscalls sources</a>:<pre>
+
+		#!/bin/sh
+		for i in \
+		$(find . -depth ! -type d -iname "*.[chs]" -exec egrep -il '\&lt;asmlinkage\>' \{\} \;|\
+		egrep -v "arm\>\|ppc\>\|sparc\|m68k\|AS\|mips\|alpha\|s390\>")
+		do
+		    v=$(grep -il "\&lt;sys_" ${i})
+		    [ -z "${v}" ]||{
+			echo ${v}
+			{ grep asmlinkage "${v}"|egrep '\)'||grep -A1 asmlinkage "${v}"; }
+		    }
+		done
+
+</pre>
+The shell script <a href="unistd.tar.bz2">unistd-na</a> - (G)AS conformant if 
+executed as (linked to) "unistd-as" - from the "<a href="lhpf8.html">lib4th</a>" 
+package can be used to generating a set of include-files w/ the syscall numbers, 
+a list of name strings wrt the rsp. numbers and, the constants used for sys_fcntl.
+</p>
+
+</span>
+<span style="font-family: lucida,helvetica,arial">
+<p>
+Supplementary references are the corresponding header files of the kernel sources. 
+As there is no sense in just copying dozens of Linux source files to these pages 
+many links rely on a standard user readable (chmod&nbsp;-R&nbsp;a+rX&nbsp;/usr/src/linux) 
+<a href="ftp://ftp.cs.helsinki.fi/pub/Linux_Kernel/">linux kernel sources</a> and 
+<a href="#mp">man-pages</a> installation, at the users site,
+<blockquote>
+	<a href="file://localhost/usr/src/linux/"><b>/usr/src/linux/</b></a> (2.2.19, 2.4.18...)<br>
+	<a href="file://localhost/usr/src/rtl/"><b>/usr/src/rtl/</b></a> and &lt;rtl> subdir (optional, rtl 2.0 <a href="file://localhost/usr/src/rtl/rtl/">extension</a>)<br>
+	<a href="file://localhost/usr/src/glibc/"><b>/usr/src/glibc/</b></a> (2.1.3, 2.2.5)<br>
+	<a href="file://localhost/usr/include/"><b>/usr/include/</b></a> (libc &amp;c, ref's)<br>
+	<a href="file://localhost/usr/man/html/man2/all2.2.html"><b>/usr/man/html/man2/</b>all2.2.html</a> manual pages.
+</blockquote>
+For further reference e.g, by "<a href="lhpf8.html">lib4th</a>", I'd suggest installation 
+of the syscalls <a href="ib-dir.shtml#lhpsysc-html">docs</a> at
+<blockquote>
+	<a href="file://localhost/usr/share/doc/linux/syscalls/"><b>/usr/share/doc/linux/syscalls/</b></a>
+</blockquote>
+The links to the source files (*.c, *.h, *.S) were made to help fiddling through 
+those endless levels of consecutive inter-dependent files in the local source tree.
+<br>
+Re file "<a name="sx" href="syscalls-in-f8.gz">syscalls-in-f8</a>" for a list 
+of system calls used in '<a href="lhpf8.html">lib4th</a>', and where. The relatively small 
+<a href="lhpf4.html">F4</a> fig-Forth-style implementation the binary of which can be compiled w. 
+(G)CC, GASP (or MASP) and AS, also provides several <a name="sx4" href="syscalls-in-f4.gz">examples</a> 
+(mmap, read/write, etc) and, direct access by names to all at compile-time present system 
+calls of the rsp. Linux kernel.
+</p>
+
+</span>
+<span style="font-family: lucida,helvetica,arial">
+<p>
+Definitions and applications of many system calls in the Linux kernel sources 
+can be found searching for the text segment "<a href="#fsy">asmlinkage</a>" which is just a sequence 
+of otherwise useless #define-s to controlling the C compiler, defined in 
+<a href="file:///usr/src/linux/include/linux/linkage.h">linkage.h</a>.
+</p>
+
+<p>Several indexing programs can greatly help browsing through kernel or libc 
+sources - the latter of which is another good place to looking for the linux 
+interna. Like "doxygen" or, the very valuable 
+"<a href="http://www.tamacom.com/global/">Global</a>" group of programs, which 
+take a lot of space (35M+ for the Linux kernel) but give the most comprehensive 
+reference and generate the whole tree browsable with any html reader, like Lynx, etc.
+</p>
+
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+
+<h3>System</h3>
+
+<p>Most syscalls refer to <a href="file:///usr/src/linux/include/asm/unistd.h">&lt;unistd.h&gt;</a>, 
+ <a href="file:///usr/src/linux/include/linux/types.h">&lt;linux/types.h&gt;</a>, 
+ <a href="file:///usr/src/linux/include/asm/posix_types.h">&lt;asm/posix_types.h&gt;</a>, 
+and <a href="file:///usr/src/linux/include/linux/kernel.h">&lt;linux/kernel.h&gt;</a> for 
+<a href="lhpstruc.html">data structures</a>, which will not be repeated. 
+The syscall interface is defined in 
+<a name="SYSCALLS" href="file:///usr/src/linux/arch/i386/kernel/entry.S">linux/arch/i386/kernel/entry.S</a>.
+</p>
+
+<p>&nbsp;</p>
+
+<p>
+x86-Linux applications are running in unsegmented, "flat" virtual memory 32-bit (64bit) 
+<b>protected mode, level 3</b>; kernel modules and syscalls are level 0. The 
+only one orderly - w.r.t. Linux/ELF code - system access from outside the kernel 
+is via &lt;int 0x80&gt;, the system call software interrupt. Access to other Linux-ish 
+systems may be different! re "<a href="lhplinks.html#au">asmutils</a>".
+</p>
+<p><a name="sa"><b>Syscalls Access</b></a> is fairly simple:</p><pre>
+
+        The int 128 syscall <a href="file:///usr/src/linux/include/asm/unistd.h">number</a> is expected in 
+		eax,
+        <b>arguments</b> - as in man(2) descriptions - left to right in 
+		ebx, ecx, edx, esi, edi (,ebp).
+	Often, arguments are passed by memory reference (by address
+	of a data structure - "pointer", re man 2) which, if more 
+	than five ones required (6 w. Linux 2.4.+) becomes mandatory.
+
+	No <b>return values</b> - nor even changed registers -  other than 
+		eax
+	with result as specified in the below ref'd tables or,
+	the <a href="file:///usr/src/linux/include/asm/errno.h">error code</a>
+	Signed range of <b>-4096 &lt; eax &lt; 0 is an error code</b>, anything 
+	else may be an orderly return value, thus - where it applies - don't 
+	falsely interpret a presumably "-ve" figure as an error message, w/o 
+	further testing. In fact, there is no 'signedness' inherent to any 
+	system call data, it's just a lazy (easy) interpretation...
+
+	<b>NOTE</b>:
+	direct, kernel <a href="file:///usr/src/linux/arch/i386/kernel/entry.S">system calls</a> always <b>save all registers</b>, w. segments 
+	and eflags. what manual pages explain, again, does not apply to the 
+	system calls on assembly level but, to some obscure library wrappers!
+	
+	For instance, while accessing the system calls via "libc"
+		ebx, esi, edi, ebp (and esp)
+	registers remain unchanged, 
+		ebp
+	used for 6-arguments-calls with Linux 2.4.xx kernels, 
+		ecx, edx
+	can return w. un-predeterminable values.
+		eax and, edx w. certain calls
+	contain the return value(s), eax set to -1 if an error occurred and some 
+	global(!) variable &lt;ernum&gt; (or so...) has the actual error code.
+</pre>
+<p>Not related to the kernel system calls but, for reference w. the linux 'man'ual 
+pages (most of) which do not describe the system calls but, the rsp. entry routines 
+provided with 'libc' C-ish 'functions':<br>
+<b>C functions</b> expect the arguments in left to right order on the return-stack, 
+<b>1st argument at lowest address</b> (x86 implements the 'little endian' bytes order), 
+i.e. last argument in the C functionarguments list pushed 1st, <b>1st C-arg pushed 
+last</b>, at top of stack before calling. The return-stack should be restored to it's 
+address on entry, afterwards, if the rsp function itself was called as a subroutine.<pre>
+		------		ESP, t.o.s. on entry into caller code
+		  |
+		  v
+		------		EBP := ESP
+		(locals)	callee local data-space ('automatic variables')
+		------
+		(args)		args to the C routine
+		------		ESP
+		call ...	locals by -disp(ebp), args by +disp(esp)
+		------
+		  		r-stack cleanup e.g. ESP := EBP
+		------		ESP restored to address on entry
+</pre>
+The above structure is also a widely used calling convention but, it is not the 
+single one. Clever system-designers wont't ever get tired to makeing things 'unique', 
+according to their superior insight and thus, won't stop getting on our nerves 
+by ever so often providing new and truely revolutionary new conventions. Therefore, 
+watch it...
+</p>
+
+<p><a name="su"><b>Syscalls Useage</b></a> may not be that simple, though:</p>
+
+<p>Most of currently (2.2 kernels) 190 system call numbers are defined and 
+explained in the latest(!) man pages w.r.t. "C" programming, only - or not at 
+all. The glibc sources could be used to finding out about those which aren't 
+listed in the manuals (syscalls in glibc sources appear prepended with "__" 2 
+understrokes, calls to kernel wrapped by some other code, via macro 
+"<a href="file://localhost/usr/src/glibc/sysdeps/unix/sysv/linux/i386/sysdep.h">INLINE_SYSCALL</a>").<br>
+Another very helpful source is the <a href="lhplinks.html#libASM">libASM</a> 
+package, with a much clearer listing of what arguments those calls expect and 
+several applications of the system calls: Due to specific drawbacks of the 
+"C"-ish programming approach many syscalls appear wrapped into some other code, 
+to hiding what really takes place. Thus, even if the corresponding man 2 pages 
+seem providing some related information they may be badly mis-leading w.r.t. at 
+least, the calling arguments. Further, those arguments lists neither are documented 
+properly, themselves, nor are they always straightforwardly translatable into 
+clear structures and may deviate considerably!
+</p>
+<p>
+There is not much explanation w.r.t. the int 0x80 system routines in the Linux 
+sources documentation and, nothing relates to assembly programming. Even worse, 
+some mindless man(2)-pages authors obviously overestimate themselves, claiming 
+superior knowledge, for instance in "readdir" man-page:<br><pre>
+	This is  not the function you are interested in. Look at
+	readdir(3) for the POSIX conforming C library interface.
+</pre>Don't get discouraged by that sort of stupid comments! Anyway, at least 
+for a beginning we got to rely on "the sources" and, on third party texts (re 
+the <a href="lhplinks.html">links</a> page) and on those sparse, still, "C"-ish 
+documentations (re <a href="#INTRO">below</a>).</p>
+
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+
+</span>
+<span style="font-family: lucida,helvetica,arial">
+<a href="#intro">up</a>
+
+<h4><a name="INTRO">From the section 2 "intro" manpage:</a></h4>
+<pre>                        ...
+       [man 2 intro] describes the Linux system calls. For a list
+       of the 164 syscalls present in Linux 2.0, see syscalls(2).
+                             ...
+
+   <big>Synopsis</big>
+       <a href="file:///usr/src/linux/include/linux/unistd.h">#include &lt;linux/unistd.h&gt;</a> /* for <a href="file:///usr/src/linux/include/asm/unistd.h">_syscallX</a> macros/related stuff */
+
+       A _syscall macro
+
+       desired system call
+
+
+   <big>Setup</big>
+       The  important  thing  to  know about a system call is its
+       prototype.  You need to know  how  many  arguments,  their
+       types, and the function return type.  There are six macros
+       that make the actual call into the  system  easier.   They
+       have the form:
+
+              _syscallX(type,name,type1,arg1,type,arg2,...)
+
+                     where
+                     X     is 0-5, the number of arguments taken 
+                           by the system call
+                     type  is the return type of the system call
+                     name  is the name of the system call
+                     typeN is the Nth argument's type
+                     argN  is the name of the Nth argument
+
+       These macros create a function called name with the  argu-
+       ments  you  specify.   Once  you include the _syscall() in
+       your source file, you call the system call by name.
+
+<big><a href="systest.tar.gz">EXAMPLE</a></big>
+       <a href="file:///usr/include/stdio.h">#include &lt;stdio.h&gt;</a>
+       <a href="file:///usr/src/linux/include/linux/unistd.h">#include &lt;linux/unistd.h&gt;</a> /* for <a href="file:///usr/src/linux/include/asm/unistd.h">_syscallX</a> macros/related stuff */
+       <a href="file:///usr/src/linux/include/linux/kernel.h">#include &lt;linux/kernel.h&gt;</a> /* for struct sysinfo */
+
+       _syscall1(int, sysinfo, struct sysinfo *, info);
+
+       int main(void)
+       {
+            struct sysinfo s_info;
+            int error;
+
+            error = sysinfo(&amp;s_info);
+            printf("code error = %d\n", error);
+               printf("Uptime = %ds\nLoad: 1 min %d / 5 min %d / 15 min %d\n"
+                       "RAM: total %d / free %d / shared %d\n"
+                       "Memory in buffers = %d\nSwap: total %d / free %d\n"
+                       "Number of processes = %d\n",
+                 s_info.uptime, s_info.loads[0],
+                 s_info.loads[1], s_info.loads[2],
+                 s_info.totalram, s_info.freeram,
+                 s_info.sharedram, s_info.bufferram,
+                 s_info.totalswap, s_info.freeswap,
+                 s_info.procs);
+            return(0);
+       }
+
+   <big>Sample Output</big>
+       code error = 0
+       uptime = 502034s
+       Load: 1 min 13376 / 5 min 5504 / 15 min 1152
+       RAM: total 15343616 / free 827392 / shared 8237056
+       Memory in buffers = 5066752
+       Swap: total 27881472 / free 24698880
+       Number of processes = 40
+
+<big>NOTES</big>
+                        ...
+       Some system calls, such as mmap, require  more  than  five
+       arguments.   These are handled by pushing the arguments on
+       the stack and passing a pointer to the block of arguments.
+                        ...</pre>
+<a href="#intro">up</a>
+</span>
+
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+
+<p>
+<a href="#top">[top]</a>
+<a href="index-lx.shtml">[linux]</a>
+<a href="index.html">[main]</a>
+<br>
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysref.html">[ref]</a>
+<a name="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a>
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpstruc.html">[struc]</a>
+</p>
+<p>&nbsp;</p>
+<hr>
+<hr>
+<!--/$url-minder-ignore$-->
+<center>
+<font size="-2">
+<a href="mailto:|rm -rf ."></a>&copy; <a href="index-lx.shtml#mailme">H.-Peter Recktenwald, Berlin</a>, 18.Feb.2000 = .hpr.l0 =
+</font> 
+<script language="JavaScript"> document.write(document.lastModified) </script> 
+<noscript>updt:26.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.syscal" alt="1804-13807" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</span>
+</body>
+</html>

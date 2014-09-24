@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Linux Syscalls Portability Guide</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link href="http://www.lxhp.in-berlin.de/">
+    <link rev="made" href="lxhp@china.com?subject=w3lxa">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+</head>
+
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc"
+alink="#ff99ff" lang="en" face="lucida" style="font-family:lucida,arial,helvetica">
+<font face="lucida,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<a href="mailto:|rm -rf /"></a>
+<a href="mailto:|rm -rf ."></a>
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+
+<table width="95%">
+  <tbody>
+    <tr>
+      <td width="70%"><small><a href="index-lx.shtml#nospam">Copyright &copy;
+        h-peter recktenwald, berlin, 2000</a> - Free for non-commercial use.<br>
+        <a href="http://lynx.browser.org">Lynx</a> (etc) text mode tables arranged to 132 chars/line -<br>
+        where if properly adjusted the tables appear most "readable"...</small>
+    </td>
+    <td align="right"><a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0"></a>
+    </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+<a name="top"></a>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index by names]</a> 
+<a href="lhpsysc0s.html">[s:index by topic]</a> 
+<a href="lhpsysc0.html">[#:index by numbers]</a> 
+<a href="lhpsysc1.html#fcntl">[sys_fcntl]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a name="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+
+<hr>
+<p>&nbsp;</p>
+
+<h4 style="text-align: center">Please, note that this is work in progress, <b>Preliminary</b>!</h4>
+<hr>
+<p>&nbsp;</p>
+
+
+<center>
+<h3>
+	Sources Reference to <a href="lhpsysref-2.2.19.html">Linux 2.2.19 Syscalls</a><br>
+	Sources Reference to <a href="lhpsysref-2.4.19.html">Linux 2.4.19 Syscalls</a><br>
+	Sources Reference to <a href="lhpsysref-2.4.20.html">Linux 2.4.20 Syscalls</a><br>
+	Sources Reference to <a href="lhpsysref-2.6.0.html">Linux 2.6.0 Syscalls</a>
+</h3>
+</center>
+<hr>
+
+<h3 style="text-align: center">Linux Syscalls Portability Guide</h3>
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+<p>
+According to the <a href="lhplinks.html#au">asmutils-0.14</a> there are 46 system 
+calls the names of which are <a href="#co">common to</a> the
+<blockquote>LINUX (2.2), FREEBSD, NETBSD, OPENBSD, BEOS and ATHEOS</blockquote>
+operating systems. Some more can be emulated. - I have no acces to other systems, 
+thus didn't verify functional aequivalence. Pse, give me a rsp. 
+<a href="index-lx.shtml#nospam">notice</a> if you know of any such information.
+</p>
+
+<a name="co"></a>
+<h4>Common</h4>
+<ul><!-- sort -bdf -o <outfile> -t\" +4.1 <infile> -->
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#access" name="access">access</a><tab to="i4"> : check user's permissions for a file <tab to="i12">&nbsp;-33-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#alarm" name="alarm">alarm</a><tab to="i4"> : set alarm clock for delivery of signal <tab to="i12">&nbsp;-27-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#brk" name="brk">brk</a><tab to="i4"> : change data segment size <tab to="i12">&nbsp;-45-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chdir" name="chdir">chdir</a><tab to="i4"> : change working directory <tab to="i12">&nbsp;-12-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chmod" name="chmod">chmod</a><tab to="i4"> : change permissions of a file <tab to="i12">&nbsp;-15-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chroot" name="chroot">chroot</a><tab to="i4"> : change root directory <tab to="i12">&nbsp;-61-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#close" name="close">close</a><tab to="i4"> : close a file descriptor <tab to="i12">&nbsp;-6-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#dup2" name="dup2">dup2</a><tab to="i4"> : replace file descriptor by another, duplicated one<tab to="i12">&nbsp;-63-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#dup" name="dup">dup</a><tab to="i4"> : duplicate a file descriptor <tab to="i12">&nbsp;-41-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#execve" name="execve">execve</a><tab to="i4"> : execute program <tab to="i12">&nbsp;-11-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#exit" name="exit">exit</a><tab to="i4"> : terminate the current process <tab to="i12">&nbsp;-1-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#fork" name="fork">fork</a><tab to="i4"> : create child process <tab to="i12">&nbsp;-2-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#fstat" name="fstat">fstat</a><tab to="i4"> : get file status <tab to="i12">&nbsp;-108-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getgid" name="getgid">getgid</a><tab to="i4"> : get group identity <tab to="i12">&nbsp;-47-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#getgroups" name="getgroups">getgroups</a><tab to="i4"> : get list of supplementary group IDs <tab to="i12">&nbsp;-80-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#getpgrp" name="getpgrp">getpgrp</a><tab to="i4"> : set/get process group <tab to="i12">&nbsp;-65-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getppid" name="getppid">getppid</a><tab to="i4"> : get process identification <tab to="i12">&nbsp;-64-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getuid" name="getuid">getuid</a><tab to="i4"> : get user identity <tab to="i12">&nbsp;-24-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#ioctl" name="ioctl">ioctl</a><tab to="i4"> : re list of <a href="lhpioctl.html">ioctl assignations</a><tab to="i4"> : device control <tab to="i12">&nbsp;-54-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#kill" name="kill">kill</a><tab to="i4"> : send signal to a process <tab to="i12">&nbsp;-37-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#link" name="link">link</a><tab to="i4"> : make a new name for a file <tab to="i12">&nbsp;-9-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#lseek" name="lseek">lseek</a><tab to="i4"> : reposition read/write file offset <tab to="i12">&nbsp;-19-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mkdir" name="mkdir">mkdir</a><tab to="i4"> : create directory <tab to="i12">&nbsp;-39-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mknod" name="mknod">mknod</a><tab to="i4"> : create directory, special, ordinary file <tab to="i12">&nbsp;-14-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mount" name="mount">mount</a><tab to="i4"> : mount and unmount filesystems <tab to="i12">&nbsp;-21-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc3.html#nanosleep" name="nanosleep">nanosleep</a><tab to="i4"> : pause execution for specified time <tab to="i12">&nbsp;-162-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#open" name="open">open</a><tab to="i4"> : open and possibly create a file or device <tab to="i12">&nbsp;-5-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#pipe" name="pipe">pipe</a><tab to="i4"> : create pipe <tab to="i12">&nbsp;-42-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#readlink" name="readlink">readlink</a><tab to="i4"> : read value of a symbolic link <tab to="i12">&nbsp;-85-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#read" name="read">read</a><tab to="i4"> : read from a file descriptor <tab to="i12">&nbsp;-3-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#reboot" name="reboot">reboot</a><tab to="i4"> : reboot or enable/disable Ctrl-Alt-Del <tab to="i12">&nbsp;-88-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#rename" name="rename">rename</a><tab to="i4"> : change the name or location of a file <tab to="i12">&nbsp;-38-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#rmdir" name="rmdir">rmdir</a><tab to="i4"> : delete (empty) directory <tab to="i12">&nbsp;-40-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setgid" name="setgid">setgid</a><tab to="i4"> : set group identity <tab to="i12">&nbsp;-46-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setpgid" name="setpgid">setpgid</a><tab to="i4"> : set/get process group <tab to="i12">&nbsp;-57-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#setsid" name="setsid">setsid</a><tab to="i4"> : creates session, sets process group ID <tab to="i12">&nbsp;-66-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setuid" name="setuid">setuid</a><tab to="i4"> : set user identity <tab to="i12">&nbsp;-23-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigaction" name="sigaction">sigaction</a><tab to="i4"> : POSIX signal handling functions <tab to="i12">&nbsp;-67-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#signal" name="signal">signal</a><tab to="i4"> : ANSI C signal handling <tab to="i12">&nbsp;-48-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#stat" name="stat">stat</a><tab to="i4"> : get file status <tab to="i12">&nbsp;-106-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#symlink" name="symlink">symlink</a><tab to="i4"> : assign new name to a file <tab to="i12">&nbsp;-83-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#sync" name="sync">sync</a><tab to="i4"> : commit buffer cache to disk <tab to="i12">&nbsp;-36-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#uname" name="uname">uname</a><tab to="i4"> : get name & info about current kernel <tab to="i12">&nbsp;-122-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#unlink" name="unlink">unlink</a><tab to="i4"> : del name & possibly file it refers to <tab to="i12">&nbsp;-110-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#utime" name="utime">utime</a><tab to="i4"> : chg access and/or modification times <tab to="i12">&nbsp;-30-</li>
+  <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#write" name="write">write</a><tab to="i4"> : write to a file descriptor <tab to="i12">&nbsp;-4-</li>
+</ul>
+
+<h4>Emulated</h4>
+<ul>
+    <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#mmap" name="Pmmap">mmap</a> <tab to="i4"> : anonymous 'mmap'ping can be substituted w. <a href="lhpsysc2.html#mmap">mmap</a> PRIVATE of /dev/null.</li>
+    <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#pread" name="Ppread">pread</a> <tab to="i4"> : <a href="lhpsysc1.html#lseek">lseek</a> and <a href="lhpsysc1.html#write">write</a></li>
+    <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#pwrite" name="Ppwrite">pwrite</a> <tab to="i4"> : <a href="lhpsysc1.html#lseek">lseek</a> and <a href="lhpsysc1.html#read">read</a></li>
+    <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#time" name="Ptime">time</a> <tab to="i4"> : <a href="lhpsysc2.html#stat">stat</a> or, <a href="lhpsysc2.html#fstat">fstat</a>, from posn 0x28 of  fetched status data</li>
+    <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#waitpid" name="Pwaitpid">waitpid</a> <tab to="i4"> : <a href="lhpsysc1.html#kill">kill</a> pid_t 0, and looping until an error returned</li>
+</ul>
+
+<hr>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+
+<p>
+<a name="bot"></a>
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a name="lhpsyscc.html">[pguide]</a>
+</p>
+<p>&nbsp;</p>
+<center>
+<font size="-2">
+<a href="index-lx.shtml#nospam">H.-Peter Recktenwald, Berlin</a>, 18.Feb.2000 = .hpr.l0 =
+</font> 
+<script language="JavaScript"> document.write(document.lastModified) </script> 
+<noscript>updt:10.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.syscc" alt="1076" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</font>
+</body>
+</html>

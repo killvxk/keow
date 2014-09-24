@@ -1,0 +1,24 @@
+Kernal Emulation on Windows
+
+KEOW
+
+
+This is an overview of how this project works.
+
+This is a linux kernel for Windows Win32 expecting Linux ELF x86 binaries.
+
+The 'kernel' is readly a dll servicing kernel SysCalls (called via INT 80 instruction). This technique relies on using i386 binaries only (nothing else is ok?)
+An initial loader starts the first program (init).
+
+Each new process is started by creating a new win32 process using a tiny stub executable
+and then the ELF image is loaded into this processes address space whilst the process
+is suspended. The stub is small and loaded high in memory to avoid the chance of overlapping code.
+
+Once the stub is running it loads the syscalls dll. The loading at this time is safe as the required
+memory is already allocated for the ELF code so will not clash.
+
+The stub sets up the stack and registers and then transfers control to the ELF code. The jump
+is wrapped in a _-try __except block. This allows the stub to catch the int 80 instruction (which
+does not run under windows) and redirect control to the approproate syscalls.dll routine.
+Control is then returned to the point after the int instruction.
+

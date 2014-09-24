@@ -1,0 +1,3758 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+                      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<title>i386 Linux 2.2+ Syscalls -1-</title>
+    <link href="http://www.lxhp.in-berlin.de/">
+    <link rev="made" href="lxhp@china.com?subject=w3lxa">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+</head>
+
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc"
+alink="#ff99ff" lang="en" face="lucida"
+style="font-family:lucida,arial,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a> <a
+href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i21">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i22">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i24">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i26">&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+<p><small><a href="index-lx.shtml#nospam">Copyright &copy; h-peter recktenwald, berlin, 2000</a> 
+    - free for any related work and, non-commercial distribution.<br>
+text mode (Lynx, Printer) tables arranged to 110 chars/line.</small></p>
+<hr>
+
+<p>&nbsp;</p>
+<a name="top"></a>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0s.html">[s:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html#fcntl">[sys_fcntl]</a> 
+<br>
+<a name="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+<hr>
+<hr>
+<ul><li><b>
+    <a href="index.html#ffii">Fight Patents abuse</a> by EC authorities - 
+    <a href="index.html#ffii">Gegen Patentmi&szlig;brauch</a> durch die EU-Beh&ouml;rden.
+</b></li></ul>
+<hr>
+<hr>
+
+<ul>
+<li>syscall-no. in <b>eax</b>; args left to right in 
+<b>ebx</b>,<b>ecx</b>,<b>edx</b>,<b>esi</b>,<b>edi</b>(,<b>ebp</b>), all preserved.<br>
+</li>
+<li>returned 0xfffff000 &lt; eax &lt;= 0xffffffff may be an error code (-4096 &lt; eax &lt; 0).<br>
+</li>
+<li><b>Common reference</b>:
+    <ul>
+    <li>&lt;<a href="file:///usr/src/linux/include/asm/unistd.h">unistd.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/asm/types.h">asm/types.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>&gt;, and 
+	&lt;<a href="file:///usr/src/linux/include/linux/kernel.h">linux/kernel.h</a>&gt; for 
+	    <a href="lhpstruc.html">data structures</a>.
+    </li>
+    <li>The syscall interface is defined in <a href="file:///usr/src/linux/arch/i386/kernel/entry.S">arch/i386/kernel/entry.S</a>,
+	symbols for loadable modules <a href="file:///usr/src/linux/kernel/ksyms.c">kernel/ksyms.c</a>.
+    </li>
+    <li>Error numbers and messages in <a href="file:///usr/src/linux/include/asm/errno.h">include/asm/errno.h</a>.
+    </li>
+    <li>Basic <a href="lhpstruc.html#types">data types</a><br>
+	<b>short</b>: word (16bit), <b>int</b>: dword (32bit), <b>long</b>: dword (32bit), <b>pointer</b>: dword (32bit).
+    </li>
+    </ul>
+</li>
+</ul>
+
+<hr>
+<hr>
+<p>&nbsp;</p>
+<a name="exit"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/exit.2.html">exit</a></td>
+<td><tab to="i4">int status</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">1</td>
+<td><tab to="i11"></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">terminate current process</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">1</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">exit code</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td>&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/kernel/exit.c">kernel/exit.c</a>
+</td>
+</tr>
+
+</table>
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="fork"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/fork.2.html">fork</a></td>
+<td><tab to="i4">&nbsp;struct <a href="lhpstruc.html#ptregs">pt_regs</a></td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8"></td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">2</td>
+<td><tab to="i11"></td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">create a child process resource;<br>
+<tab to="i3">resource utilizations:=0, file locks &amp; pending signals not inherited.<br>
+<tab to="i3">simplified "<a href="lhpsysc2.html#clone">clone</a>" w/ flags set to SIGCHLD and caller's ESP<br>
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td><tab to="i4">2</td><td colspan="6">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx...</td><td><tab to="i4">all&nbsp;register&nbsp;values&nbsp;passed&nbsp;to&nbsp;duplicate&nbsp;job</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">clone : zero<br>
+		<tab to="i4">caller: <a href="lhpstruc.html#pid_t">pid_t</a> pid (dword) or, -ve error code</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">EAGAIN, ENOMEM</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/include/linux/sched.h">linux/sched.h</a>,
+<a href="file:///usr/src/linux/include/asm/ptrace.h">asm/ptrace.h</a>.
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/arch/i386/kernel/process.c">arch/i386/kernel/process.c</a>, 
+		<tab to="i4"><a href="file:///usr/src/linux/kernel/fork.c">kernel/fork.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="read"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/read.2.html">read</a></td>
+<td><tab to="i4">int fd, </td>
+<td><tab to="i5">void *buf, </td>
+<td><tab to="i6"><a href="lhpstruc.html#size_t">size_t</a> count</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">3</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">read up to count bytes from file fd into buffer *buf</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">3</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">file descriptor</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">ptr to input buffer</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">buffer size, max. count of bytes to receive</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">&nbsp;no. of bytes received, file pointer advanced accordingly</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">EAGAIN, EBADF, EFAULT, EINTR, EINVAL, EIO, EISDIR</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="7"><tab to="i4">note that "buffer overflow" is not immanent to the system call but,<br>
+		<tab to="i4">was introduced by ignorant "programming" rsp (lib)"C" useage/design...
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/fs/read_write.c">fs/read_write.c</a>
+</td>
+
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="write"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/write.2.html">write</a></td>
+<td><tab to="i4">int fd, </td>
+<td><tab to="i5">void *buf, </td>
+<td><tab to="i6"><a href="lhpstruc.html#size_t">size_t</a> count, </td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">4</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">write (up to) count bytes of data from *buf to file fd</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">4</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">file descriptor</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">ptr to output buffer</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">count of bytes to send</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">no. of sent bytes (if POSIX conforming f.s.)</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">EAGAIN, EBADF, EFAULT, EINTR, EINVAL, EIO, ENOSPC, EPIPE</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/read_write.c">fs/read_write.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="open"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/open.2.html">open</a></td>
+<td><tab to="i4">&nbsp;const char *pathname,</td>
+<td><tab to="i5">&nbsp;int flags,</td>
+<td><tab to="i6">&nbsp;mode_t mode</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">5</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">open a file or device, create/truncate if corresponding mode flag(s) set</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">5</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">ptr to asciz abs or rel pathname</td>
+</tr>
+<tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">file access <a href="#acsb">bits</a></td>
+</tr>
+<tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">file permissions, <a href="#chmod">mode</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">int fd (16bit filedescriptor)</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><a name="oer"></a><tab to="i4">ACCESS, EXIST, FAULT, ISDIR, LOOP, MFILE,<br>
+<tab to="i4">NAMETOOLONG, NFILE, NOENT, NODEV, NODIR, <br>
+<tab to="i4">NOMEM, NOSPC, NXIO, ROFS, TXTBSY</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">
+<a name="types" href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>,
+<a href="file:///usr/src/linux/include/linux/posix_types.h">linux/posix_types.h</a>,
+<a name="stat" href="file:///usr/src/linux/include/linux/stat.h">linux/stat.h</a> 
+-re- <a href="lhpstruc.html#stat">struct stat</a>,
+<br><tab to="i4">
+<a name="fcntlh" href="file:///usr/src/linux/include/asm/fcntl.h">asm/fcntl.h</a>,
+<a href="file:///usr/src/linux/include/asm/types.h">asm/types.h</a>,
+<a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>,
+<br><tab to="i4">
+<a href="file:///usr/include/fcntl.h">fcntl.h</a>,
+<a href="file:///usr/include/sys/stat.h">sys/stat.h</a>.
+<a href="file:///usr/include/sys/types.h">sys/types.h</a>
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+<tr>
+<td colspan="11">&nbsp;</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td colspan="2"><tab to="i1"><a name="acsb" href="file:///usr/src/linux/include/asm/fcntl.h"><b>file access bits</b></a></td>
+<td colspan="8"><tab to="i4">&nbsp;</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="8"><tab to="i2">O_ACCMODE	<tab to="i4">   0003<br>
+		<tab to="i2">O_RDONLY	<tab to="i4">     00<br>
+		<tab to="i2">O_WRONLY	<tab to="i4">     01<br>
+		<tab to="i2">O_RDWR  	<tab to="i4">     02<br>
+		<tab to="i2">O_CREAT 	<tab to="i4">   0100<br>
+		<tab to="i2">O_EXCL  	<tab to="i4">   0200<br>
+		<tab to="i2">O_NOCTTY	<tab to="i4">   0400<br>
+		<tab to="i2">O_TRUNC 	<tab to="i4">  01000<br>
+		<tab to="i2">O_APPEND	<tab to="i4">  02000<br>
+		<tab to="i2">O_NONBLOCK	<tab to="i4">  04000<br>
+		<tab to="i2">O_NDELAY  	<tab to="i4"> O_NONBLOCK<br>
+		<tab to="i2">O_SYNC    	<tab to="i4">  010000 specific to ext2 fs and block devices<br>
+		<tab to="i2">FASYNC    	<tab to="i4">  020000 fcntl, for BSD compatibility<br>
+		<tab to="i2">O_DIRECT  	<tab to="i4">  040000 direct disk access hint - currently ignored<br>
+		<tab to="i2">O_LARGEFILE<tab to="i4"> 0100000<br>
+		<tab to="i2">O_DIRECTORY<tab to="i4"> 0200000 must be a directory<br>
+		<tab to="i2">O_NOFOLLOW <tab to="i4"> 0400000 don't follow links
+</td>
+</tr>
+
+<tr>
+<td colspan="11">&nbsp;</td>
+</tr>
+
+<tr>
+<td>&nbsp;</td>
+<td colspan="2"><tab to="i1"><a name="chmodf" href="file:///usr/src/linux/include/linux/stat.h">file permissions flags</a></td>
+<td colspan="8">&nbsp;</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1"><a name="ufl"></a>&nbsp;</td>
+<td colspan="8"><tab to="i2">S_ISUID	<tab to="i4">04000 set user ID on execution<br>
+		<tab to="i2">S_ISGID	<tab to="i4">02000 set group ID on execution<br>
+		<tab to="i2">S_ISVTX	<tab to="i4">01000 sticky bit<br>
+		<tab to="i2">S_IRUSR	<tab to="i4">00400 read by owner		<tab to="i7">(S_IREAD)<br>
+		<tab to="i2">S_IWUSR	<tab to="i4">00200 write by owner		<tab to="i7">(S_IWRITE)<br>
+		<tab to="i2">S_IXUSR	<tab to="i4">00100 execute/search by owner	<tab to="i7">(S_IEXEC)<br>
+		<tab to="i2">S_IRGRP	<tab to="i4">00040 read by group<br>
+		<tab to="i2">S_IWGRP	<tab to="i4">00020 write by group<br>
+		<tab to="i2">S_IXGRP	<tab to="i4">00010 execute/search by group<br>
+		<tab to="i2">S_IROTH	<tab to="i4">00004 read by others		<tab to="i7">(<a href="#access">R_OK</a>)<br>
+		<tab to="i2">S_IWOTH	<tab to="i4">00002 write by others		<tab to="i7">(<a href="#access">W_OK</a>)<br>
+		<tab to="i2">S_IXOTH	<tab to="i4">00001 execute/search by others	<tab to="i7">(<a href="#access">X_OK</a>)<br>
+		&nbsp;<br>
+		<tab to="i2">S_IRWXUGO	<tab to="i4">(S_IRWXU|S_IRWXG|S_IRWXO)		<tab to="i7">-re- <a href="#umask">umask</a><br>
+		<tab to="i2">S_IALLUGO	<tab to="i4">(S_ISUID|S_ISGID|S_ISVTX|S_IRWXUGO)<br>
+		<tab to="i2">S_IRUGO	<tab to="i4">(S_IRUSR|S_IRGRP|S_IROTH)<br>
+		<tab to="i2">S_IWUGO	<tab to="i4">(S_IWUSR|S_IWGRP|S_IWOTH)<br>
+		<tab to="i2">S_IXUGO	<tab to="i4">(S_IXUSR|S_IXGRP|S_IXOTH)
+</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="close"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/close.2.html">close</a></td>
+<td><tab to="i4">int fd</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">6</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">close a file by fd reference</a>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">6</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">file descriptor</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">EBADF (-1)</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="waitpid"></a>
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/waitpid.2.html">waitpid</a></td>
+<td><tab to="i4">&nbsp;<a href="lhpstruc.html#pid_t">pid_t</a></a> pid,</td>
+<td><tab to="i5">&nbsp;int *status,</td>
+<td><tab to="i6">&nbsp;int options</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">7</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">wait for a specified child process termination; simplified call to <a href="lhpsysc2.html#wait4">wait4</a>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">7</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">2nd-ary process id or <a href="#killspec">specification</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">NULL or, ptr to buf for exitted 2nd-ary job status</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">option flags, zero or WNOHANG, WUNTRACED</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4"><a href="lhpstruc.html#pid_t">pid_t</a>, pid of 2ndary job which exitted</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">if buffer supplied, <a href="lhpsysc2.html#waits">exit state</a> of 2nd-ary job</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">CHILD, INVAL, RESTARTSYS</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">libc: sys/wait.h, wait.c &amp;c, <a href="#types">[types]</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/exit.c">kernel/exit.c</a>
+</td>
+
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="creat"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/open.2.html">creat</a></td>
+<td><tab to="i4">const char *pathname</td>
+<td><tab to="i5">mode_t mode</td>
+<td><tab to="i6"></td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">8</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">create a file</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">8</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">ptr to asciz abs or rel pathname</td>
+</tr>
+
+<tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">file permissions, <a href="#chmodf">mode</a></td>
+</tr>
+
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">int fd filedescriptor</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">access, exist, fault, isdir, loop, mfile, nametoolong<br>
+		<tab to="i4">nfile, noent, nodev, nodir, nomem, nospc, nxio <br>
+		<tab to="i4">rofs, txtbsy</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="#types">[types]</a>, <a href="#stat">sys/stat.h</a>, <a href="#fcntlh">fcntl.h</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">note&nbsp;</td>
+<td colspan="8"><tab to="i4">sys_creat is identical to <a href="#open">sys_open</a> w. O_CREAT|O_WRONLY|O_TRUNC flags.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="link"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/link.2.html">link</a></td>
+<td><tab to="i4">const char *oldpath</td>
+<td><tab to="i5">const char *newpath</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">9</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">create hard link to an existing file</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">9</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">ptr to asciz abs or rel name of existing file</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">ptr to asciz abs or rel name of new file-name</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">-/-</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">acces, io, perm, exist, fault, loop mlink,
+<br>
+<tab to="i4">nametoolong, noent, nomem, nospc, notdir, <br>
+<tab to="i4">perm, rofs, xdev</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/namei.c">fs/namei.c</a>
+</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="unlink"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/unlink.2.html">unlink</a></td>
+<td><tab to="i4">const char *pathname</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">10</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">delete a name and remove file when not busy</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">10</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">ptr to asciz abs or rel file-name</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">-/-</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">acces, fault, io, isdir, loop, nametoolong,
+<br>
+<tab to="i4">noent, nomem, notdir, perm, rofs</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/namei.c">fs/namei.c</a>
+</td>
+</tr>
+
+</table>
+<p>&nbsp;</p>
+
+
+<hr>
+
+<a name="execve"></a>
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/execve.2.html">execve</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td colspan="3"><tab to="i5">const char *filename, 
+		<tab to="i6">char const argv[], 
+		<tab to="i7">char const envp[]
+</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">11</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i3">execute&nbsp;a&nbsp;program&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax:</td><td><tab to="i4">11</td><td colspan="6">&nbsp;</td>
+</tr><tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">ebx:</td><td><tab to="i4">ptr&nbsp;to&nbsp;&lt;nul>&nbsp;terminated&nbsp;string&nbsp;of&nbsp;program&nbsp;path&amp;name</td>
+<td colspan="6">&nbsp;</td>
+</tr>
+<tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">ecx:</td><td><tab to="i4">ptr to zero terminated list of ptrs to &lt;nul> terminated program argument stgs</td>
+<td colspan="6">&nbsp;</td>
+</tr>
+<tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">edx:</td><td><tab to="i4">ptr&nbsp;to&nbsp;zero&nbsp;terminated&nbsp;list&nbsp;of&nbsp;ptrs&nbsp;to&nbsp;&lt;nul>&nbsp;terminated&nbsp;environment&nbsp;strings</td><td colspan="6">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">no return, executed prog inherits resources and overwrites caller
+</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax:</td>
+<td colspan="7"><tab to="i4">2big, acces, inval, io, isdir, libbad loop,
+<tab to="i4">nfile, noexec, noent, <br>
+<tab to="i4">nomem, notdir, fault, nametoolong, perm, txtbusy
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8">
+<tab to="i4"><a href="file:///usr/src/linux/arch/i386/kernel/process.c">arch/i386/kernel/process.c</a>
+</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">note</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">waiting caller of a "fork"ed or "clone"d job<br>
+<tab to="i4">being released immediately after entry to execve.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="chdir"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/chdir.2.html">chdir</a></td>
+<td><tab to="i4">const char *path</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">12</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change working directory</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">12</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">ptr to asciz abs or rel file-name</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">acces, badf, fault, io, loop, nametoolong, noent, nomem, notdir</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+
+<a name="time"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/time.2.html">time</a></td>
+<td><tab to="i4"><a href="lhpstruc.html#time_t">time_t</a> *t</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">13</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get time in seconds since 1-jan-1970</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">13</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">NULL or, ptr to buffer which receives a copy of the return value</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">((time_t)-1) seconds</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">fault</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/include/linux/time.h">linux/time.h</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/time.c">kernel/time.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<a name="mknod"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/mknod.2.html">mknod</a></td>
+<td><tab to="i4">const char *pathname</td>
+<td><tab to="i5">mode_t mode</td>
+<td><tab to="i6">dev_t dev</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">14</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">create a filesystem node (file, device, special file, named pipe)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">acces, exist, fault, inval, loop, nametoolong,<br>
+<tab to="i4">noent, nomem, nospc, notdir, perm, rofs</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="#stat">sys/stat.h</a> (mode flags), <a href="#fcntlh">fcntl.h</a>, 
+		<a href="#types">[types]</a>
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/namei.c">fs/namei.c</a>; 
+			    <a href="file:///usr/src/linux/include/linux/major.h">include/linux/major.h</a>, 
+			    <a href="file:///usr/src/linux/Documentation/devices.txt">Documentation/devices.txt</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="chmod"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/chmod.2.html">chmod</a></td>
+<td><tab to="i4">const char *path</td>
+<td><tab to="i5"><a href="#chmodf">mode_t mode</a></td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">15</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change file permissions (attributes)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">acces, badf, fault, io, loop, nametoolong,<br>
+<tab to="i4">noent, nomem, notdir, perm, rofs</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="#types">[types]</a>, <a href="#stat">sys/stat.h</a>,
+<a href="file:///usr/src/linux/include/asm/stat.h">asm/stat.h</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+<tr>
+<td colspan="11">&nbsp;</td>
+</tr>
+<tr><td><tab to="i1">&nbsp;</td>
+<td colspan="8"><tab to="i4">-re- <a href="#chmodf"><b>access mode flags</b></a></td>
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="lchown"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/lchown.2.html">lchown</a></td>
+<td><tab to="i4">const char *path</td>
+<td><tab to="i5"><a href="lhpstruc.html#uid_t">uid_t</a> owner</td>
+<td><tab to="i6"><a href="lhpstruc.html#gid_t">gid_t</a> group</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">16</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change owner of a file, don't follow symbolic links</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">(many...)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="break"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/break.2.html">break</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">17</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="oldstat"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a
+href="file://localhost/usr/man/html/man2/oldstat.2.html">oldstat</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">18</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">(abandoned)</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="lseek"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/lseek.2.html">lseek</a></td>
+<td><tab to="i4">int fd</td>
+<td><tab to="i5"><a href="lhpstruc.html#off_t">off_t</a> offset</td>
+<td><tab to="i6">int whence</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">19</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">change file pointer of file ref-d by fd</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">19</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">file descriptor</td>
+</tr>
+
+<tr>
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">disp to the rsp. file position -re - "whence"</td>
+</tr>
+
+<tr valign="top">
+<td colspan="3"><tab to="i1">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">"whence" flag, either one of<br>
+		<tab to="i5">SEEK_SET 0&nbsp;&nbsp;&nbsp;add disp to beginning of file,<br>
+		<tab to="i5">SEEK_CUR 1&nbsp;&nbsp;&nbsp;add disp to current position,<br>
+		<tab to="i5">SEEK_END 2&nbsp;&nbsp;&nbsp;add disp to end of file.
+</td>
+</tr>
+
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">off_t ptr posn. re beginning of file</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">badf, inval, ispipe</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/include/unistd.h">unistd.h</a>,
+<a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/read_write.c">fs/read_write.c</a>
+</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="getpid"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/getpid.2.html">getpid</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">20</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get pid of current process</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4"><a href="lhpstruc.html#pid_t">pid_t</a> pid</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="mount"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/mount.2.html">mount</a>&nbsp;</td>
+<td><tab to="i4">c ch *specialfile</td>
+<td><tab to="i5">c ch *dir</td>
+<td><tab to="i6">c ch *fstype</td>
+<td><tab to="i7">ul rwflag</td>
+<td><tab to="i8">c v *data</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">21</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td colspan="2"><tab to="i1">&nbsp;</td>
+<td colspan="9"><tab to="i2">mount a filesystem</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">21</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">ptr to asciz name of device/specialfile</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">ptr to asciz name of mount-point</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">ptr to asciz name file system type</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">flags</td>
+<td><tab to="i3">esi</td>
+<td colspan="7">
+		<tab to="i4">MS_MGC_MSK		<tab to="i6">0xC0ED	<tab to="i7">in m.s. 16-bit; 'magic', required till 2.4.0-t9<br>
+		<tab to="i4">MS_RDONLY		<tab to="i6">1		<tab to="i7">Mount read-only<br>
+		<tab to="i4">MS_NOSUID		<tab to="i6">2		<tab to="i7">Ignore suid and sgid bits<br>
+		<tab to="i4">MS_NODEV		<tab to="i6">4		<tab to="i7">Disallow access to device special files<br>
+		<tab to="i4">MS_NOEXEC		<tab to="i6">8		<tab to="i7">Disallow program execution<br>
+		<tab to="i4">MS_SYNCHRONOUS	<tab to="i6">16		<tab to="i7">Writes are synced at once<br>
+		<tab to="i4">MS_REMOUNT		<tab to="i6">32		<tab to="i7">Alter flags of a mounted FS<br>
+		<tab to="i4">MS_MANDLOCK	<tab to="i6">64		<tab to="i7">Allow mandatory locks on an FS<br>
+		<tab to="i4">MS_NOATIME		<tab to="i6">1024	<tab to="i7">Do not update access times<br>
+		<tab to="i4">MS_NODIRATIME	<tab to="i6">2048	<tab to="i7">Do not update directory access times<br>
+		<tab to="i4">MS_BIND		<tab to="i6">4096	<tab to="i7"><br>
+		<tab to="i4">MS_REC		<tab to="i6">16384	<tab to="i7"><br>
+		<tab to="i4">MS_VERBOSE		<tab to="i6">32768	<tab to="i7"><br>
+		<tab to="i4">MS_ACTIVE		<tab to="i6">(1&lt;&lt;30)<tab to="i7"><br>
+		<tab to="i4">MS_NOUSER		<tab to="i6">(1&lt;&lt;31)<tab to="i7">
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edi</td>
+<td colspan="7"><tab to="i4">ptr to device independent, additional data (max. page-size)</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">any which can occur in the particular f.s. or, in the kernel</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">sys/mount.h&nbsp;<a href="file:///usr/src/linux/include/linux/mount.h">linux/mount.h</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/super.c">fs/super.c</a>, 
+		<a href="file:///usr/src/linux/fs/namespace.c">fs/namespace.c</a> (2.4) 
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<a name="umount"></a><a name="k4oldumount"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/umount.2.html">umount</a> K4:oldumount</td>
+<td><tab to="i4">const char *specialfile | *dir</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">22</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">unmount a filesystem</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">any which can occur in the particular f.s. or, in the kernel</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">sys/mount.h, <a href="file:///proc/filesystems">/proc/filesystems</a>, 
+		<a href="#umount2">umount2</a>
+</td>
+</tr>
+
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"> <a href="file:///usr/src/linux/fs/super.c">fs/super.c</a>, 
+		<a href="file:///usr/src/linux/fs/namespace.c">fs/namespace.c</a> (2.4)
+</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">NOTE</td>
+<td colspan="8"><tab to="i4">inconsistently def'd wrt prior sources in kernel 2.4.18!<br>
+		<tab to="i4">according to 2.4.18 explanation 'oldumount' executes (new) 'mount *device,0'<br>
+		<tab to="i4">[hp] 2.4.18 variant found to not operating on (linked) device files, any more.
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="setuid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/setuid.2.html">setuid</a></td>
+<td><tab to="i4"><a href="lhpstruc.html#uid_t">uid_t</a> uid</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">23</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">set real user id</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">eperm</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="getuid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/getuid.2.html">getuid</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">24</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get real user id</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4"><a href="lhpstruc.html#uid_t">uid_t</a> uid</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/include/unistd.h">unistd.h</a>,
+<a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="stime"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/stime.2.html">stime</a></td>
+<td><tab to="i4"><a href="lhpstruc.html#time_t">time_t</a> *t</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">25</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">set secinds since 1-jan-1970</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">eperm</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">time.h</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/time.c">kernel/time.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="ptrace"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/ptrace.2.html">ptrace</a></td>
+<td><tab to="i4">long request, </td>
+<td><tab to="i5"><a href="lhpstruc.html#pid_t">pid_t</a> pid, </td>
+<td><tab to="i6">long addr, </td>
+<td><tab to="i7">long data</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">26</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">trace a child process</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td><tab to="i4">26</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td><td><tab to="i4">requested&nbsp;<a href="#pq">action</a></td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td><td><tab to="i4">process&nbsp;id&nbsp;of&nbsp;the&nbsp;target&nbsp;job</td><td align="right" colspan="6"><tab to="i8">&nbsp;"child"</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td><td><tab to="i4">address&nbsp;in&nbsp;target&nbsp;job</td><td align="right" colspan="6"><tab to="i8">&nbsp;"address"</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">esi</td><td><tab to="i4">address&nbsp;in&nbsp;tracing&nbsp;job</td><td align="right" colspan="6"><tab to="i8">&nbsp;"data"</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">as specified by the request</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">io, fault, perm, srch</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">
+<a href="file:///usr/src/linux/include/linux/ptrace.h">linux/ptrace.h</a>.
+<a href="file:///usr/src/linux/include/asm/ptrace.h">asm/ptrace.h</a>,
+<a href="file:///usr/src/linux/include/linux/sched.h">linux/sched.h</a>.
+<a href="file:///usr/src/linux/include/asm/user.h">asm/user.h</a>,
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/arch/i386/kernel/ptrace.c">arch/i386/kernel/ptrace.c</a>
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2"><a href="file:///usr/src/linux/include/linux/ptrace.h" name="pq">requests PTRACE_..</a>
+		<tab to="i3">	<tab to="i4">	<tab to="i26">&nbsp;ret</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10">
+<tab to="i2">16&nbsp;&nbsp;		<tab to="i22">ATTACH	<tab to="i24">pid 		<tab to="i26">&nbsp;<tab to="i8">attach to already running process						    <br>
+<tab to="i2">&nbsp;7&nbsp;&nbsp;	<tab to="i22">CONT	<tab to="i24">pid,,signo	<tab to="i26">&nbsp;<tab to="i8">restart after signal.                                                              <br>
+<tab to="i2">17&nbsp;&nbsp;		<tab to="i22">DETACH	<tab to="i24">pid 		<tab to="i26">&nbsp;<tab to="i8">detach a process that was attached.                                                <br>
+<tab to="i2">14&nbsp;&nbsp;		<tab to="i22">GETFPREGS <tab to="i24">pid,,*data	<tab to="i26">&nbsp;<tab to="i8">get the child FPU state.                                                           <br>
+<tab to="i2">18:K4			<tab to="i22">GETFPXREGS <tab to="i24">pid,,*data	<tab to="i26">&nbsp;<tab to="i8">get the child extended FPU state.                                                  <br>
+<tab to="i2">12&nbsp;&nbsp;		<tab to="i22">GETREGS	<tab to="i24">pid,,*data	<tab to="i26">&nbsp;<tab to="i8">get all gp regs from the child. re <a href="lhpstruc.html#ptraceregs">register</a>.<br>
+<tab to="i2">&nbsp;8&nbsp;&nbsp;	<tab to="i22">KILL	<tab to="i24">pid	 	<tab to="i26">&nbsp;<tab to="i8">make the child exit, send it a sigkill.                                            <br>
+<tab to="i2">&nbsp;1&nbsp;&nbsp;	<tab to="i22">PEEKTEXT	<tab to="i24">pid,addr,*data 	<tab to="i26">&nbsp;<tab to="i8">read word at location addr.                                                        <br>
+<tab to="i2">&nbsp;2&nbsp;&nbsp;	<tab to="i22">PEEKDATA	<tab to="i24">pid,addr,*data 	<tab to="i26">&nbsp;<tab to="i8">read the word at location addr in the USER area.                                   <br>
+<tab to="i2">&nbsp;3&nbsp;&nbsp;	<tab to="i22">PEEKUSR	<tab to="i24">pid,addr,*data	<tab to="i26">&nbsp;<tab to="i8"> "                                                                                 <br>
+<tab to="i2">&nbsp;4&nbsp;&nbsp;	<tab to="i22">POKETEXT	<tab to="i24">pid,addr,*data	<tab to="i26">&nbsp;<tab to="i8">write the word at location addr.                                                   <br>
+<tab to="i2">&nbsp;5&nbsp;&nbsp;	<tab to="i22">POKEDATA	<tab to="i24">pid,addr,*data	<tab to="i26">&nbsp;<tab to="i8"> "                                                                                 <br>
+<tab to="i2">&nbsp;6&nbsp;&nbsp;	<tab to="i22">POKEUSR	<tab to="i24">pid,addr,*data	<tab to="i26">&nbsp;<tab to="i8">write the word at location addr in the USER area                                   <br>
+<tab to="i2">21:K4			<tab to="i22">SETOPTIONS <tab to="i24">pid,,data	<tab to="i26">&nbsp;<tab to="i8">-no comment- (option 'PTRACE_O_TRACESYSGOOD' or none)                              <br>
+<tab to="i2">13&nbsp;&nbsp;		<tab to="i22">SETREGS	<tab to="i24">pid,,*data	<tab to="i26">&nbsp;<tab to="i8">set all gp regs in the child.                                                      <br>
+<tab to="i2">15&nbsp;&nbsp;		<tab to="i22">SETFPREGS<tab to="i24">pid,,*data		<tab to="i26">&nbsp;<tab to="i8">set the child FPU state.                                                           <br>
+<tab to="i2">19:K4			<tab to="i22">SETFPXREGS <tab to="i24">pid,,*data	<tab to="i26">&nbsp;<tab to="i8">set the child extended FPU state.                                                  <br>
+<tab to="i2">&nbsp;9&nbsp;&nbsp;	<tab to="i22">SINGLESTEP <tab to="i24">pid		<tab to="i26">sigtrap&nbsp;<tab to="i8">set the trap flag.                                                                 <br>
+<tab to="i2">24&nbsp;&nbsp;		<tab to="i22">SYSCALL	<tab to="i24">pid,,signo	<tab to="i26">&nbsp;<tab to="i8">continue and stop at next (return from) syscall                                    <br>
+<tab to="i2">&nbsp;0&nbsp;&nbsp;	<tab to="i22">TRACEME	<tab to="i24">-/-		<tab to="i26">&nbsp;<tab to="i8">set the ptrace bit in the process flags.                                           <br>
+</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file:///usr/src/linux/include/linux/ptrace.h" name="pr">registers</a></td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">EBX        &nbsp;<tab to="i5">0 <br>
+		<tab to="i4">ECX        &nbsp;<tab to="i5">1 <br>
+		<tab to="i4">EDX        &nbsp;<tab to="i5">2 <br>
+		<tab to="i4">ESI        &nbsp;<tab to="i5">3 <br>
+		<tab to="i4">EDI        &nbsp;<tab to="i5">4 <br>
+		<tab to="i4">EBP        &nbsp;<tab to="i5">5 <br>
+		<tab to="i4">EAX        &nbsp;<tab to="i5">6 <br>
+		<tab to="i4">DS         &nbsp;<tab to="i5">7 <br>
+		<tab to="i4">ES         &nbsp;<tab to="i5">8 <br>
+		<tab to="i4">FS         &nbsp;<tab to="i5">9 <br>
+		<tab to="i4">GS         &nbsp;<tab to="i5">10<br>
+		<tab to="i4">ORIG_EAX   &nbsp;<tab to="i5">11<br>
+		<tab to="i4">EIP        &nbsp;<tab to="i5">12<br>
+		<tab to="i4">CS         &nbsp;<tab to="i5">13<br>
+		<tab to="i4">EFL        &nbsp;<tab to="i5">14<br>
+		<tab to="i4">UESP       &nbsp;<tab to="i5">15<br>
+		<tab to="i4">SS         &nbsp;<tab to="i5">16<br>
+		<tab to="i4">FRAME_SIZE &nbsp;<tab to="i5">17
+</td>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+
+<a name="alarm"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/alarm.2.html">alarm</a></td>
+<td><tab to="i4">u int seconds</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">27</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">send SIGALARM at a specified time</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">0 or unsigned int seconds until prev. alarms are due to execute</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a><br>
+		<tab to="i4">sys_alarm is a simplified call to <a href="lhpsysc2.html#setitimer">sys_setitimer</a>.
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="oldfstat"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a
+href="file://localhost/usr/man/html/man2/oldfstat.2.html">oldfstat</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">28</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">(abandoned)&nbsp;</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="pause"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a
+href="file://localhost/usr/man/html/man2/pause.2.html">pause</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">29</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">sleep until signal</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">EINTR if signal caught</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">restartnohand</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="utime"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a
+href="file://localhost/usr/man/html/man2/utime.2.html">utime</a></td>
+<td><tab to="i4">char *filename</td>
+<td><tab to="i5">struct utimbuf *buf</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">30</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change access and/or modification time of an inode</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">acces, noent</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">sys/time.h, utime.h, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="stty"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/stty.2.html">stty</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">31</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="gtty"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/gtty.2.html">gtty</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">32</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="access"></a>
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/access.2.html">access</a></td>
+<td><tab to="i4">const char *pathname</td>
+<td><tab to="i5">int mode&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">33</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">check user's permissions for a file</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td colspan="7"><tab to="i4">33</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td><td colspan="7"><tab to="i4">ptr to asciz string w. path name</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td><td colspan="7"><tab to="i4">mode flags, <a href="#ufl">R_OK, W_OK, X_OK</a>, F_OK = 0, re '<a href="#open">open</a>'</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td><td colspan="7"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">all f.s. and file access related errors can occur</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>, libc/gcc "<a href="file:///usr/include/unistd.h">unistd.h</a>"
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="nice"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/nice.2.html">nice</a></td>
+<td><tab to="i4">int inc</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">34</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change process priority</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">perm</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="ftime"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/ftime.2.html">ftime</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">35</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="sync"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/sync.2.html">sync</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">36</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">commit buffer cache to disk</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">always 0</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/buffer.c">fs/buffer.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="kill"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/kill.2.html">kill</a></td>
+<td><tab to="i4"><a href="lhpstruc.html#pid_t">pid_t</a> pid</td>
+<td><tab to="i5">int sig</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">37</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">send a signal to a process</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">inval, perm, srch</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/signal.c">kernel/signal.c</a>, <a href="lhpsysc3.html#sigref">[more]</a>
+</td>
+</tr>
+
+</table>
+<pre><a name="killspec"></a>
+
+		pid 		signal sent to
+		-------- | -------------------------------------------
+		&gt;  0       process {pid}
+		   0       every process in caller's process group
+		  -1       all processes but the very first
+		&lt; -1       every process in group |{gid}| ("killpg", re <a href="#getgid">getgid</a>)
+
+		no action if sig = 0, but error checking occurs, i.e.
+		this can be used to check whether a process exists.</pre>
+<p>&nbsp;</p>
+<hr>
+
+<a name="rename"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/rename.2.html">rename</a></td>
+<td><tab to="i4">c ch *oldpath</td>
+<td><tab to="i5">c ch *newpath</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">38</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">move/rename a file</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">&nbsp;busy, exist, isdir, notempty, xdev (and other f.s. errors)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/include/stdio.h">stdio.h</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/namei.c">fs/namei.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="mkdir"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/mkdir.2.html">mkdir</a></td>
+<td><tab to="i4">const char *path</td>
+<td><tab to="i5">mode_t mode</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">39</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">create a directory</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">(f.s. &amp; perm's related errors)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="#stat">sys/stat.h</a>, <a href="#fcntlh">fcntl.h</a>,
+<a href="file:///usr/include/unistd.h">unistd.h</a>,
+<a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/namei.c">fs/namei.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="rmdir"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/rmdir.2.html">rmdir</a></td>
+<td><tab to="i4">const char *pathname</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">40</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">delete an empty directory</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">access, busy, fault, loop, nametoolong,
+<br>
+<tab to="i4">noent, nomem, notdir, notempty, perm, rofs</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/namei.c">fs/namei.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="dup"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/dup.2.html">dup</a></td>
+<td><tab to="i4">int oldfd</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">41</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">create a file descriptor duplicate</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">int new fd, the lowest until then un-used number</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">badf, mfile (,inval)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/fcntl.c">fs/fcntl.c</a>
+</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">note</td>
+<td colspan="8"><tab to="i4">dup as well as <a href="#dup2">dup2</a> assign new fd-s but don't duplicate the channel's description,<br>
+		<tab to="i4">any modification, e.g by an ioctl, would affect all instances of a resp. fd!
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="pipe"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/pipe.2.html">pipe</a></td>
+<td><tab to="i4">int fd[2]</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">42</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">create a pipe</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td>
+<tab to="i4">42</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td><tab to="i4">ptr to writable array of two dwords</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">[ebx]</td>
+<td colspan="7"><tab to="i4">fd(0) at [ebx] for input from, fd(1) at [ebx+4] output to pipe</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">fault, mfile, nfile</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/arch/i386/kernel/sys_i386.c">arch/i386/kernel/sys_i386.c</a>
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">note:</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">re <a href="#mknod">mknod</a> for named pipes.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<a name="times"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/times.2.html">times</a></td>
+<td><tab to="i4">struct <a href="lhpstruc.html#tms">tms</a> *buf</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">43</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get process times</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">sys/times.h</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="prof"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/prof.2.html">prof</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">44</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="brk"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/brk.2.html">brk</a></td>
+<td><tab to="i4">void *end_data_segment</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">45</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change data section size, top of .bss</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td>
+<tab to="i4">45</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">(virtual) address of new .bss top in range of data-space bottom<br>
+		<tab to="i4">and, below any linked library or 16K below .ss bottom, rsp, within<br>
+		<tab to="i4">the limits of the owner process' data size - re <a href="lhpsysc2.html#getrlimit">getrlimit</a>.
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx := 0</td>
+<td colspan="7"><tab to="i4">can be used to finding the currently valid top address of .bbs.
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="1"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">currently, after call valid top address</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="8"><tab to="i4">nomem</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/mm/mmap.c">mm/mmap.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<a name="setgid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/setgid.2.html">setgid</a></td>
+<td><tab to="i4"><a href="lhpstruc.html#gid_t">gid_t</a> gid</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">46</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">set real group id of current process</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">perm</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="getgid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/getgid.2.html">getgid</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">47</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get real group id of current process</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4"><a href="lhpstruc.html#gid_t">gid_t</a> gid</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/include/unistd.h">unistd.h</a>,
+<a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="signal"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/signal.2.html">signal</a></td>
+<td><tab to="i4">*signal(int signum, void (*handler)(int))</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">48</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">setup a signal handler</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">void previous value of signal hnd</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">sig_err</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/signal.c">kernel/signal.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="geteuid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/geteuid.2.html">geteuid</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">49</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get effective user id of current
+process</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4"><a href="lhpstruc.html#uid_t">uid_t</a> uid</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">&nbsp;-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/include/unistd.h">unistd.h</a>,
+<a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="getegid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/getegid.2.html">getegid</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">50</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get effective group id of current process</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4"><a href="lhpstruc.html#gid_t">gid_t</a> gid</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/include/unistd.h">unistd.h</a>,
+<a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="acct"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/acct.2.html">acct</a></td>
+<td><tab to="i4">int acct(const char *filename)</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">51</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">switch process accounting on/off</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">0 or -ve ernum</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">nosys, nomem, perm, access, io, users</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="umount2"></a><a name="k4umount"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/umount.2.html">umount2</a> K4:umount</td>
+<td><tab to="i4">const char *specialfile | *dir</td>
+<td><tab to="i5">int flag</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">52</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td colspan="8"><tab to="i4">*specialfile <tab to="i6">ptr to asciz mountpoint(?) or device/specialfile name<br>
+		<tab to="i4">flag <tab to="i6">1 to forcedly un-mount, else 0.
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">zero after success, else ernum</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">any f.s. error</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/super.c">fs/namespace.c</a>
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="#umount">oldumount</a> (2.4, formerly named "umount")</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="8"><tab to="i4">&lt;manpages-1.50> include ref to "umount2" by 'man 2 umount'</td>
+</tr>
+
+</table>
+<blockquote>
+NOTE: renamed to "umount" w. kernel 2.4.18(+?); from the source file:
+<blockquote>
+"Now umount can handle mount points as well as block devices.
+This is important for filesystems which use unnamed block devices.
+We now support a flag for forced unmount like the other 'big iron' unixes.
+Our API is identical to OSF/1 to avoid making a mess of AMD.<br>
+</blockquote>
+Which previously was, but now is apparently not true, any more (re <a href="lhplinks.html#au">asmutils</a>, "ccd")...
+</blockquote>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="lock"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/lock.2.html">lock</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">53</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="ioctl"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/ioctl.2.html">ioctl</a></td>
+<td><tab to="i4">int fd</td>
+<td><tab to="i5">int request</td>
+<td><tab to="i6">char *argp</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">54</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">manipulate a character device</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td>
+<tab to="i4">54</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td><tab to="i4">file descriptor</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td><tab to="i4">command code</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td colspan="7"><tab to="i4">&nbsp;ptr to writable data area or other arg structure</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">zero on success</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">badf, fault, inval, notty</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref&nbsp;</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/include/asm/ioctl.h">asm/ioctl.h</a> 
+		- <a href="lhpioctl.html"><b>ioctl</b></a> page.
+</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/fs/ioctl.c">fs/ioctl.c</a><br>
+		<tab to="i4">for instance, console ioctls provide many nice features - most<br>
+		<tab to="i4">of which aren't overly helpful because, all(!) consoles would<br>
+		<tab to="i4">globally be affected!<br>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="fcntl"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/fcntl.2.html">fcntl</a></td>
+<td><tab to="i4">int fd</td>
+<td><tab to="i5">int cmd</td>
+<td><tab to="i6">[ <a href="lhpstruc.html#flock">struct flock</a> *lock ]</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">55</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">file/-descriptor control</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td><td>
+<tab to="i4">55</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td><tab to="i4">file descriptor</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td><tab to="i4">command code</td><td colspan="6">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">edx</td>
+<td><tab to="i4">file locks:</td><td colspan="6">&nbsp;ptr to writable <a href="lhpstruc.html#flock">struct flock</a></td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">according to the rsp command</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">acces, again, badf, deadlk, fault, intr, inval, mfilem nolock, perm</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"> <a href="lhpfcntl.html">fcntl</a> page.
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4"><a href="file:///usr/src/linux/fs/fcntl.c">fs/fcntl.c</a>, <a href="file:///usr/include/unistd.h">unistd.h</a>,
+			    <a href="file:///usr/src/linux/include/asm/unistd.h">linux/unistd.h</a>, <a href="#fcntlh">fcntl.h</a>.
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+
+<hr>
+<hr>
+
+<a name="mpx"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/mpx.2.html">mpx</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">56</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td colspan="8"><tab to="i4">n.i.</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="setpgid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/setpgid.2.html">setpgid</a></td>
+<td><tab to="i4"><a href="lhpstruc.html#pid_t">pid_t</a> pid</td>
+<td><tab to="i5"><a href="lhpstruc.html#pid_t">pid_t</a> pgid</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">57</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">set process group id</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">inval, perm, srch</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="ulimit"></a>
+
+<table border="0" width="95%">
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/ulimit.2.html">ulimit</a></td>
+<td><tab to="i4">int cmd</td>
+<td><tab to="i5">(...)</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">58</td>
+<td><tab to="i11">libc</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get/set resource limits - not a system call</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4">syscalls <a href="lhpsysc2.html#setrlimit">setrlimit</a>, <a href="lhpsysc2.html#getrlimit">getrlimit</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref (glibc2)</td>
+<td colspan="8"><tab to="i4">man (3) ulimit, 
+		<a href="file:///usr/src/glibc/sysdeps/generic/ulimit.c">sysdeps/generic/ulimit.c</a>,
+		<a href="file:///usr/src/glibc/sysdeps/unix/sysv/linux/ulimit.c">sysdeps/unix/sysv/linux/ulimit.c
+</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><b>NOTE</b>:</td>
+<td colspan="8"><tab to="i4">not a kernel syscall</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="oldolduname"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/oldolduname.2.html">oldolduname</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">59</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">(syscall removed)</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/include/linux/utsname.h">utsname.h</a>, struc oldold<a href="lhpstruc.html#utsname">utsname</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="umask"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/umask.2.html">umask</a></td>
+<td><tab to="i4">mode_t mask</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">60</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">set file creation mask</td>
+</tr>
+
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">60</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">file creation permissions, masked w. <a href="#chmodf">S_IRWXUGO</a> by kernel code</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">mode_t previously valid mask</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="8"><tab to="i4"><a href="#stat">sys/stat.h</a>, <a href="#types">[types]</a></td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sys.c">kernel/sys.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="chroot"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/chroot.2.html">chroot</a></td>
+<td><tab to="i4">const char *path</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">61</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">change root directory (tree)</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">any, dependent on f.s. type</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/open.c">fs/open.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="ustat"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/ustat.2.html">ustat</a></td>
+<td><tab to="i4">&nbsp;</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">62</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i4">n.i. - libc call</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="dup2"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/dup2.2.html">dup2</a></td>
+<td><tab to="i4">int oldfd</td>
+<td><tab to="i5">int newfd</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">63</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">duplicate file descriptor oldfd, on success replace newfd w/ duplicated.
+</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">63</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ebx</td>
+<td colspan="7"><tab to="i4">file descriptor to duplicate</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">&nbsp;</td>
+<td><tab to="i3">ecx</td>
+<td colspan="7"><tab to="i4">file descriptor which the duplicate should be assigned to</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">duplicate fd</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">badf, mfile</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/fs/fcntl.c">fs/fcntl.c</a>
+</td>
+</tr>
+
+<tr valign="top">
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">note</td>
+<td colspan="8"><tab to="i4">dup2 as well as <a href="#dup">dup</a> assign new fd-s but don't duplicate the channel's description,<br>
+		<tab to="i4">any modification, e.g by an ioctl, would affect all instances of a resp. fd!<br>
+		<tab to="i4">'newfd' will be closed prior to re-assignation, if applicable.
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+
+<a name="getppid"></a>
+
+<table border="0" width="95%">
+
+<tr>
+<td><tab to="i1">P&nbsp;</td>
+<td colspan="2"><tab to="i2"><a href="file://localhost/usr/man/html/man2/getppid.2.html">getppid</a></td>
+<td><tab to="i4">void</td>
+<td><tab to="i5">&nbsp;</td>
+<td><tab to="i6">&nbsp;</td>
+<td><tab to="i7">&nbsp;</td>
+<td><tab to="i8">&nbsp;</td>
+<td><tab to="i9">&nbsp;</td>
+<td><tab to="i10">64</td>
+<td><tab to="i11">&nbsp;</td>
+</tr>
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="10"><tab to="i2">get parent process id</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">arg</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4">64</td>
+</tr>
+
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">return</td>
+<td><tab to="i3">eax</td>
+<td colspan="7"><tab to="i4"><a href="lhpstruc.html#pid_t">pid_t</a> pid</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">errors</td>
+<td colspan="8"><tab to="i4">-/-</td>
+</tr>
+
+<tr>
+<td><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">source</td>
+<td colspan="8"><tab to="i4"><a href="file:///usr/src/linux/kernel/sched.c">kernel/sched.c</a>
+</td>
+</tr>
+
+</table>
+
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p><a name="bot"></a>
+<a href="lhpsysc2.html">[next]</a>
+<a href="lhpsysc0.html">[back]</a>
+<a href="#bot">[bot]</a>
+<a href="#top">[top]</a>
+<br>
+<a href="lhpsyscal.html">[intro]</a>
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a name="lhpsysc1.html">[1..64]</a>
+<a href="lhpsysc2.html">[65..128]</a>
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<p>&nbsp;</p>
+<hr>
+
+<center>
+<font size="-2">
+<a href="index-lx.shtml#mailme">H.-Peter Recktenwald, Berlin</a>, 18.Feb.2000 = .hpr.l0 =</font>
+<script language="JavaScript"> document.write(document.lastModified) </script>
+<noscript>updt:10.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.sysc1" alt="6913" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</body>
+</html>

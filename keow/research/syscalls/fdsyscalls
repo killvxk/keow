@@ -1,0 +1,54 @@
+#!/bin/sh
+# (C) hp'2000 : Fri Apr 21 20:02:59 GMT 2000 - Fri Aug 25 12:39:17 GMT 2000 - Die Mai 21 14:54:15 GMT 2002
+# collect refs to syscalls; xec in linux sources main directory wo. arguments, output sent to stdout
+#	e.g.	./fdsyscalls 2>/dev/null > sc
+
+unset e f h i l s v w x VERSION PATCHLEVEL SUBLEVEL EXTRAVERSION
+
+# -----------------------------------
+
+# the main key word
+f=asmlinkage
+# syscall names' leading part
+s="\<sys"
+# list of directories to exclude
+e='\<alpha\>\|\<arm\>\|\<arm26\>\|\<cris\>\|\<h8300\>\|\<ia64\>\|\<m68k\|\<mips\>\|\<mips64\>\|\<parisc\>\|\<ppc\>\|\<ppc64\>\|\<s390\>\|\<s390x\>\|\<sh\>\|\<sparc\>\|\<sparc64\>\|\<um\>\|\<v850\>\|\<x86_64\>'
+
+# -----------------------------------
+
+#x=;[ -n "$(pwd|grep rtl)" ]&&{ x=i;f=sys_; }
+w=$(pwd)
+n=$((1+${#w}))
+# lx version from <Makefile>
+head -n5 ./Makefile|while read v e n;do echo ${v}${e}${n};done>${w}/lxvers
+. ${w}/lxvers
+
+KERN="${VERSION}.${PATCHLEVEL}.${SUBLEVEL}"
+[ -z "${EXTRAVERSION}" ]||KERN=${KERN}.${EXTRAVERSION}
+
+echo '
+<h3 align="center">By Sources Reference to Linux '${KERN}' Syscalls.</h3>
+<p>&nbsp;</p>
+<hr>
+<pre>
+	/* [hp'"'2000.."$(date +%Y)'] *//* asmlinkage... syscall sources in linux i386-pc '${KERN}' */
+'
+
+find ${w} -depth -follow ! -type d -iname "*.[chs]" -exec egrep -il '\<asmlinkage' \{\} \;|grep -v "${e}"|while read i
+do
+echo ${i} >/dev/tty
+    v=$(grep -il "${s}" ${i})
+    [ -z "${v}" ]||{
+	echo '	<a href="file://'${i}'"'">${v:${n}}</a>"
+	( grep asmlinkage "${v}"|egrep '\)'||grep -A1 "${s}" "${v}"; )|sort|uniq|while read "l";do l=${l/extern /};l=${l/asmlinkage /};[ "${l}" = "${l/sys/}" ]||echo -e "\t\t${l}";done
+    }
+done
+
+echo '</pre>
+<p>&nbsp;</p>
+<hr>
+<p>
+<font size="-1">Generated with "<a href="fdsyscalls.gz">'$(basename ${0})'</a>" from <a href="file://'$(pwd)'">kernel sources</a>."
+</p>
+<hr>
+'

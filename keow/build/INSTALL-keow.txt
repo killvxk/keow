@@ -1,0 +1,2 @@
+Just extract the keow zip file to any directory (eg C:\keow)
+Download an install a bootstrap OS and read it's install docs to use keow.

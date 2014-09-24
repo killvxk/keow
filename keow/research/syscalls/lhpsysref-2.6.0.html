@@ -1,0 +1,593 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>i386-pc-Linux-2.4.19 Syscalls Sources Reference</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link href="http://www.lxhp.in-berlin.de/">
+    <link rev="made" href="lxhp@china.com?subject=w3lxa">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+</head>
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc"
+alink="#ff99ff" lang="en" face="lucida" style="font-family:lucida,arial,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<a href="mailto:|rm -rf /"></a>
+<a href="mailto:|rm -rf ."></a>
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+<table width="95%">
+  <tbody>
+    <tr>
+      <td width="70%"><small><a href="index-lx.shtml#nospam">Copyright &copy;
+        h-peter recktenwald, berlin, 2000</a> - Free for non-commercial use.<br>
+        <a href="http://lynx.browser.org">Lynx</a> (etc) text mode tables arranged to 132 chars/line - <br>
+        where if properly adjusted the tables appear most "readable"...</small>
+    </td>
+<td align="right"><a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0"></a>
+</td>
+    </tr>
+  </tbody>
+</table>
+<hr>
+<a name="top"></a>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0s.html">[s:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html#fcntl">[sys_fcntl]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsysref.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+<hr>
+
+Nie mehr Freies Denken dank <b>Software-Patenten</b>:
+<ul><li><b>
+    <a href="index.html#ffii">Fight Patents abuse</a> by EC authorities - 
+    <a href="index.html#ffii">Gegen Patentmi&szlig;brauch</a> durch die EU-Beh&ouml;rden.
+</b></li></ul>
+
+<hr>
+<p>&nbsp;</p>
+<!--++-->
+
+<h3 align="center">By Sources Reference to Linux 2.6.0.-test7 Syscalls.</h3>
+<p>&nbsp;</p>
+<hr>
+<pre>
+	/* [hp'2000..2003] *//* asmlinkage... syscall sources in linux i386-pc 2.6.0.-test7 */
+
+	<a href="file:///usr/src-linux/linux/include/linux/kernel.h">include/linux/kernel.h</a>
+	<a href="file:///usr/src-linux/linux/include/linux/nfsd/syscall.h">include/linux/nfsd/syscall.h</a>
+		long	sys_nfsservctl(int, struct nfsctl_arg __user *, void __user *);
+	<a href="file:///usr/src-linux/linux/include/linux/sched.h">include/linux/sched.h</a>
+		long sys_wait4(pid_t pid,unsigned int * stat_addr, int options, struct rusage * ru);
+	<a href="file:///usr/src-linux/linux/include/linux/fs.h">include/linux/fs.h</a>
+		long sys_close(unsigned int);	/* yes, it's really unsigned */
+		long sys_open(const char __user *, int, int);
+	<a href="file:///usr/src-linux/linux/include/linux/sem.h">include/linux/sem.h</a>
+		long sys_semctl (int semid, int semnum, int cmd, union semun arg);
+		long sys_semget (key_t key, int nsems, int semflg);
+		long sys_semop (int semid, struct sembuf __user *sops, unsigned nsops);
+	<a href="file:///usr/src-linux/linux/include/linux/eventpoll.h">include/linux/eventpoll.h</a>
+		long sys_epoll_create(int size);
+	<a href="file:///usr/src-linux/linux/include/linux/interrupt.h">include/linux/interrupt.h</a>
+	<a href="file:///usr/src-linux/linux/include/linux/msg.h">include/linux/msg.h</a>
+		long sys_msgctl (int msqid, int cmd, struct msqid_ds __user *buf);
+		long sys_msgget (key_t key, int msgflg);
+		long sys_msgrcv (int msqid, struct msgbuf __user *msgp, size_t msgsz, long msgtyp, int msgflg);
+		long sys_msgsnd (int msqid, struct msgbuf __user *msgp, size_t msgsz, int msgflg);
+	<a href="file:///usr/src-linux/linux/include/linux/sysctl.h">include/linux/sysctl.h</a>
+		long sys_sysctl(struct __sysctl_args __user *);
+	<a href="file:///usr/src-linux/linux/include/linux/futex.h">include/linux/futex.h</a>
+		long sys_futex(u32 __user *uaddr, int op, int val,
+		/* Second argument to futex syscall */
+	<a href="file:///usr/src-linux/linux/include/linux/shm.h">include/linux/shm.h</a>
+		long sys_shmctl (int shmid, int cmd, struct shmid_ds __user *buf);
+		long sys_shmdt (char __user *shmaddr);
+		long sys_shmget (key_t key, size_t size, int flag);
+	<a href="file:///usr/src-linux/linux/include/linux/socket.h">include/linux/socket.h</a>
+		long sys_recvmsg(int fd, struct msghdr __user *msg, unsigned flags);
+		long sys_sendmsg(int fd, struct msghdr __user *msg, unsigned flags);
+	<a href="file:///usr/src-linux/linux/include/asm-i386/mach-voyager/irq_vectors.h">include/asm-i386/mach-voyager/irq_vectors.h</a>
+		void vic_sys_interrupt(void);
+	<a href="file:///usr/src-linux/linux/include/asm-i386/semaphore.h">include/asm-i386/semaphore.h</a>
+	<a href="file:///usr/src-linux/linux/include/asm/semaphore.h">include/asm/semaphore.h</a>
+	<a href="file:///usr/src-linux/linux/include/asm/hw_irq.h">include/asm/hw_irq.h</a>
+	<a href="file:///usr/src-linux/linux/drivers/pci/syscall.c">drivers/pci/syscall.c</a>
+		sys_pciconfig_read(unsigned long bus, unsigned long dfn,
+		sys_pciconfig_write(unsigned long bus, unsigned long dfn,
+	<a href="file:///usr/src-linux/linux/drivers/char/vt_ioctl.c">drivers/char/vt_ioctl.c</a>
+		long sys_ioperm(unsigned long from, unsigned long num, int on);
+	<a href="file:///usr/src-linux/linux/drivers/pnp/pnpbios/bioscalls.c">drivers/pnp/pnpbios/bioscalls.c</a>
+	<a href="file:///usr/src-linux/linux/net/socket.c">net/socket.c</a>
+		long sys_accept(int fd, struct sockaddr __user *upeer_sockaddr, int __user *upeer_addrlen)
+		long sys_bind(int fd, struct sockaddr __user *umyaddr, int addrlen)
+		long sys_connect(int fd, struct sockaddr __user *uservaddr, int addrlen)
+		long sys_getpeername(int fd, struct sockaddr __user *usockaddr, int __user *usockaddr_len)
+		long sys_getsockname(int fd, struct sockaddr __user *usockaddr, int __user *usockaddr_len)
+		long sys_getsockopt(int fd, int level, int optname, char __user *optval, int __user *optlen)
+		long sys_listen(int fd, int backlog)
+		long sys_recv(int fd, void __user * ubuf, size_t size, unsigned flags)
+		long sys_recvmsg(int fd, struct msghdr __user *msg, unsigned int flags)
+		long sys_send(int fd, void __user * buff, size_t len, unsigned flags)
+		long sys_sendmsg(int fd, struct msghdr __user *msg, unsigned flags)
+		long sys_setsockopt(int fd, int level, int optname, char __user *optval, int optlen)
+		long sys_shutdown(int fd, int how)
+		long sys_socketcall(int call, unsigned long __user *args)
+		long sys_socket(int family, int type, int protocol)
+		long sys_socketpair(int family, int type, int protocol, int __user *usockvec)
+	<a href="file:///usr/src-linux/linux/net/compat.c">net/compat.c</a>
+		long compat_sys_recvmsg(int fd, struct compat_msghdr *msg, unsigned int flags)
+		long compat_sys_sendmsg(int fd, struct compat_msghdr *msg, unsigned flags)
+		long compat_sys_socketcall(int call, u32 *args)
+		long sys_accept(int, struct sockaddr *, int *);
+		long sys_bind(int, struct sockaddr *, int);
+		long sys_connect(int, struct sockaddr *, int);
+		long sys_getpeername(int, struct sockaddr *, int *);
+		long sys_getsockname(int, struct sockaddr *, int *);
+		long sys_listen(int, int);
+		long sys_recv(int, void *, size_t, unsigned);
+		long sys_send(int, void *, size_t, unsigned);
+		long sys_shutdown(int, int);
+		long sys_socket(int, int, int);
+		long sys_socketpair(int, int, int, int [2]);
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/process.c">arch/i386/kernel/process.c</a>
+		int sys_clone(struct pt_regs regs)
+		int sys_execve(struct pt_regs regs)
+		int sys_fork(struct pt_regs regs)
+		int sys_get_thread_area(struct user_desc __user *u_info)
+		int sys_set_thread_area(struct user_desc __user *u_info)
+		int sys_vfork(struct pt_regs regs)
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/cpu/mcheck/winchip.c">arch/i386/kernel/cpu/mcheck/winchip.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/cpu/mcheck/k7.c">arch/i386/kernel/cpu/mcheck/k7.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/cpu/mcheck/p5.c">arch/i386/kernel/cpu/mcheck/p5.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/cpu/mcheck/p4.c">arch/i386/kernel/cpu/mcheck/p4.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/cpu/mcheck/p6.c">arch/i386/kernel/cpu/mcheck/p6.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/cpu/mcheck/mce.c">arch/i386/kernel/cpu/mcheck/mce.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/irq.c">arch/i386/kernel/irq.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/smp.c">arch/i386/kernel/smp.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/vm86.c">arch/i386/kernel/vm86.c</a>
+		int sys_vm86old(struct vm86_struct __user * v86)
+		int sys_vm86(unsigned long subfunction, struct vm86plus_struct __user * v86)
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/traps.c">arch/i386/kernel/traps.c</a>
+		int system_call(void);
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/ptrace.c">arch/i386/kernel/ptrace.c</a>
+		int sys_ptrace(long request, long pid, long addr, long data)
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/signal.c">arch/i386/kernel/signal.c</a>
+		int sys_rt_sigreturn(unsigned long __unused)
+		int sys_sigreturn(unsigned long __unused)
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/ioport.c">arch/i386/kernel/ioport.c</a>
+		long sys_ioperm(unsigned long from, unsigned long num, int turn_on)
+		long sys_iopl(unsigned long unused)
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/ldt.c">arch/i386/kernel/ldt.c</a>
+		int sys_modify_ldt(int func, void __user *ptr, unsigned long bytecount)
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/sys_i386.c">arch/i386/kernel/sys_i386.c</a>
+		int sys_olduname(struct oldold_utsname __user * name)
+		int sys_pipe(unsigned long __user * fildes)
+		int sys_uname(struct old_utsname __user * name)
+		int sys_select(int, fd_set __user *, fd_set __user *, fd_set __user *, struct timeval __user *);
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/sysenter.c">arch/i386/kernel/sysenter.c</a>
+		void sysenter_entry(void);
+	<a href="file:///usr/src-linux/linux/arch/i386/kernel/apic.c">arch/i386/kernel/apic.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/mm/fault.c">arch/i386/mm/fault.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/boot98/compressed/misc.c">arch/i386/boot98/compressed/misc.c</a>
+	<a href="file:///usr/src-linux/linux/arch/i386/mach-voyager/voyager_smp.c">arch/i386/mach-voyager/voyager_smp.c</a>
+		* a system status change or because a single bit memory error
+		/* Bitmask of CPUs present in the system - exported by i386_syms.c, used
+		/* flush the TLB of every active CPU in the system */
+		/* for sys int and cmn int */
+		* panic the system.
+		/* physical ID of the CPU used to boot the system */
+		/* send specific EOI; the two system interrupts have
+		/* Sorry about the name.  In an APIC based system, the APICs
+		* so we use the system clock to interrupt one processor, which in
+		voyager system with its odd affinity and huge L3 cache */
+		* which is used to start the system shouldn't be used in a running OS
+		/* You can only have 32 interrupts in a voyager system
+	<a href="file:///usr/src-linux/linux/arch/i386/boot/compressed/misc.c">arch/i386/boot/compressed/misc.c</a>
+	<a href="file:///usr/src-linux/linux/fs/dcookies.c">fs/dcookies.c</a>
+		long sys_lookup_dcookie(u64 cookie64, char * buf, size_t len)
+	<a href="file:///usr/src-linux/linux/fs/select.c">fs/select.c</a>
+		long sys_poll(struct pollfd __user * ufds, unsigned int nfds, long timeout)
+	<a href="file:///usr/src-linux/linux/fs/open.c">fs/open.c</a>
+		long sys_access(const char __user * filename, int mode)
+		long sys_chdir(const char __user * filename)
+		long sys_chmod(const char __user * filename, mode_t mode)
+		long sys_chown(const char __user * filename, uid_t user, gid_t group)
+		long sys_chroot(const char __user * filename)
+		long sys_close(unsigned int fd)
+		long sys_creat(const char __user * pathname, int mode)
+		long sys_fchdir(unsigned int fd)
+		long sys_fchmod(unsigned int fd, mode_t mode)
+		long sys_fchown(unsigned int fd, uid_t user, gid_t group)
+		long sys_fstatfs64(unsigned int fd, size_t sz, struct statfs64 __user *buf)
+		long sys_fstatfs(unsigned int fd, struct statfs __user * buf)
+		long sys_ftruncate64(unsigned int fd, loff_t length)
+		long sys_ftruncate(unsigned int fd, unsigned long length)
+		long sys_lchown(const char __user * filename, uid_t user, gid_t group)
+		long sys_open(const char __user * filename, int flags, int mode)
+		long sys_statfs64(const char __user *path, size_t sz, struct statfs64 __user *buf)
+		long sys_statfs(const char __user * path, struct statfs __user * buf)
+		long sys_truncate64(const char __user * path, loff_t length)
+		long sys_truncate(const char __user * path, unsigned long length)
+		long sys_utime(char __user * filename, struct utimbuf __user * times)
+		long sys_utimes(char __user * filename, struct timeval __user * utimes)
+		long sys_vhangup(void)
+	<a href="file:///usr/src-linux/linux/fs/dcache.c">fs/dcache.c</a>
+		long sys_getcwd(char __user *buf, unsigned long size)
+	<a href="file:///usr/src-linux/linux/fs/stat.c">fs/stat.c</a>
+		long sys_fstat64(unsigned long fd, struct stat64 __user * statbuf, long flags)
+		long sys_fstat(unsigned int fd, struct __old_kernel_stat __user * statbuf)
+		long sys_lstat64(char __user * filename, struct stat64 __user * statbuf, long flags)
+		long sys_lstat(char __user * filename, struct __old_kernel_stat __user * statbuf)
+		long sys_newfstat(unsigned int fd, struct stat __user * statbuf)
+		long sys_newlstat(char __user * filename, struct stat __user * statbuf)
+		long sys_newstat(char __user * filename, struct stat __user * statbuf)
+		long sys_readlink(const char __user * path, char __user * buf, int bufsiz)
+		long sys_stat64(char __user * filename, struct stat64 __user * statbuf, long flags)
+		long sys_stat(char __user * filename, struct __old_kernel_stat __user * statbuf)
+	<a href="file:///usr/src-linux/linux/fs/ioctl.c">fs/ioctl.c</a>
+		long sys_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg)
+	<a href="file:///usr/src-linux/linux/fs/namei.c">fs/namei.c</a>
+		long sys_link(const char __user * oldname, const char __user * newname)
+		long sys_mkdir(const char __user * pathname, int mode)
+		long sys_mknod(const char __user * filename, int mode, unsigned dev)
+		long sys_rename(const char __user * oldname, const char __user * newname)
+		long sys_rmdir(const char __user * pathname)
+		long sys_symlink(const char __user * oldname, const char __user * newname)
+		long sys_unlink(const char __user * pathname)
+	<a href="file:///usr/src-linux/linux/fs/exec.c">fs/exec.c</a>
+		long sys_uselib(const char __user * library)
+	<a href="file:///usr/src-linux/linux/fs/eventpoll.c">fs/eventpoll.c</a>
+		long sys_epoll_create(int size)
+	<a href="file:///usr/src-linux/linux/fs/xattr.c">fs/xattr.c</a>
+		sys_fgetxattr(int fd, char __user *name, void __user *value, size_t size)
+		sys_flistxattr(int fd, char __user *list, size_t size)
+		sys_fremovexattr(int fd, char __user *name)
+		sys_fsetxattr(int fd, char __user *name, void __user *value,
+		sys_getxattr(char __user *path, char __user *name, void __user *value,
+		sys_lgetxattr(char __user *path, char __user *name, void __user *value,
+		sys_listxattr(char __user *path, char __user *list, size_t size)
+		sys_llistxattr(char __user *path, char __user *list, size_t size)
+		sys_lremovexattr(char __user *path, char __user *name)
+		sys_lsetxattr(char __user *path, char __user *name, void __user *value,
+		sys_removexattr(char __user *path, char __user *name)
+		sys_setxattr(char __user *path, char __user *name, void __user *value,
+	<a href="file:///usr/src-linux/linux/fs/super.c">fs/super.c</a>
+		long sys_ustat(unsigned dev, struct ustat __user * ubuf)
+	<a href="file:///usr/src-linux/linux/fs/aio.c">fs/aio.c</a>
+		long sys_io_destroy(aio_context_t ctx)
+		long sys_io_setup(unsigned nr_events, aio_context_t *ctxp)
+	<a href="file:///usr/src-linux/linux/fs/compat.c">fs/compat.c</a>
+		long compat_sys_fstatfs(unsigned int fd, struct compat_statfs *buf)
+		long compat_sys_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg)
+		long compat_sys_statfs(const char *path, struct compat_statfs *buf)
+		long compat_sys_utime(char *filename, struct compat_utimbuf *t)
+		long compat_sys_utimes(char *filename, struct compat_timeval *t)
+		long sys_fcntl(unsigned int, unsigned int, unsigned long);
+	<a href="file:///usr/src-linux/linux/fs/readdir.c">fs/readdir.c</a>
+		long sys_getdents64(unsigned int fd, struct linux_dirent64 __user * dirent, unsigned int count)
+		long sys_getdents(unsigned int fd, struct linux_dirent __user * dirent, unsigned int count)
+	<a href="file:///usr/src-linux/linux/fs/buffer.c">fs/buffer.c</a>
+		long sys_bdflush(int func, long data)
+		long sys_fdatasync(unsigned int fd)
+		long sys_fsync(unsigned int fd)
+		long sys_sync(void)
+	<a href="file:///usr/src-linux/linux/fs/read_write.c">fs/read_write.c</a>
+		off_t sys_lseek(unsigned int fd, off_t offset, unsigned int origin)
+		ssize_t sys_read(unsigned int fd, char __user * buf, size_t count)
+		ssize_t sys_sendfile64(int out_fd, int in_fd, loff_t __user *offset, size_t count)
+		ssize_t sys_sendfile(int out_fd, int in_fd, off_t __user *offset, size_t count)
+		ssize_t sys_write(unsigned int fd, const char __user * buf, size_t count)
+	<a href="file:///usr/src-linux/linux/fs/namespace.c">fs/namespace.c</a>
+		long sys_oldumount(char __user * name)
+		long sys_pivot_root(const char __user *new_root, const char __user *put_old)
+		long sys_umount(char __user * name, int flags)
+	<a href="file:///usr/src-linux/linux/fs/fcntl.c">fs/fcntl.c</a>
+		long sys_dup2(unsigned int oldfd, unsigned int newfd)
+		long sys_dup(unsigned int fildes)
+		long sys_fcntl64(unsigned int fd, unsigned int cmd, unsigned long arg)
+		long sys_fcntl(unsigned int fd, unsigned int cmd, unsigned long arg)
+	<a href="file:///usr/src-linux/linux/fs/filesystems.c">fs/filesystems.c</a>
+		long sys_sysfs(int option, unsigned long arg1, unsigned long arg2)
+	<a href="file:///usr/src-linux/linux/fs/locks.c">fs/locks.c</a>
+		long sys_flock(unsigned int fd, unsigned int cmd)
+	<a href="file:///usr/src-linux/linux/fs/quota.c">fs/quota.c</a>
+		long sys_quotactl(unsigned int cmd, const char *special, qid_t id, caddr_t addr)
+	<a href="file:///usr/src-linux/linux/fs/nfsctl.c">fs/nfsctl.c</a>
+		sys_nfsservctl(int cmd, struct nfsctl_arg __user *arg, void __user *res)
+	<a href="file:///usr/src-linux/linux/kernel/fork.c">kernel/fork.c</a>
+		long sys_set_tid_address(int __user *tidptr)
+	<a href="file:///usr/src-linux/linux/kernel/sysctl.c">kernel/sysctl.c</a>
+		long sys_sysctl(struct __sysctl_args __user *args)
+		long sys_sysctl(struct __sysctl_args __user *args)
+	<a href="file:///usr/src-linux/linux/kernel/sys.c">kernel/sys.c</a>
+		long sys_getgroups(int gidsetsize, gid_t __user *grouplist)
+		long sys_gethostname(char __user *name, int len)
+		long sys_getpgid(pid_t pid)
+		long sys_getpgrp(void)
+		long sys_getpriority(int which, int who)
+		long sys_getresgid(gid_t *rgid, gid_t *egid, gid_t *sgid)
+		long sys_getresuid(uid_t *ruid, uid_t *euid, uid_t *suid)
+		long sys_getrlimit(unsigned int resource, struct rlimit __user *rlim)
+		long sys_getrusage(int who, struct rusage __user *ru)
+		long sys_getsid(pid_t pid)
+		long sys_newuname(struct new_utsname __user * name)
+		long sys_ni_syscall(void)
+		long sys_old_getrlimit(unsigned int resource, struct rlimit __user *rlim)
+		long sys_reboot(int magic1, int magic2, unsigned int cmd, void __user * arg)
+		long sys_setdomainname(char __user *name, int len)
+		long sys_setfsgid(gid_t gid)
+		long sys_setfsuid(uid_t uid)
+		long sys_setgid(gid_t gid)
+		long sys_setgroups(int gidsetsize, gid_t __user *grouplist)
+		long sys_sethostname(char __user *name, int len)
+		long sys_setpgid(pid_t pid, pid_t pgid)
+		long sys_setpriority(int which, int who, int niceval)
+		long sys_setregid(gid_t rgid, gid_t egid)
+		long sys_setresgid(gid_t rgid, gid_t egid, gid_t sgid)
+		long sys_setresuid(uid_t ruid, uid_t euid, uid_t suid)
+		long sys_setreuid(uid_t ruid, uid_t euid)
+		long sys_setrlimit(unsigned int resource, struct rlimit __user *rlim)
+		long sys_setsid(void)
+		long sys_setuid(uid_t uid)
+		long sys_times(struct tms __user * tbuf)
+		long sys_umask(int mask)
+	<a href="file:///usr/src-linux/linux/kernel/time.c">kernel/time.c</a>
+		long sys_adjtimex(struct timex __user *txc_p)
+		long sys_gettimeofday(struct timeval __user *tv, struct timezone __user *tz)
+		long sys_stime(time_t *tptr)
+		long sys_time(int * tloc)
+	<a href="file:///usr/src-linux/linux/kernel/futex.c">kernel/futex.c</a>
+		long sys_futex(u32 __user *uaddr, int op, int val,
+	<a href="file:///usr/src-linux/linux/kernel/signal.c">kernel/signal.c</a>
+		long sys_restart_syscall(void)
+		long sys_tgkill(int tgid, int pid, int sig)
+	<a href="file:///usr/src-linux/linux/kernel/itimer.c">kernel/itimer.c</a>
+		long sys_getitimer(int which, struct itimerval __user *value)
+	<a href="file:///usr/src-linux/linux/kernel/compat.c">kernel/compat.c</a>
+		long compat_sys_getitimer(int which, struct compat_itimerval *it)
+		long compat_sys_getrlimit (unsigned int resource, struct compat_rlimit *rlim)
+		long compat_sys_getrusage(int who, struct compat_rusage *ru)
+		long compat_sys_old_getrlimit(unsigned int resource, struct compat_rlimit *rlim)
+		long compat_sys_setrlimit(unsigned int resource, struct compat_rlimit *rlim)
+		long compat_sys_sigpending(compat_old_sigset_t *set)
+		long compat_sys_times(struct compat_tms *tbuf)
+		long sys_getrlimit (unsigned int resource, struct rlimit *rlim);
+		long sys_getrusage(int who, struct rusage *ru);
+		long sys_old_getrlimit(unsigned int resource, struct rlimit *rlim);
+		long sys_setrlimit(unsigned int resource, struct rlimit *rlim);
+		long sys_sigpending(old_sigset_t *);
+		long sys_sigprocmask(int, old_sigset_t *, old_sigset_t *);
+	<a href="file:///usr/src-linux/linux/kernel/posix-timers.c">kernel/posix-timers.c</a>
+		if (sys_timer_delete(timer->it_id))
+		*	    much resolution as the system can muster.  In some cases this
+		* not really ever put in the timer list (to save system resources).
+		* restarted (i.e. we have flagged this in the sys_private entry of the
+		sys_clock_getres(clockid_t which_clock, struct timespec __user *tp)
+		sys_clock_gettime(clockid_t which_clock, struct timespec __user *tp)
+		sys_clock_nanosleep(clockid_t which_clock, int flags,
+		sys_clock_settime(clockid_t which_clock, const struct timespec __user *tp)
+		sys_nanosleep(struct timespec __user *rqtp, struct timespec __user *rmtp)
+		*	    system timer code these entries should be NULL.  This will
+		sys_timer_create(clockid_t which_clock,
+		sys_timer_delete(timer_t timer_id)
+		sys_timer_getoverrun(timer_t timer_id)
+		sys_timer_gettime(timer_t timer_id, struct itimerspec __user *setting)
+		sys_timer_settime(timer_t timer_id, int flags,
+	<a href="file:///usr/src-linux/linux/kernel/uid16.c">kernel/uid16.c</a>
+		long sys_chown16(const char * filename, old_uid_t user, old_gid_t group)
+		long sys_fchown16(unsigned int fd, old_uid_t user, old_gid_t group)
+		long sys_getegid16(void)
+		long sys_geteuid16(void)
+		long sys_getgid16(void)
+		long sys_getgroups16(int gidsetsize, old_gid_t __user *grouplist)
+		long sys_getresgid16(old_gid_t *rgid, old_gid_t *egid, old_gid_t *sgid)
+		long sys_getresuid16(old_uid_t *ruid, old_uid_t *euid, old_uid_t *suid)
+		long sys_getuid16(void)
+		long sys_lchown16(const char * filename, old_uid_t user, old_gid_t group)
+		long sys_setfsgid16(old_gid_t gid)
+		long sys_setfsuid16(old_uid_t uid)
+		long sys_setgid16(old_gid_t gid)
+		long sys_setgroups16(int gidsetsize, old_gid_t __user *grouplist)
+		long sys_setregid16(old_gid_t rgid, old_gid_t egid)
+		long sys_setresgid16(old_gid_t rgid, old_gid_t egid, old_gid_t sgid)
+		long sys_setresuid16(old_uid_t ruid, old_uid_t euid, old_uid_t suid)
+		long sys_setreuid16(old_uid_t ruid, old_uid_t euid)
+		long sys_setuid16(old_uid_t uid)
+		long sys_chown(const char *, uid_t,gid_t);
+		long sys_fchown(unsigned int, uid_t,gid_t);
+		long sys_lchown(const char *, uid_t,gid_t);
+		long sys_setfsgid(gid_t);
+		long sys_setfsuid(uid_t);
+		long sys_setgid(gid_t);
+		long sys_setregid(gid_t, gid_t);
+		long sys_setresgid(gid_t, gid_t, gid_t);
+		long sys_setresuid(uid_t, uid_t, uid_t);
+		long sys_setreuid(uid_t, uid_t);
+		long sys_setuid(uid_t);
+	<a href="file:///usr/src-linux/linux/kernel/acct.c">kernel/acct.c</a>
+		long sys_acct(const char *name)
+	<a href="file:///usr/src-linux/linux/kernel/exec_domain.c">kernel/exec_domain.c</a>
+		* I hope the new sysctl schemes discussed for future versions
+		#include <linux/sysctl.h>
+		* in one place as the dynamic registration of sysctls is
+		sys_personality(u_long personality)
+		* We have to have all sysctl handling for the Linux-ABI
+	<a href="file:///usr/src-linux/linux/kernel/capability.c">kernel/capability.c</a>
+		long sys_capget(cap_user_header_t header, cap_user_data_t dataptr)
+		long sys_capset(cap_user_header_t header, const cap_user_data_t data)
+	<a href="file:///usr/src-linux/linux/kernel/module.c">kernel/module.c</a>
+		/* Called by the /proc file system to return a list of modules. */
+		sys_delete_module(const char *name_user, unsigned int flags)
+		sys_delete_module(const char __user *name_user, unsigned int flags)
+		sys_init_module(void __user *umod,
+	<a href="file:///usr/src-linux/linux/kernel/sched.c">kernel/sched.c</a>
+		long sys_nice(int increment)
+		long sys_sched_getparam(pid_t pid, struct sched_param __user *param)
+		long sys_sched_get_priority_max(int policy)
+		long sys_sched_get_priority_min(int policy)
+		long sys_sched_getscheduler(pid_t pid)
+		long sys_sched_rr_get_interval(pid_t pid, struct timespec __user *interval)
+		long sys_sched_setparam(pid_t pid, struct sched_param __user *param)
+		long sys_sched_yield(void)
+	<a href="file:///usr/src-linux/linux/kernel/timer.c">kernel/timer.c</a>
+		long sys_getegid(void)
+		long sys_geteuid(void)
+		long sys_getgid(void)
+		long sys_getpid(void)
+		long sys_getppid(void)
+		long sys_gettid(void)
+		long sys_getuid(void)
+		long sys_nanosleep(struct timespec *rqtp, struct timespec *rmtp)
+		long sys_sysinfo(struct sysinfo __user *info)
+		unsigned long sys_alarm(unsigned int seconds)
+	<a href="file:///usr/src-linux/linux/kernel/exit.c">kernel/exit.c</a>
+		long sys_exit(int error_code)
+		long sys_wait4(pid_t pid,unsigned int * stat_addr, int options, struct rusage * ru)
+		long sys_waitpid(pid_t pid,unsigned int * stat_addr, int options)
+		void sys_exit_group(int error_code)
+	<a href="file:///usr/src-linux/linux/kernel/panic.c">kernel/panic.c</a>
+		void sys_sync(void);	/* it's really int */
+	<a href="file:///usr/src-linux/linux/kernel/printk.c">kernel/printk.c</a>
+		long sys_syslog(int type, char __user * buf, int len)
+	<a href="file:///usr/src-linux/linux/ipc/msg.c">ipc/msg.c</a>
+		long sys_msgctl (int msqid, int cmd, struct msqid_ds *buf)
+		long sys_msgget (key_t key, int msgflg)
+		long sys_msgsnd (int msqid, struct msgbuf *msgp, size_t msgsz, int msgflg)
+	<a href="file:///usr/src-linux/linux/ipc/sem.c">ipc/sem.c</a>
+		long sys_semctl (int semid, int semnum, int cmd, union semun arg)
+		long sys_semget (key_t key, int nsems, int semflg)
+		long sys_semop (int semid, struct sembuf __user *tsops, unsigned nsops)
+	<a href="file:///usr/src-linux/linux/ipc/util.c">ipc/util.c</a>
+		long sys_msgctl (int msqid, int cmd, struct msqid_ds *buf)
+		long sys_msgget (key_t key, int msgflg)
+		long sys_msgsnd (int msqid, struct msgbuf *msgp, size_t msgsz, int msgflg)
+		long sys_semctl (int semid, int semnum, int cmd, union semun arg)
+		long sys_semget (key_t key, int nsems, int semflg)
+		long sys_semop (int semid, struct sembuf *sops, unsigned nsops)
+		long sys_shmat (int shmid, char *shmaddr, int shmflg, ulong *addr)
+		long sys_shmctl (int shmid, int cmd, struct shmid_ds *buf)
+		long sys_shmdt (char *shmaddr)
+		long sys_shmget (key_t key, size_t size, int shmflag)
+	<a href="file:///usr/src-linux/linux/ipc/shm.c">ipc/shm.c</a>
+		long sys_shmctl (int shmid, int cmd, struct shmid_ds __user *buf)
+		long sys_shmdt(char __user *shmaddr)
+		long sys_shmget (key_t key, size_t size, int shmflg)
+	<a href="file:///usr/src-linux/linux/mm/mlock.c">mm/mlock.c</a>
+		long sys_mlockall(int flags)
+		long sys_mlock(unsigned long start, size_t len)
+		long sys_munlockall(void)
+		long sys_munlock(unsigned long start, size_t len)
+	<a href="file:///usr/src-linux/linux/mm/swapfile.c">mm/swapfile.c</a>
+		long sys_swapoff(const char __user * specialfile)
+		long sys_swapon(const char __user * specialfile, int swap_flags)
+	<a href="file:///usr/src-linux/linux/mm/madvise.c">mm/madvise.c</a>
+		long sys_madvise(unsigned long start, size_t len, int behavior)
+	<a href="file:///usr/src-linux/linux/mm/filemap.c">mm/filemap.c</a>
+		ssize_t sys_readahead(int fd, loff_t offset, size_t count)
+	<a href="file:///usr/src-linux/linux/mm/msync.c">mm/msync.c</a>
+		long sys_msync(unsigned long start, size_t len, int flags)
+	<a href="file:///usr/src-linux/linux/mm/fadvise.c">mm/fadvise.c</a>
+		long sys_fadvise64_64(int fd, loff_t offset, loff_t len, int advice)
+		long sys_fadvise64(int fd, loff_t offset, size_t len, int advice)
+	<a href="file:///usr/src-linux/linux/mm/mprotect.c">mm/mprotect.c</a>
+		sys_mprotect(unsigned long start, size_t len, unsigned long prot)
+	<a href="file:///usr/src-linux/linux/mm/mremap.c">mm/mremap.c</a>
+		unsigned long sys_mremap(unsigned long addr,
+	<a href="file:///usr/src-linux/linux/mm/mmap.c">mm/mmap.c</a>
+		long sys_munmap(unsigned long addr, size_t len)
+		unsigned long sys_brk(unsigned long brk)
+	<a href="file:///usr/src-linux/linux/mm/nommu.c">mm/nommu.c</a>
+		long sys_munmap(unsigned long addr, size_t len)
+		unsigned long sys_brk(unsigned long brk)
+	<a href="file:///usr/src-linux/linux/mm/mincore.c">mm/mincore.c</a>
+		long sys_mincore(unsigned long start, size_t len,
+		* The mincore(2) system call.
+		* The mincore() system call.
+	<a href="file:///usr/src-linux/linux/init/initramfs.c">init/initramfs.c</a>
+		long sys_chmod(char *name, mode_t mode);
+		long sys_chown(char *name, uid_t uid, gid_t gid);
+		long sys_fchmod(int fd, mode_t mode);
+		long sys_fchown(int fd, uid_t uid, gid_t gid);
+		long sys_lchown(char *name, uid_t uid, gid_t gid);
+		long sys_link(char *old, char *new);
+		long sys_mkdir(char *name, int mode);
+		long sys_mknod(char *name, int mode, unsigned dev);
+		long sys_symlink(char *old, char *new);
+		long sys_write(int fd, const char *buf, size_t size);
+	<a href="file:///usr/src-linux/linux/init/main.c">init/main.c</a>
+	<a href="file:///usr/src-linux/linux/init/do_mounts.h">init/do_mounts.h</a>
+		long sys_chdir(const char *name);
+		long sys_chroot(const char *name);
+		long sys_fchdir(int fd);
+		long sys_ioctl(int fd, int cmd, unsigned long arg);
+		long sys_mkdir(const char *name, int mode);
+		long sys_mknod(const char *name, int mode, unsigned dev);
+		long sys_newstat(char * filename, struct stat * statbuf);
+		long sys_rmdir(const char *name);
+		long sys_stat64(char *name, struct stat64 *stat);
+		long sys_umount(char *name, int flags);
+		long sys_unlink(const char *name);
+	<a href="file:///usr/src-linux/linux/init/do_mounts_devfs.c">init/do_mounts_devfs.c</a>
+		long sys_access(const char * filename, int mode);
+		long sys_symlink(const char *old, const char *new);
+</pre>
+<p>&nbsp;</p>
+<hr>
+<p>
+<font size="-1">Generated with "<a href="fdsyscalls.gz">fdsyscalls</a>" from <a href="file:///usr/src-linux/linux">kernel sources</a>."
+</p>
+<hr>
+
+<!--++-->
+
+<p>
+<a href="#top">[top]</a>
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index.html">[main page]</a>
+<br>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc3.html">[193..256]</a>
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+</p>
+<p>&nbsp;</p>
+<center>
+<font size="-2">
+<a href="index-lx.shtml#nospam">H.-Peter Recktenwald, Berlin</a>, 24.Aug.2003 = .hpr.l0 =
+</font> 
+<script language="JavaScript"> document.write(document.lastModified) </script> 
+<noscript>updt:24.Aug.03+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.sysref-2.6.0" alt="7" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</body>
+</html>

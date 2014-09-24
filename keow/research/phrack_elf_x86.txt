@@ -1,0 +1,1468 @@
+                             ==Phrack Inc.==
+
+               Volume 0x0b, Issue 0x3a, Phile #0x05 of 0x0e
+
+|=----=[ Armouring the ELF: Binary encryption on the UNIX platform ]=----=|
+|=-----------------------------------------------------------------------=|
+|=-------=[ grugq <grugq@lokmail.net>, scut <scut@team-teso.net> ]=------=|
+
+
+--[ Contents
+
+  - Introduction
+  - Why encrypt?
+  - What is binary encryption?
+  - The threat
+  - ELF format
+    - ELF headers
+    - ELF sections
+    - ELF segments
+    - ELF support and history
+  - ELF loading
+    - ELF loading - Linux
+    - ELF Linux - auxiliary vectors
+    - ELF mapping
+  - Binary encryption theory
+  - Runtime decryption techniques
+  - ELF parasite approach
+  - Packing/Userspace ELF loader
+  - The future
+  - References
+
+
+--[ Introduction
+
+The UNIX world has lagged far behind the Microsoft world (including both
+MS-DOS and MS Windows) in the twin realms of binary protection and reverse
+engineering.
+
+The variety and types of binary protection are a major area of difference.
+MS Windows PE binaries can be encrypted, packed, wrapped, and thoroughly
+obfuscated, and then decrypted, unpacked, unwrapped, and reconstructed.
+Conversely, the best that can be done to a UNIX ELF binary is stripping the
+debugging symbol table. There are no deconstructors, no wrappers, no
+encrypters, and only a single packer (UPX [12], aimed at decreasing disk
+space, not increasing protection) for the ELF. Clearly the UNIX ELF binary
+is naked compared to the powerful protections afforded the Windows PE binary
+format.
+
+The quantity and quality of reverse engineering tools are other key areas
+of significant gulf. The runtime environment of the PE binary, and indeed
+the very operating system it executes on, is at the mercy of the brilliant
+debugger SoftICE. Meanwhile the running ELF can only be examined one word
+at a time via the crippled system call ptrace(), imperfectly interfaced via
+adb and its brain dead cousin: gdb. The procfs, on those systems on which
+it is present, typically only provides the ability to examine a process
+rather than control it. Indeed, the UNIX world is an unrealised nightmare
+for the UNIX reverse engineer. Unrealised because up until now no one has
+bothered to protect an ELF binary.
+
+
+--[ Why encrypt?
+
+The prime motivator for protecting files on MS platforms has been to enforce
+copy protection in a failed attempt to ensure payment for shareware
+applications. As of now, there is no such motivation on the UNIX side, but
+there are other reasons to protect binaries.
+
+From the viewpoint of an attacker the reasons to protect binaries can be
+listed as:
+
+        - hindering forensic analysis in case of detection
+        - hindering copying of confidential data (possibly by other
+          attackers or commercially motivated forensic investigators*)
+        - adding functionality to the protected binary
+
+From the point of view of a defender, there are also good reasons to
+protect binaries. These can be enumerated as
+
+        - adding a level of authorization checks
+        - hindering analysis of customised intrusion detection tools (tools
+          that an attacker might figure out how to evade, were they to
+          discover their purpose)
+        - adding functionality to the protected binary
+
+The need to protect binaries from analysis in the UNIX world has clearly
+surfaced.
+
+* Certain big five companies sell their collections of recovered exploits
+  for an annual fee.
+
+
+--[ What is binary encryption?
+
+The reasons to protect a binary are clear, now we have to come up with a
+good design for the protection itself.  When we talk of protecting binaries
+it is important to know what sort of protection we expect to achieve; we
+must define our requirements. The requirements for this implementation are
+as follows:
+
+        - Only authorised individuals may execute the binary.
+        - The on disk binary must be immune for all methods of static
+          analysis which might reveal anything substantial about the
+          purposes/methods of the binary.
+        - The process image of the binary, something that unfortunately
+          cannot be hidden, must obscure the purposes/methods of the
+          binary.
+        - The mechanism for protecting the binary must be production
+          quality, being both robust and reliable.
+
+The best mechanism to fulfill all of these requirements is with some form of
+encryption. We know enough of what we want that we can now define the term
+"binary encryption" as the process of protecting a binary from reverse
+engineering and analysis, while keeping it intact and executeable to the
+underlying operating system. Thus, when we talk of binary encryption we refer
+to a robust security mechanism for protecting binaries.
+
+
+--[ The threat
+
+Today most of the so called "forensic analysts" have very few tools and
+knowledge at hand to counter anything more sophisticated than rm, strip and 
+some uncautious attacker. This has been demostrated in the public analysis of
+the x2 binary [14]. Two seminal forensic investigators have been completely
+stumped by a relatively simple binary protection. It is worth mentioning
+that two private reverse engineers reversed the x2 binary to C source code
+in approximately one day.
+
+The Unix forensic investigater has an extremely limited range of tools at
+her disposal for analysis of a comprimised machine. These tools tend to
+be targeted at debugging a misbehaving system, rather than analysing a
+comprimised system. While locate, find, lsof and netstat are fine when
+attempting to keep a production system from falling over, when it comes to
+investigating a breakin, they fall short on usefulness. Even TCT is severly
+limited in its capabilities (although that is the subject of another
+paper).
+
+If the broad analysis of an entire system is so impaired, binary analysis
+is even more so. The forensic analyst is equiped with tools designed to
+debug binaries straight from the back end of an accomidating compiler, not
+the hostile binaries packaged by a crafty attacker. The list of tools is
+short, but for completeness presented here: strings, objdump, readelf,
+ltrace, strace, and gdb. These tools are all based on two flawed interfaces:
+libbfd and ptrace(). There are superior tools currently in development, but
+they are primarily intended for, and used by, Unix reverse engineers and
+other individuals with "alternative" motivations.
+
+Barring these private reverse engineering applications, no Unix tools exist
+to tackle sophisticated hostile code. This is because the basic Unix
+debugging hooks are very limited. The ubiquitus ptrace() can be easily
+subverted and confused, and while /proc interface is more feature rich, it is
+not uniform across platforms. Additionally the /proc debugging interface 
+typicall provides only information about the runtime environment of a
+process, not control over its exectuion. Even the most sophisticated procfs
+need not be of any help to the analyst, if the binary is sufficiently
+protected.  
+
+That said, there has been some slight improvement in the quality of analysis
+tools. The powerful Windows only disassembler - IDA - now provides complete
+support for the ELF binary format. Indeed, with the latest release IDA can
+finally handle ELF binaries without a section header table (thanks Ilfak).
+
+These improvements in the available tools are meaningless however, unless
+there is an accompanying increase in knowledge and skill for the forensic
+analysers.  Given that there are almost no skilled reverse engineers in
+forensic analysis (based on the published material one could easily conclude
+that there are none), the hackers will have the upper hand at the start of
+this arms race.
+
+As the underground world struggles with with the issue of leaking exploits
+and full vs. non disclusure, more hackers will see binary encryption as a
+means of securing their intellectual property. Simultaneously the security
+community is going to be exposed to more encrypted binaries, and will have
+to learn to analyse a hostile binary.
+
+
+--[ ELF format
+
+The 'Executeable and Linking Format' is a standardized file format for
+executeable code. It is mostly used for executeable files (ET_EXEC) or for
+shared libraries (ET_DYN). Currently almost all modern Unix variants
+support the ELF format for its portability, standardized features and
+designed-from-scratch cleaness. The actual version of the ELF standard is
+1.2. There are multiple documents covering the standard, see [1].
+
+The ELF binary format was designed to meet the requirements of both linkers
+(typically used during compile time) and loaders (typically used only
+during run time). This nessicitated the incorporation of two distinct
+interfaces to describe the data contained within the binary file. These two
+interfaces have no dependancy on each other. This section will act as a
+brief introduction to both interfaces of the ELF.
+
+
+--[ ELF headers
+
+An ELF file must contain at a minimum an ELF header. The ELF header
+contains information regarding how the contents of the binary file should
+be interpreted, as well as the locations of the other structures describing
+the binary. The ELF header starts at offset 0 within the file, and has the
+following format:
+
+#define EI_NIDENT (16)
+
+typedef struct
+{
+  unsigned char e_ident[EI_NIDENT];     /* Magic number and other info */
+  Elf32_Half    e_type;                 /* Object file type */
+  Elf32_Half    e_machine;              /* Architecture */
+  Elf32_Word    e_version;              /* Object file version */
+  Elf32_Addr    e_entry;                /* Entry point virtual address */
+  Elf32_Off     e_phoff;                /* Program header table file offset */
+  Elf32_Off     e_shoff;                /* Section header table file offset */
+  Elf32_Word    e_flags;                /* Processor-specific flags */
+  Elf32_Half    e_ehsize;               /* ELF header size in bytes */
+  Elf32_Half    e_phentsize;            /* Program header table entry size */
+  Elf32_Half    e_phnum;                /* Program header table entry count */
+  Elf32_Half    e_shentsize;            /* Section header table entry size */
+  Elf32_Half    e_shnum;                /* Section header table entry count */
+  Elf32_Half    e_shstrndx;             /* Section header string table index */
+} Elf32_Ehdr;
+
+The fields are explained in detail below:
+
+    * e_ident has certain known offsets that contain information about how to
+      treat and interpret the binary. Be warned that Linux defines additional
+      indices and values that are not contained in the SysV ABI, and are
+      therefore non-portable. These are the official known offsets, and their
+      potential values:
+
+#define EI_MAG0         0               /* File identification byte 0 index */
+#define ELFMAG0         0x7f            /* Magic number byte 0 */
+
+#define EI_MAG1         1               /* File identification byte 1 index */
+#define ELFMAG1         'E'             /* Magic number byte 1 */
+
+#define EI_MAG2         2               /* File identification byte 2 index */
+#define ELFMAG2         'L'             /* Magic number byte 2 */
+
+#define EI_MAG3         3               /* File identification byte 3 index */
+#define ELFMAG3         'F'             /* Magic number byte 3 */
+
+#define EI_CLASS        4               /* File class byte index */
+#define ELFCLASSNONE    0               /* Invalid class */
+#define ELFCLASS32      1               /* 32-bit objects */
+#define ELFCLASS64      2               /* 64-bit objects */
+
+#define EI_DATA         5               /* Data encoding byte index */
+#define ELFDATANONE     0               /* Invalid data encoding */
+#define ELFDATA2LSB     1               /* 2's complement, little endian */
+#define ELFDATA2MSB     2               /* 2's complement, big endian */
+
+#define EI_VERSION      6               /* File version byte index */
+#define EV_CURRENT      1               /* Value must be EV_CURRENT */
+
+
+    * e_type describes how the binary is intended to be utilised. The following
+      are legal values:
+
+#define ET_NONE         0               /* No file type */
+#define ET_REL          1               /* Relocatable file */
+#define ET_EXEC         2               /* Executable file */
+#define ET_DYN          3               /* Shared object file */
+#define ET_CORE         4               /* Core file */
+
+    * e_machine indicates for which architecture the object file is
+      intended. The following is a short list of the most common values:
+
+#define EM_SPARC         2              /* SUN SPARC */
+#define EM_386           3              /* Intel 80386 */
+#define EM_SPARCV9      43              /* SPARC v9 64-bit */
+#define EM_IA_64        50              /* Intel Merced */
+
+    * e_version indicates which version of ELF the object file conforms too.
+      Currently it must be set to EV_CURRENT, identical to
+      e_ident[EI_VERSION].
+
+    * e_entry contains the relative virtual address of the entry point to the
+      binary. This is traditionally the function _start() which is located at
+      the start of the .text section (see below). This field only has meaning
+      for ET_EXEC objects.
+
+    * e_phoff conatins the offset from the start of the file to the first
+      Program Header (see below). This field is only meaningful in ET_EXEC and
+      ET_DYN objects.
+
+    * e_shoff contains the offset from the start of the file to the first
+      Section Header (see below). This field is always useful to the reverse
+      engineer, but only required on ET_REL files.
+
+    * e_flags contains processor specific flags. This field is not used on
+      i386 or SPARC systems, so it can be safely ignored.
+
+    * e_ehsize contains the size of the ELF header. This is for error checking
+      and should be set to sizeof(Elf32_Ehdr).
+
+    * e_phentsize contains the size of a Program Header. This is for error
+      checking and should be set to sizeof(Elf32_Phdr).
+
+    * e_phnum contains the number of Program headers. The program header table
+      is an array of Elf32_Phdr with e_phnum elements.
+
+    * e_shentsize contains the size of a Section Header. This is for error
+      checking and should be set to sizeof(Elf32_Shdr).
+
+    * e_shnum contains the number of Section headers. The section header table
+      is an array of Elf32_Shdr with e_shnum elements.
+
+    * e_shstrndx contains the index within the section header table of the
+      section containing the string table of section names (see below).
+
+
+The following two sections describe in detail the linking interface and the
+execution interface to the ELF, respectively.
+
+
+--[ ELF Sections
+
+The interface used when linking multiple object files together is the Section
+interface. The binary file is viewed as an collection of sections; each an
+array of bytes of which no byte may reside in more than one secion. The
+contents of a section may be interpreted in any way by the inspecting
+application, although there is helper information to enable an application
+to correctly interpret a section's contents. Each section is described by a
+section header, contained within a section header table typically located
+at the end of the object. The section header table is an array of section
+headers in arbitrary order, although usually in the same order as they
+appear in the file, with the only exeption being that the zeroeth entry is
+the NULL section: a section which is set to 0 and doesn't describe any part
+of the binary. Each section header has the following format:
+
+typedef struct
+{
+  Elf32_Word    sh_name;                /* Section name (string tbl index) */
+  Elf32_Word    sh_type;                /* Section type */
+  Elf32_Word    sh_flags;               /* Section flags */
+  Elf32_Addr    sh_addr;                /* Section virtual addr at execution */
+  Elf32_Off     sh_offset;              /* Section file offset */
+  Elf32_Word    sh_size;                /* Section size in bytes */
+  Elf32_Word    sh_link;                /* Link to another section */
+  Elf32_Word    sh_info;                /* Additional section information */
+  Elf32_Word    sh_addralign;           /* Section alignment */
+  Elf32_Word    sh_entsize;             /* Entry size if section holds table */
+} Elf32_Shdr;
+
+The fields of the section header have the following meanings:
+
+    * sh_name contains an index into the section contents of the e_shstrndx
+      string table. This index is the start of a null terminated string to
+      be used as the name of the section. There are reserved names, the
+      most important being:
+		.text		Executable object code
+		.rodata		Read only strings
+		.data		Initialised "static" data
+		.bss		Zero initialized "static" data, and the
+				base of the heap
+
+    * sh_type contains the section type, helping the inspecting application
+      to determine how to interpret the sections contents. The following
+      are legal values:
+
+#define SHT_NULL         0              /* Section header table entry unused */
+#define SHT_PROGBITS     1              /* Program data */
+#define SHT_SYMTAB       2              /* Symbol table */
+#define SHT_STRTAB       3              /* String table */
+#define SHT_RELA         4              /* Relocation entries with addends */
+#define SHT_HASH         5              /* Symbol hash table */
+#define SHT_DYNAMIC      6              /* Dynamic linking information */
+#define SHT_NOTE         7              /* Notes */
+#define SHT_NOBITS       8              /* Program space with no data (bss) */
+#define SHT_REL          9              /* Relocation entries, no addends */
+#define SHT_SHLIB        10             /* Reserved */
+#define SHT_DYNSYM       11             /* Dynamic linker symbol table */
+
+
+    * sh_flags contains a bitmap defining how the contents of the section
+      are to be treated at run time. Any bitwise OR'd value of the
+      following is legal:
+
+#define SHF_WRITE       (1 << 0)        /* Writable */
+#define SHF_ALLOC       (1 << 1)        /* Occupies memory during execution */
+#define SHF_EXECINSTR   (1 << 2)        /* Executable */
+
+
+    * sh_addr contains the relative virtual address of the section during
+      runtime.
+
+    * sh_offset contains the offset fromt he start of the file to the first
+      byte of the section.
+
+    * sh_size contains the size in bytes of the section.
+
+    * sh_link is used to link associated sections together. This is
+      typically used to link a string table to a section whose contents
+      require a string table for correct intepretation, e.g. symbol tables.
+
+    * sh_info is a used to contain extra information to aid in link
+      editing. This field has exactly two uses, indicating which section a
+      relocation applies to for SHT_REL[A] sections, and holding the
+      maximum number of elements plus one within a symbol table.
+
+    * sh_addralign contains the alignment requirement of section contents,
+      typically 0/1 (both meaning no alignment) or 4.
+
+    * sh_entsize, if the section holds a table, contains the size of each
+      element. Used for error checking.
+
+
+--[ ELF Segments
+
+The ELF segment interface is used to during the creation of a process
+image. Each segment, a contiguous stream of bytes, (not to be confused with
+a memory segment, i.e. one page) is described by a program header. The
+program headers are contained in a program header table described by the
+ELF header. This table can be located anywhere, but is typically located
+immediately after the ELF header *. The program header is now described in
+depth:
+
+typedef struct
+{
+  Elf32_Word	p_type;			/* Segment type */
+  Elf32_Off	p_offset;		/* Segment file offset */
+  Elf32_Addr	p_vaddr;		/* Segment virtual address */
+  Elf32_Addr	p_paddr;		/* Segment physical address */
+  Elf32_Word	p_filesz;		/* Segment size in file */
+  Elf32_Word	p_memsz;		/* Segment size in memory */
+  Elf32_Word	p_flags;		/* Segment flags */
+  Elf32_Word	p_align;		/* Segment alignment */
+} Elf32_Phdr;
+
+The fields have the following meanings:
+
+    * p_type describes how to treat the contents of a segment. The
+      following are legal values:
+
+#define PT_NULL         0               /* Program header table entry unused */
+#define PT_LOAD         1               /* Loadable program segment */
+#define PT_DYNAMIC      2               /* Dynamic linking information */
+#define PT_INTERP       3               /* Program interpreter */
+#define PT_NOTE         4               /* Auxiliary information */
+#define PT_SHLIB        5               /* Reserved */
+#define PT_PHDR         6               /* Entry for header table itself */
+
+    * p_offset contains the offset within the file of the first byte of the
+      segment.
+
+    * p_vaddr contains the realtive virtual address the segment expects to
+      be loaded into memory at.
+
+    * p_paddr contains the physical address of the segment expects to be
+      loaded into memory at. This field has no meaning unless the hardware
+      supports and requires this information. Typically this field is set to
+      either 0 or the same value as p_vaddr.
+
+    * p_filesz contains the size in bytes of the segment within the file.
+
+    * p_memsz contains the size in bytes of the segment once loaded into
+      memory. If the segment has a larger p_memsz than p_filesz, the
+      remaining space is initialised to 0. This is the mechanism used to
+      create the .bss during program loading.
+
+    * p_flags contains the memory protection flags for the segment once
+      loaded. Any bit wise OR'd combination of following are legal values:
+
+#define PF_X            (1 << 0)        /* Segment is executable */
+#define PF_W            (1 << 1)        /* Segment is writable */
+#define PF_R            (1 << 2)        /* Segment is readable */
+
+    * p_align contains the alignment for the segment in memory. If the
+      segment is of type PT_LOAD, then the alignment will be the expected
+      page size.
+
+* FreeBSD's dynamic linker requires the program header table to be located 
+within the first page (4096 bytes) of the binary.
+
+
+--[ ELF format - support and history
+
+The ELF format has widely gained acceptance as a reliable and mature
+executeable format. It is flexible, being able to support different
+architectures, 32 and 64 bit alike, without compromising too much of its
+design.
+
+As of now, the following systems support the ELF format:
+
+        DGUX             | ELF, ?, ?
+        FreeBSD          | ELF, 32/64 bit, little/big endian
+        IRIX             | ELF, 64 bit, big endian
+        Linux            | ELF, 32/64 bit, little/big endian
+        NetBSD           | ELF, 32/64 bit, little/big endian
+        Solaris          | ELF, 32/64 bit, little/big endian
+        UnixWare         | ELF, 32 bit, little endian
+
+The 32/64 bit differences on a single system is due to different
+architectures the operating systems is able to run on.
+
+
+--[ ELF loading
+
+An ELF binary is loaded by mapping all PT_LOAD segments into memory at the
+correct locations (p_vaddr), the binary is checked for library dependancies
+and if they exist those libraries are loaded. Finally, any relocations that
+need to be done are performed, and control is transfered to the main
+executable's entry point. The accompanying code in load.c demonstrates one
+method of doing this (based on the GNU dynamic linker).
+
+
+--[ ELF loading - Linux
+
+Once the userspace receives control, we have this situation:
+
+        - All PT_LOAD segments of the binary, or if its dynamicly linked:
+          the dynamic linker, are mapped properly
+        - Entry point: In case there is a PT_INTERP segment, the program
+          counter is set to the entry point of the program interpreter.
+        - Entry point: In case there is no PT_INTERP segment, the program
+          counter is initialized to the ELF header's entry point.
+        - The top of the stack is initialized with important data, see
+          below.
+
+When the userspace receives control, the stack layout has a fixed format.
+The rough order is this:
+
+       <arguments> <environ> <auxv> <string data>
+
+The detailed layout, assuming IA32 architecture, is this (Linux kernel
+series 2.2/2.4):
+
+  position            content                     size (bytes) + comment
+  ------------------------------------------------------------------------
+  stack pointer ->  [ argc = number of args ]     4
+                    [ argv[0] (pointer) ]         4   (program name)
+                    [ argv[1] (pointer) ]         4
+                    [ argv[..] (pointer) ]        4 * x
+                    [ argv[n - 1] (pointer) ]     4
+                    [ argv[n] (pointer) ]         4   (= NULL)
+
+                    [ envp[0] (pointer) ]         4
+                    [ envp[1] (pointer) ]         4
+                    [ envp[..] (pointer) ]        4
+                    [ envp[term] (pointer) ]      4   (= NULL)
+
+                    [ auxv[0] (Elf32_auxv_t) ]    8
+                    [ auxv[1] (Elf32_auxv_t) ]    8
+                    [ auxv[..] (Elf32_auxv_t) ]   8
+                    [ auxv[term] (Elf32_auxv_t) ] 8   (= AT_NULL vector)
+
+                    [ padding ]                   0 - 16
+
+                    [ argument ASCIIZ strings ]   >= 0
+                    [ environment ASCIIZ str. ]   >= 0
+
+  (0xbffffffc)      [ end marker ]                4   (= NULL)
+
+  (0xc0000000)      < top of stack >              0   (virtual)
+  ------------------------------------------------------------------------
+
+When the runtime linker (rtld) has done its duty of mapping and resolving
+all the required libraries and symbols, it does some initialization work
+and hands over the control to the real program entry point afterwards. As
+this happens, the conditions are:
+
+        - All required libraries mapped from 0x40000000 on
+        - All CPU registers set to zero, except the stack pointer ($sp) and
+          the program counter ($eip/$ip or $pc). The ABI may specify
+          further initial values, the i386 ABI requires that %edx is set to
+          the address of the DT_FINI function.
+
+
+--[ ELF loading - auxiliary vectors (Elf32_auxv_t).
+
+The stack initialization is somewhat familar for a C programmer, since he
+knows the argc, argv and environment pointers from the parameters of his
+'main' function. It gets called by the C compiler support code with exactly
+this parameters:
+
+    main (argc, &argv[0], &envp[0]);
+
+However, what is more of a mystery, and usually not discussed at all, is
+the array of 'Elf32_auxv_t' vectors. The structure is defined in the elf.h
+include file:
+
+typedef struct
+{
+        int a_type;                     /* Entry type */
+        union
+        {
+                long int a_val;         /* Integer value */
+                void *a_ptr;            /* Pointer value */
+                void (*a_fcn) (void);   /* Function pointer value */
+        } a_un;
+} Elf32_auxv_t;
+
+It is a generic type-to-value relationship structure used to transfer very
+important data from kernelspace to userspace. The array is initialized on
+any successful execution, but normally it is used only by the program
+interpreter. Lets take a look on the 'a_type' values, which define what
+kind of data the structure contains. The types are found in the 'elf.h'
+file, and although each architecture implementing the ELF standard is
+free to define them, there are a lot of similarities among them. The
+following list is from a Linux 2.4 kernel.
+
+/* Legal values for a_type (entry type).  */
+#define AT_NULL         0               /* End of vector */
+#define AT_IGNORE       1               /* Entry should be ignored */
+#define AT_EXECFD       2               /* File descriptor of program */
+#define AT_PHDR         3               /* Program headers for program */
+#define AT_PHENT        4               /* Size of program header entry */
+#define AT_PHNUM        5               /* Number of program headers */
+#define AT_PAGESZ       6               /* System page size */
+#define AT_BASE         7               /* Base address of interpreter */
+#define AT_FLAGS        8               /* Flags */
+#define AT_ENTRY        9               /* Entry point of program */
+#define AT_NOTELF       10              /* Program is not ELF */
+#define AT_UID          11              /* Real uid */
+#define AT_EUID         12              /* Effective uid */
+#define AT_GID          13              /* Real gid */
+#define AT_EGID         14              /* Effective gid */
+#define AT_CLKTCK       17              /* Frequency of times() */
+
+Some types are mandatory for the runtime dynamic linker, while some are
+merely candy and remain unused. Also, the kernel does not have to use every
+type, infact, the order and occurance of the elements are subject to change
+across different kernel versions. This turns out to be important when
+writing our own userspace ELF loader, since the runtime dynamic linker may
+expect a certain format, or even worse, the headers we receive by the
+kernel ourselves are in different order on different systems (Linux 2.2 to
+2.4 changed behaviour, for example). Anyway, if we stick to a few simple
+rules when parsing and setting up the headers, few things can go wrong:
+
+        - Always skip sizeof(Elf32_auxv_t) bytes at a time
+        - Skip any unknown AT_* type
+        - Ignore AT_IGNORE types
+        - Stop processing only at AT_NULL vector
+
+On Linux, the runtime linker requires the following Elf32_auxv_t
+structures:
+
+        AT_PHDR, a pointer to the program headers of the executeable
+        AT_PHENT, set to 'e_phentsize' element of the ELF header (constant)
+        AT_PHNUM, number of program headers, 'e_phnum' from ELF header
+        AT_PAGESZ, set to constant 'PAGE_SIZE' (4096 on x86)
+        AT_ENTRY, real entry point of the executeable (from ELF header)
+
+On other architectures there are similar requirements for very important
+auxiliary vectors, with which the runtime linker would not be able to work.
+
+Some further details about the way Linux starts up an executeable can be
+found at [11].
+
+
+--[ Binary encryption theory
+
+There is nothing new about encrypting binaries, indeed since the 1980's
+there have been various mechanisms developed for protecting binaries on
+personal computers. The most active developers of binary protections have
+been virus writers and shareware developers. While these techniques have
+evolved with advances in processing power and operating system architecture,
+most of the basic concepts remain the same. Essentially a plaintext
+decryption engine will execute first and it will decrypt the next encrypted
+section of code, this might be the main .text, or it might be another
+decryption engine.
+
+Barring a flawed and easily cracked encryption technique (e.g. XOR with a
+fixed value), the first plaintext decryptor is the usually the weak point of
+any encrypted binary. Due to this weakness, a number of various methods have
+been developed for making the initial decryption engine as difficult to
+reverse engineer as possible.
+
+The following is just a brief list of methods that have been used to
+protect the initial decryption engine:
+
+    * Self Modifying Code: Code which alters itself during run time, so that
+      analysis of the binary file on disk is different from analysis of the
+      memory image.
+
+    * Polymorphic Engines: Creates a unique decryption engine each time it is
+      used so that it is more difficult to compare two files. Also, it is
+      slightly more difficult to reverse engineer.
+
+    * Anti-Disassembling/Debugging tricks: Tricks which attempt to confuse
+      the tools being used by the reverse engineer. This makes it difficult
+      for the analyst to discover what the object code is doing.
+
+
+The following is a short list of encryption methods that have been used to
+protect the main object code of the executable:
+
+    * XOR: The favourite of any aspiring hacker, xor is frequently used to
+      obfuscate code with a simple encryption. These are usually very easily
+      broken, but extend slightly the time it takes to reverse engineer.
+
+    * Stream Ciphers: Ideal for binary encryption, these are usually strong,
+      small and can decrypt an arbitray number of bytes. A binary properly
+      encrypted with a stream cipher is impregnable to analysis.
+
+    * Block Ciphers: These are more awkward to use for binary encryption
+      because of the block alignment requirements.
+
+    * Virtual CPUs: A painstaking and powerful method of securing a binary.
+      The object code actually runs on a virual CPU that needs to be
+      independantly analysed first. Very painful for a reverse engineer (and
+      also the developer).
+
+There are even mechanisms to keep the plaintext as safe as possible in
+memory. Here is a partial list of some of these mechanisms:
+
+   * Running Line Code: This is when only the code immediately needed is
+     decrypted, and then encrypted again after use. CPU intensive, but
+     extremely difficult to analyse.
+
+   * Proprietary Binary Formats: If the object code is stored in an unknown
+     format, it is quite difficult for the reverse engineer to determine what
+     is data and what is text.
+
+
+--[ Runtime encryption techniques
+
+--[ The virus approach
+
+Adding code to an ELF executeable is far from being new. There have been
+known ELF viruses since about 1997, and Silvio was the first to publish
+about it [2], [3].
+
+One nasty property about the ELF format is its "easy loading" design
+goal. The program headers and the associated segments map directly into the
+memory, speeding up the preparation of the executeable when executing it.
+The way its implemented in the ELF format makes it difficult to change the
+file layout after linking. To add code or to modify the basic structure
+becomes nearly impossible, since a lot of hardcoded values cannot be
+adjusted without knowing the pre-linking information, such as relocation
+information, symbols, section headers and the like. But most of such
+information is either gone in the binary or incomplete.
+
+Even with such information, modifying the structure of the ELF
+executeable is difficult (without using a sophisticated library such as
+libbfd). For an in-depth discussion about reducing the pain when modifying
+shared libraries with most of the symbol information intact, klog has
+written an article about it [4].
+
+Because of this difficulties, most attempts in the past have focused on
+exploiting 'gaps' within the ELF binary, that get mapped into memory when
+loading it, but remain unused. Such areas are needed to align the memory on
+pages. As mentioned earlier, ELF has been designed for fast loading, and
+this alignment in the file guarantees a one-to-one mapping of the file into
+the memory. Also, as we will see below, this alignment allows easy
+implementation of page-wise granularity for read, write and execution
+permission.
+
+So the 'usual' ELF virus searches through the host executeable for such
+gaps, and in case a sufficient large area has been found it writes a copy
+of itself into it. Afterwards it redirects the execution flow of the
+program to its own area, often by just modifying the program entry point in
+the ELF header. There have been numerous examples for such viruses, most
+notable the 'VIT' [5] and 'Brundle-Fly' [6] virii.
+
+While this approach works moderatly well in practice, it cannot infect
+every ET_EXEC ELF executeable. The page size (PAGE_SIZE) on a UNIX system
+is often 4096, and since the padding can take up at max a whole page, the
+chances of finding a possible gap is dependant on the virus size and the
+host executeable. An average virus of the above type takes about 2000 bytes
+and hence can infect only about 50 percent of all executeables. While for
+virii this adds some non-deterministic fun and does not really matter, for
+reliable binary encryption this approach has serious drawbacks.
+
+However, there have been mad people using this approach for basic binary
+encryption purposes. The program which does this is called dacryfile. There
+is an demonstration copy of dacryfile* availble from [7]. Dacryfile uses a
+data injected parasite to perform the run time decryption of the host file.
+While dacryfile is undocumented, a limited amount of information is provided
+here for the curious.
+
+Dacryfile is a collection of tools which implement the following concept.
+The host file is encrypted from the start of the .text section, to the end
+of the .text segment. The file now has its object code and its read only
+data protected by encryption, while all its data and dynamic objects are
+open to inspection. The host file is injected with a parasite that will
+perform the runtime decryption. This parasite can be of arbitrary size
+because it is appended to the end of the .data segment. 
+
+The default link map of a gcc produced Linux ELF has the .dynamic section
+as the last prior to the .bss section. The .dynamic section is an array of
+Elf32_Dyn structures, terminated by a NULL struct tag. Therefore, regardless
+of how big the .dynamic section, processing of its contents will halt when
+the terminating Elf32_Dyn struct is encountered. A parasite can be injected
+at the end of the section without damaging the host file in any way. The
+dacryfile program "inject" appends the .text section from a parasite object
+file onto the .dynamic section of a host binary.
+
+The parasite itself is fairly simple, utilising the subversive dynamic
+linking Linux library to access libc functions, and rc4 to decrypt the host.
+
+The dacryfile collection is unsupported and undocumented, it and all other
+first generation binary encryptors, are a dead end. However, a dacryfile
+protected binary will be extremely immune from the recent pitiful attempts
+at reverse engineering by the forensic experts. Provided the encryption
+passphrase remains secret, and is strong enough to withstand a brute force
+attack, a dacryfile protect binary will keep is its object code or read-only
+data ecure from examination. The dynamic string table will still be
+available, but that will provide limited information about the functionality
+of the binary.
+
+Also included with the article is a stripped down but functional loader of
+the burneye runtime encryption program. It is commented and should work
+just fine.
+
+* dacryphilia is a fetish in which one gains sexual arousal through the
+  tears of one's partner.
+
+
+--[ Packing/Userspace ELF loader
+
+The most flexible approach to wrap an executeable has been invented by the
+developers of the UPX packer [12], by John Reiser to be exact :). They load
+the binary in userspace, much like the kernel does it. When done properly
+there is no visible change in behaviour to the wrapped program, while it
+has no constrains on either the wrapper or the wrapped executeable, as the
+techniques mentioned before have. So this is the way we want to encrypt
+binaries, by loading them from userspace.
+
+Normally the kernel is responsible for loading the ELF executeable into
+memory, setting page permissions and allocating storage. Then it passes
+control to the code in the executeable.
+
+On todays system this is not fully true anymore. The kernel still does a
+lot of initial work, but then interacts with a userspace runtime linker
+(rtld) to resolve libraries dependancies, symbols and linking preparations.
+Only after the rtld has done the whole backstage work, control is passed to
+the real programs entry point. The program finds itself in a healthy
+environment with all library symbols resolved, well prepared memory layout
+and a carefully watching runtime linker in the background.
+
+In normal system use this is a very hidden operation and since it works
+so smooth nobody really cares. But as we are going to write a userspace ELF
+loader, we have to mess with the details. To get a rough impression, just
+write a simple "hello world" program in C, compile it, and instead of just
+running it, do a strace on it. Ever wondered what happens as so many
+syscalls are issued by your one-line executeable?
+
+This is the runtime linker in action, trying to resolve your 'printf'
+symbol after it mapped the entire C library into memory and prepared the
+page permissions.
+
+A lot of interesting details about the history of linkers and program
+loading can be found in [8].
+
+
+--[ The future
+
+Forensic work on binary executeables will become very difficult, and most
+of the people who do forensics nowadays will drop out of the field. Most
+likely some people from the reverse engineering 'scene' will convert more
+to network security and become forensics.
+
+There are promising approaches to incorporating decompilation and
+data/code flow analysis techniques into binary encryption to implement
+further protections against tempering, analyzing and deprotecting such
+binaries.
+
+The strength of the next protections will rely on the missing debug
+interfaces on most UNIX's, that are able to deal with hostile code. The
+generation of protections that come afterwards will rely solely on their
+sophisticated obfuscation approaches to deny attempts of static and
+dead-listing type of analysis.
+
+There are approaches to replace the overtaxed ptrace interface [9] with
+more powerful debug interfaces that can deal with hostile code. Also work
+on kernel space debuggers has been done, such as the Pice debugger [10].
+
+Aside from poor debugging tools and bad debugging hooks, the only thing
+that can be used to armour the run time binary is heavy obfuscation that
+will make it harder for a reverse engineer to see what is actually going
+on. You have to remember that a reverse engineer can see each atomic
+operation that is performed, as well as what is going on in memory (i.e.
+change variables, new mmaps, read()s, etc. etc. If this is to be defeated,
+they need to be swamped with information. They need to be so bady off that
+they cry about each time they have to restart their debuggers!
+
+
+--[ References
+
+  [1] Tool Interface Standard, Executeable and Linking Format, Version 1.2
+      http://segfault.net/~scut/cpu/generic/TIS-ELF_v1.2.pdf
+
+      http://www.caldera.com/developers/gabi/latest/contents.html
+      http://www.caldera.com/developers/devspecs/gabi41.pdf
+
+      additional per-architecture information is available from
+      http://www.caldera.com/developers/devspecs/
+
+  [2] Silvio Cesare, Unix viruses
+      http://www.big.net.au/~silvio/unix-viruses.txt
+
+  [3] Silvio Cesare, Unix ELF parasites and virus
+      http://www.big.net.au/~silvio/elf-pv.txt
+
+  [4] klog, Phrack #56 article 9, Backdooring binary objects
+      http://www.phrack.org/show.php?p=56&a=9
+
+  [5] Silvio Cesare, The 'VIT' virus
+      http://www.big.net.au/~silvio/vit.html
+
+  [6] Konrad Rieck, Konrad Kretschmer
+      'Brundle-Fly', a good-natured Linux ELF virus
+      http://www.roqe.org/brundle-fly/
+
+  [7] The grugq, dacryfile binary encryptor
+      http://hcunix.7350.org/grugq/src/dacryfile.tgz
+
+  [8] John R. Levine, Linkers & Loaders
+      ISBN 1-55860-496-0
+
+  [9] Linux ptrace man page (see if you can catch the three errors)
+      http://www.die.net/doc/linux/man/man2/ptrace.2.html
+
+ [10] PrivateICE Linux system level symbolic source debugger
+      http://pice.sourceforge.net/
+
+ [11] Konstantin Boldyshev, Startup state of Linux/i386 ELF binary
+      http://linuxassembly.org/startup.html
+
+ [12] UPX, the Ultimate Packer for eXecutables
+      http://upx.sourceforge.net/
+
+ [13] GNU binutils
+      ftp://ftp.gnu.org
+ 
+ [14] Forensic analysis of a burneye protected binary
+      http://www.incidents.org/papers/ssh_exploit.pdf
+      http://staff.washington.edu/dittrich/misc/ssh-analysis.txt
+ 
+ [15] The grugq, Subversive Dynamic Linking
+      http://hcunix.7350.org/grugq/doc/subversivedl.pdf
+
+
+begin 664 burneye-stripped.tar.gz
+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
+&@X4`D`$`
+`
+end
+
+|=[ EOF ]=---------------------------------------------------------------=|

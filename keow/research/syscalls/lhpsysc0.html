@@ -1,0 +1,521 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title></title>
+  <title>i386 Linux 2.2+ Syscalls Index, by Numbers</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link href="http://www.lxhp.in-berlin.de/">
+    <link rev="made" href="lxhp@china.com?subject=w3lxa">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+</head>
+
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc"
+alink="#ff99ff" lang="en" face="lucida" style="font-family:lucida,arial,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+
+<span style="font-family: lucida,helvetica,arial">
+<table width="95%">
+<tbody>
+<tr>
+<td width="70%">
+    <small><a href="index-lx.shtml#nospam">Copyright &copy; h-peter recktenwald, berlin, 2000</a> 
+    - free for any related work and non-commercial distribution.<br>
+    <a href="http://lynx.browser.org">Lynx</a> (etc) text mode tables arranged to 110 chars/line - <br>
+    where if properly adjusted the html-lists appear most "readable"...</small>
+</td>
+<td align="right">
+<a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0"></a>
+</td>
+</tr>
+</tbody>
+</table>
+
+<hr>
+<a name="top"></a>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index by names]</a> 
+<a href="lhpsysc0s.html">[s:index by topic]</a> 
+<a name="lhpsysc0.html">[#:index by numbers]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+
+<hr>
+
+<blockquote>
+<ul>
+<li><b>Common reference</b> which will not be repeated throughout this text:
+    <ul>
+    <li>&lt;<a href="file:///usr/src/linux/include/asm/unistd.h">unistd.h</a>&gt; syscalls list, 
+	&lt;<a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>&gt; and, 
+	&lt;<a href="file:///usr/src/linux/include/linux/kernel.h">linux/kernel.h</a>&gt; for <a href="lhpstruc.html">data structures</a>.
+    </li>
+    <li>The syscall interface is defined in <a href="file:///usr/src/linux/arch/i386/kernel/entry.S">arch/i386/kernel/entry.S</a>,
+	symbols for loadable modules <a href="file:///usr/src/linux/kernel/ksyms.c">kernel/ksyms.c</a>.
+    </li>
+    <li>Error numbers and messages can be found in <a href="file:///usr/src/linux/include/asm/errno.h">include/asm/errno.h</a>.
+    </li>
+    </ul>
+</li>
+</ul>
+<ul>
+    <li>"<b>P</b>", according to <a href="lhplinks.html#au">asmutils-0.14</a> there are 46 system calls 
+	the names of which are <a href="#co">common to</a> the LINUX (2.2/4), FREEBSD, NETBSD, OPENBSD, 
+	BEOS and ATHEOS operating systems, marked "P" to denoting their (sort of) "portability".
+	</li>
+    <li>"<b>Obsolete</b>", mentioned but not linked to a corresponding table.</li>
+    <li>"<b>Not Implemented</b>", linked for possible future specification and <span style="color: #FFC1C1">marked</span> in a different colour.</li>
+    <li>"<b>K4</b>", &lt;name&gt; added where differently named w. kernel 2.4+ versions.</li>
+</ul>
+
+</blockquote>
+
+<hr>
+
+<h3>i386-PC-Linux&nbsp;System&nbsp;Calls</h3>
+<center>
+<h4>Sources: 
+	<a href="lhpsysref-2.2.19.html">2.2.19</a>, <a href="lhpsysref-2.4.19.html">2.4.19</a>, 
+	<a href="lhpsysref-2.4.20.html">2.4.20</a>, <a href="lhpsysref-2.6.0.html">2.6.0</a>
+</h4>
+</center>
+
+<hr>
+<ol>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#exit" name="exit">exit</a>&nbsp;<tab to="i3">	int - - - - <tab to="i7">: terminate the current process <tab to="i12">&nbsp;-1-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#fork" name="fork">fork</a>&nbsp;<tab to="i3">	s pt_regs - - - - <tab to="i7">: create child process <tab to="i12">&nbsp;-2-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#read" name="read">read</a>&nbsp;<tab to="i3">	uint ch* size_t - - <tab to="i7">: read from file descriptor <tab to="i12">&nbsp;-3-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#write" name="write">write</a>&nbsp;<tab to="i3">	uint c ch* size_t - - <tab to="i7">: write to file descriptor <tab to="i12">&nbsp;-4-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#open" name="open">open</a>&nbsp;<tab to="i3">	c ch* int int - - <tab to="i7">: open / create file or device <tab to="i12">&nbsp;-5-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#close" name="close">close</a>&nbsp;<tab to="i3">	uint - - - - 	<tab to="i7">: close a file descriptor <tab to="i12">&nbsp;-6-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#waitpid" name="waitpid">waitpid</a>&nbsp;<tab to="i3">pid_t uint* int - - 	<tab to="i7">: wait for process termination <tab to="i12">&nbsp;-7-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#creat" name="creat">creat</a>&nbsp;<tab to="i3">	c ch* int - - - <tab to="i7">: create child process <tab to="i12">&nbsp;-8-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#link" name="link">link</a>&nbsp;<tab to="i3">	c ch* c ch* - - - <tab to="i7">: assign new name to a file <tab to="i12">&nbsp;-9-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#unlink" name="unlink">unlink</a>&nbsp;<tab to="i3">	c ch* - - - - <tab to="i7">: del name & file it refers to <tab to="i12">&nbsp;-10-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#execve" name="execve">execve</a>&nbsp;<tab to="i3">	s pt_regs - - - - <tab to="i7">: execute program <tab to="i12">&nbsp;-11-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chdir" name="chdir">chdir</a>&nbsp;<tab to="i3">	c ch* - - - - <tab to="i7">: change working directory <tab to="i12">&nbsp;-12-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#time" name="time">time</a>&nbsp;<tab to="i3">	int* - - - - <tab to="i7">: get time in seconds <tab to="i12">&nbsp;-13-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mknod" name="mknod">mknod</a>&nbsp;<tab to="i3">	c ch* int dev_t - - <tab to="i7">: create dir, special, ordinary file <tab to="i12">&nbsp;-14-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chmod" name="chmod">chmod</a>&nbsp;<tab to="i3">	c ch* mode_t - - - <tab to="i7">: change permissions of a file <tab to="i12">&nbsp;-15-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#lchown" name="lchown">lchown</a>&nbsp;<tab to="i3">	c ch* uid_t gid_t - - <tab to="i7">: change ownership of a file <tab to="i12">&nbsp;-16-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#break" name="break"><span style="color:#FFC1C1">break</span></a></li>
+ <li>&nbsp;<tab to="i1"> oldstat</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#lseek" name="lseek">lseek</a>&nbsp;<tab to="i3">	uint off_t uint - - <tab to="i7">: reposition read/write file offset <tab to="i12">&nbsp;-19-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#getpid" name="getpid">getpid</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: get process identification <tab to="i12">&nbsp;-20-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mount" name="mount">mount</a>&nbsp;<tab to="i3">	ch* ch* ch* - - <tab to="i7">: mount and unmount filesystems <tab to="i12">&nbsp;-21-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#umount" name="umount">umount</a> K4(18):oldumount <tab to="i3">	ch* - - - - <tab to="i7">: mount and unmount filesystems. <tab to="i12">&nbsp;-22-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setuid" name="setuid">setuid</a>&nbsp;<tab to="i3">	uid_t - - - - <tab to="i7">: set user identity <tab to="i12">&nbsp;-23-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getuid" name="getuid">getuid</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: get user identity <tab to="i12">&nbsp;-24-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#stime" name="stime">stime</a>&nbsp;<tab to="i3">	int* - - - - <tab to="i7">: set time <tab to="i12">&nbsp;-25-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#ptrace" name="ptrace">ptrace</a>&nbsp;<tab to="i3">	l l l l - <tab to="i7">: process trace <tab to="i12">&nbsp;-26-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#alarm" name="alarm">alarm</a>&nbsp;<tab to="i3">	uint - - - - <tab to="i7">: set alarm clock for delivery of signal <tab to="i12">&nbsp;-27-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#oldfstat" name="oldfstat">oldfstat</a></li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#pause" name="pause">pause</a>&nbsp;<tab to="i4">	- - - - - <tab to="i7">: wait for signal <tab to="i12">&nbsp;-29-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#utime" name="utime">utime</a>&nbsp;<tab to="i3">	ch* s utimbuf* - - -<tab to="i7">: chg access and/or modification times <tab to="i12">&nbsp;-30-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#stty" name="stty"><span style="color:#FFC1C1">stty</span></a></li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#gtty" name="gtty"><span style="color:#FFC1C1">gtty</span></a></li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#access" name="access">access</a>&nbsp;<tab to="i3">	c ch* int - - - <tab to="i7">: check user's permissions for a file <tab to="i12">&nbsp;-33-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#nice" name="nice">nice</a>&nbsp;<tab to="i3">		int - - - - <tab to="i7">: change process priority <tab to="i12">&nbsp;-34-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#ftime" name="ftime"><span style="color:#FFC1C1">ftime</span></a>&nbsp;<tab to="i3"> <tab to="i7"><tab to="i7">: (re time) return date and time <tab to="i12">&nbsp;-35-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#sync" name="sync">sync</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: commit buffer cache to disk <tab to="i12">&nbsp;-36-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#kill" name="kill">kill</a>&nbsp;<tab to="i3">	int int - - - <tab to="i7">: send signal to a process <tab to="i12">&nbsp;-37-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#rename" name="rename">rename</a>&nbsp;<tab to="i3">	c ch* c ch* - - - <tab to="i7">: change the name or location of a file <tab to="i12">&nbsp;-38-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mkdir" name="mkdir">mkdir</a>&nbsp;<tab to="i3">	c ch* int - - - <tab to="i7">: create directory <tab to="i12">&nbsp;-39-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#rmdir" name="rmdir">rmdir</a>&nbsp;<tab to="i3">	c ch* - - - - <tab to="i7">: delete (an empty) directory <tab to="i12">&nbsp;-40-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#dup" name="dup">dup</a>&nbsp;<tab to="i3"> uint - - - - <tab to="i7">: duplicate a file descriptor <tab to="i12">&nbsp;-41-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#pipe" name="pipe">pipe</a>&nbsp;<tab to="i3">	ul* - - - - <tab to="i7">: create pipe <tab to="i12">&nbsp;-42-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#times" name="times">times</a>&nbsp;<tab to="i3">	s tms* - - - - <tab to="i7">: get process times <tab to="i12">&nbsp;-43-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#prof" name="prof"><span style="color:#FFC1C1">prof</span></a></li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#brk" name="brk">brk</a>&nbsp;<tab to="i3"> ul - - - - <tab to="i7">: change data segment size <tab to="i12">&nbsp;-45-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setgid" name="setgid">setgid</a>&nbsp;<tab to="i3">	gid_t - - - - <tab to="i7">: set group identity <tab to="i12">&nbsp;-46-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getgid" name="getgid">getgid</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: get group identity <tab to="i12">&nbsp;-47-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#signal" name="signal">signal</a>&nbsp;<tab to="i3">	int __sighandler_t - - - <tab to="i7">: ANSI C signal handling <tab to="i12">&nbsp;-48-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#geteuid" name="geteuid">geteuid</a>&nbsp;<tab to="i3">- - - - - <tab to="i7">: get user identity <tab to="i12">&nbsp;-49-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#getegid" name="getegid">getegid</a>&nbsp;<tab to="i3">- - - - - <tab to="i7">: get group identity <tab to="i12">&nbsp;-50-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#acct" name="acct">acct</a>&nbsp;<tab to="i3">		c ch* - - - - <tab to="i7">: switch process accounting on or off</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#umount2" name="umount2">umount2</a> K4(18):umount <tab to="i3">ch* int - - - <tab to="i7">: mount and unmount filesystems. <tab to="i12">&nbsp;-52-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#lock" name="lock"><span style="color:#FFC1C1">lock</span></a></li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#ioctl" name="ioctl">ioctl</a>&nbsp;<tab to="i3">	uint uint ul - - <tab to="i7">: re <a href="lhpioctl.html">ioctl assignations</a>&nbsp;<tab to="i3">, control device <tab to="i12">&nbsp;-54-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#fcntl" name="fcntl">fcntl</a>&nbsp;<tab to="i3">	uint uint ul - - <tab to="i7">: re <a href="file:///usr/src/linux/include/asm/fcntl.h">fcntl.h</a>, <tab to="i3">manipulate file descriptor <tab to="i12">&nbsp;-55-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#mpx" name="mpx"><span style="color:#FFC1C1">mpx</span></a></li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setpgid" name="setpgid">setpgid</a>&nbsp;<tab to="i3">	pid_t pid_t - - -<tab to="i7">: set/get process group <tab to="i12">&nbsp;-57-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#ulimit" name="ulimit">ulimit</a>&nbsp;<tab to="i3"> <tab to="i7">: re getrlimit(2) <tab to="i12">&nbsp;-58-</li>
+ <li>&nbsp;<tab to="i1"> oldolduname</a>	<tab to="i3"> s oldold_utsname* - - - -</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#umask" name="umask">umask</a>&nbsp;<tab to="i3"> int - - - - <tab to="i7">: set file creation mask <tab to="i12">&nbsp;-60-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chroot" name="chroot">chroot</a>&nbsp;<tab to="i3"> c ch* - - - - <tab to="i7">: change root directory <tab to="i12">&nbsp;-61-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc1.html#ustat" name="ustat">ustat</a>&nbsp;<tab to="i3"> dev_t s ustat* - - - <tab to="i7">: get file system statistics <tab to="i12">&nbsp;-62-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#dup2" name="dup2">dup2</a>&nbsp;<tab to="i3"> uint uint - - - <tab to="i7">: replace 2nd w/ duplicate of 1st fd <tab to="i12">&nbsp;-63-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getppid" name="getppid">getppid</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: get process identification <tab to="i12">&nbsp;-64-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#getpgrp" name="getpgrp">getpgrp</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: set/get process group <tab to="i12">&nbsp;-65-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#setsid" name="setsid">setsid</a>&nbsp;<tab to="i3"> - - - - - <tab to="i7">: crea session, set process group ID <tab to="i12">&nbsp;-66-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigaction" name="sigaction">sigaction</a>&nbsp;<tab to="i3">	int c s olds old_sigaction* - - <tab to="i7">: POSIX signal handling functions <tab to="i12">&nbsp;-67-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sgetmask" name="sgetmask">sgetmask</a> <tab to="i3"> - - - - -</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#ssetmask" name="ssetmask">ssetmask</a> <tab to="i3"> - - - - </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setreuid" name="setreuid">setreuid</a>&nbsp;<tab to="i3">	uid_t uid_t - - - <tab to="i7">: set real and / or effective user ID <tab to="i12">&nbsp;-70-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setregid" name="setregid">setregid</a>&nbsp;<tab to="i3">	gid_t gid_t - - - <tab to="i7">: set real and / or effective group ID <tab to="i12">&nbsp;-71-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigsuspend" name="sigsuspend">sigsuspend</a>&nbsp;<tab to="i3">	int int old_sigset_t - - <tab to="i7">: POSIX signal handling functions. <tab to="i12">&nbsp;-72-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigpending" name="sigpending">sigpending</a>&nbsp;<tab to="i3">old_sigset_t* - - - - <tab to="i7">: POSIX signal handling functions <tab to="i12">&nbsp;-73-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sethostname" name="sethostname">sethostname</a>&nbsp;<tab to="i3">	ch* int - - - <tab to="i7">: set host name <tab to="i12">&nbsp;-74-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setrlimit" name="setrlimit">setrlimit</a>&nbsp;<tab to="i3">	uint s rlimit* - - - <tab to="i7">: get/set resource limits and usage <tab to="i12">&nbsp;-75-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#getrlimit" name="getrlimit">getrlimit</a>&nbsp;<tab to="i3">	uint s rlimit* - - - <tab to="i7">: get/set resource limits and usage <tab to="i12">&nbsp;-76-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#getrusage" name="getrusage">getrusage</a>&nbsp;<tab to="i3">	int s rusage* - - - <tab to="i7">: get/set resource limits and usage <tab to="i12">&nbsp;-77-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#gettimeofday" name="gettimeofday">gettimeofday</a>&nbsp;<tab to="i3">	s timeval* s timezone* - - - <tab to="i7">: get time <tab to="i12">&nbsp;-78-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#settimeofday" name="settimeofday">settimeofday</a>&nbsp;<tab to="i3">	s timeval* s timezone* - - - <tab to="i7">: set time <tab to="i12">&nbsp;-79-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#getgroups" name="getgroups">getgroups</a>&nbsp;<tab to="i3">	int gid_t* - - - <tab to="i7">: get list of supplementary group IDs <tab to="i12">&nbsp;-80-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setgroups" name="setgroups">setgroups</a>&nbsp;<tab to="i3">	int gid_t* - - - <tab to="i7">: set list of supplementary group IDs <tab to="i12">&nbsp;-81-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#select" name="select">select</a>+K4:oldselect <tab to="i3">	s sel_arg_s* - - - - <tab to="i7">: synchronous I/O multiplexing <tab to="i12">&nbsp;-82-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#symlink" name="symlink">symlink</a>&nbsp;<tab to="i3">	c ch* c ch* - - - <tab to="i7">: make new name for a file <tab to="i12">&nbsp;-83-</li>
+ <li>&nbsp;<tab to="i1"> oldlstat</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#readlink" name="readlink">readlink</a>&nbsp;<tab to="i3">	c ch* ch* int - - <tab to="i7">: read value of a symbolic link <tab to="i12">&nbsp;-85-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#uselib" name="uselib">uselib</a>&nbsp;<tab to="i3">	c ch* - - - - <tab to="i7">: select shared library <tab to="i12">&nbsp;-86-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#swapon" name="swapon">swapon</a>&nbsp;<tab to="i3">	c ch* int - - - <tab to="i7">: start swapping to file/device <tab to="i12">&nbsp;-87-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#reboot" name="reboot">reboot</a>&nbsp;<tab to="i3">	int int int void* - <tab to="i7">: reboot or enable/disable Ctrl-Alt-Del <tab to="i12">&nbsp;-88-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#readdir" name="readdir">readdir</a>&nbsp;<tab to="i3">	uint void* uint - - <tab to="i7">: read directory entry <tab to="i12">&nbsp;-89-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#mmap" name="mmap">mmap</a>&nbsp;<tab to="i3">	s mmap_arg_s* - - - - <tab to="i7">: map files or devices into memory <tab to="i12">&nbsp;-90-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#munmap" name="munmap">munmap</a>&nbsp;<tab to="i3">	ul size_t - - - <tab to="i7">: unmap files or devices into memory <tab to="i12">&nbsp;-91-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#truncate" name="truncate">truncate</a>&nbsp;<tab to="i3">	c ch* ul - - - <tab to="i7">: truncate file to specified length <tab to="i12">&nbsp;-92-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#ftruncate" name="ftruncate">ftruncate</a>&nbsp;<tab to="i3">	uint ul - - - <tab to="i7">: truncate file to specified length <tab to="i12">&nbsp;-93-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#fchmod" name="fchmod">fchmod</a>&nbsp;<tab to="i3">	int fd uint mode_t - - - <tab to="i7">: change permissions of a file <tab to="i12">&nbsp;-94-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#fchown" name="fchown">fchown</a>&nbsp;<tab to="i3">	int fd uint uid_t gid_t - - <tab to="i7">: change ownership of a file <tab to="i12">&nbsp;-95-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#getpriority" name="getpriority">getpriority</a>&nbsp;<tab to="i3">	int int - - - <tab to="i7">: get program scheduling priority <tab to="i12">&nbsp;-96-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setpriority" name="setpriority">setpriority</a>&nbsp;<tab to="i3">	int int int - - <tab to="i7">: set program scheduling priority <tab to="i12">&nbsp;-97-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#profil" name="profil">profil</a>&nbsp;<tab to="i3">	<tab to="i7">: execution time profile <tab to="i12">&nbsp;-98-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#statfs" name="statfs">statfs</a>&nbsp;<tab to="i3">	c ch* s statfs* - - - <tab to="i7">: get file system statistics <tab to="i12">&nbsp;-99-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#fstatfs" name="fstatfs">fstatfs</a>&nbsp;<tab to="i3">	uint s statfs* - - - <tab to="i7">: get file system statistics <tab to="i12">&nbsp;-100-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#ioperm" name="ioperm">ioperm</a>&nbsp;<tab to="i3">	ul ul int - - <tab to="i7">: set port input/output permissions <tab to="i12">&nbsp;-101-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#socketcall" name="socketcall">socketcall</a>&nbsp;<tab to="i3"> int ul* - - - <tab to="i7">: socket system calls <tab to="i12">&nbsp;-102-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#syslog" name="syslog">syslog</a>&nbsp;<tab to="i3">	int ch* int - - <tab to="i7">: read/clr kernel msg buffer; loglevel <tab to="i12">&nbsp;-103-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setitimer" name="setitimer">setitimer</a>&nbsp;<tab to="i3">	int s itimerval* s itimerval* - - <tab to="i7">: set an interval timer <tab to="i12">&nbsp;-104-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#getitimer" name="getitimer">getitimer</a>&nbsp;<tab to="i3">	int s itimerval* - - - <tab to="i7">: get value of an interval timer <tab to="i12">&nbsp;-105-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#stat" name="stat">stat</a>&nbsp;<tab to="i3">	ch* s stat* - - - <tab to="i7">: get file status <tab to="i12">&nbsp;-106-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#lstat" name="lstat">lstat</a>&nbsp;<tab to="i3">	ch* s stat* - - - <tab to="i7">: get file status <tab to="i12">&nbsp;-107-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#fstat" name="fstat">fstat</a>&nbsp;<tab to="i3">	uint s stat* - - - <tab to="i7">: get file status <tab to="i12">&nbsp;-108-</li>
+ <li>&nbsp;<tab to="i1"> olduname <tab to="i3">	s old_utsname* - - - -</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#iopl" name="iopl">iopl</a>&nbsp;<tab to="i3">	ul - - - - <tab to="i7">: change I/O privilege level <tab to="i12">&nbsp;-110-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#vhangup" name="vhangup">vhangup</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: virtually hangup the current tty <tab to="i12">&nbsp;-111-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#idle" name="idle">idle</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: make process 0 idle <tab to="i12">&nbsp;-112-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#vm86old" name="vm86old">vm86old</a>&nbsp;<tab to="i3">	ul s vm86plus_s* - - - <tab to="i7">: enter virtual 8086 mode <tab to="i12">&nbsp;-113-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#wait4" name="wait4">wait4</a>&nbsp;<tab to="i3">	ul* int options s rusage* - <tab to="i7">: wait for process termination, BSD <tab to="i12">&nbsp;-114-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#swapoff" name="swapoff">swapoff</a>&nbsp;<tab to="i3">	c ch* - - - - <tab to="i7">: stop swapping to file/device <tab to="i12">&nbsp;-115-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sysinfo" name="sysinfo">sysinfo</a>&nbsp;<tab to="i3">	s sysinfo* - - - - <tab to="i7">: info on overall system statistics <tab to="i12">&nbsp;-116-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#ipc" name="ipc">ipc</a>&nbsp;<tab to="i3">	uint int int int void* <tab to="i7">: System V IPC system calls <tab to="i12">&nbsp;-117-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#fsync" name="fsync">fsync</a>&nbsp;<tab to="i3">	uint - - - - <tab to="i7">: sync complete in-core state with disk <tab to="i12">&nbsp;-118-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigreturn" name="sigreturn">sigreturn</a>&nbsp;<tab to="i3">	ul - - - - <tab to="i7">: ret from sig hnd, cleanup stack <tab to="i12">&nbsp;-119-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#clone" name="clone">clone</a>&nbsp;<tab to="i3">	s pt_regs - - - - <tab to="i7">: create child process <tab to="i12">&nbsp;-120-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#setdomainname" name="setdomainname">setdomainname</a>&nbsp;<tab to="i3">	ch* int - - - <tab to="i7">: get/set domain name <tab to="i12">&nbsp;-121-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#uname" name="uname">uname</a>&nbsp;<tab to="i3">	s new_utsname* - - - - <tab to="i7">: get name & info about current kernel <tab to="i12">&nbsp;-122-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#modify_ldt" name="modify_ldt">modify_ldt</a>&nbsp;<tab to="i3"> int void* ul - - <tab to="i7">: get or set ldt <tab to="i12">&nbsp;-123-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#adjtimex" name="adjtimex">adjtimex</a>&nbsp;<tab to="i3">	s timex* - - - - <tab to="i7">: tune kernel clock <tab to="i12">&nbsp;-124-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#mprotect" name="mprotect">mprotect</a>&nbsp;<tab to="i3">	ul size_t ul - - <tab to="i7">: control allowable accesses to memory <tab to="i12">&nbsp;-125-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigprocmask" name="sigprocmask">sigprocmask</a>&nbsp;<tab to="i3">	int old_sigset_t* old_sigset_t* - - <tab to="i7">: POSIX signal handling functions <tab to="i12">&nbsp;-126-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#create_module" name="create_module">create_module</a>&nbsp;<tab to="i3">	c ch* size_t - - - <tab to="i7">: create module entry <tab to="i12">&nbsp;-127-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc2.html#init_module" name="init_module">init_module</a>&nbsp;<tab to="i3">	c ch* s module* - - - <tab to="i7">: init loadable module entry <tab to="i12">&nbsp;-128-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#delete_module" name="delete_module">delete_module</a>&nbsp;<tab to="i3">	c ch* - - - - <tab to="i7">: delete module entry <tab to="i12">&nbsp;-129-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#get_kernel_syms" name="get_kernel_syms">get_kernel_syms</a>&nbsp;<tab to="i3">s kernel_sym* - - - - <tab to="i7">: retrieve kernel & module syms <tab to="i12">&nbsp;-130-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#quotactl" name="quotactl">quotactl</a>&nbsp;<tab to="i3">	int c ch* int caddr_t - <tab to="i7">: manipulate disk quotas <tab to="i12">&nbsp;-131-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getpgid" name="getpgid">getpgid</a>&nbsp;<tab to="i3">	pid_t - - - - <tab to="i7">: set/get process group <tab to="i12">&nbsp;-132-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#fchdir" name="fchdir">fchdir</a>&nbsp;<tab to="i3">	uint - - - - <tab to="i7">: change working directory <tab to="i12">&nbsp;-133-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#bdflush" name="bdflush">bdflush</a>&nbsp;<tab to="i3">	int l - - - <tab to="i7">: start/flsh/tune buf-dirty-flsh daem <tab to="i12">&nbsp;-134-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sysfs" name="sysfs">sysfs</a>&nbsp;<tab to="i3">	int ul ul - - <tab to="i7">: get file system type information <tab to="i12">&nbsp;-135-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#personality" name="personality">personality</a>&nbsp;<tab to="i3">	ul - - - -	<tab to="i7">: set process execution domain <tab to="i12">&nbsp;-136-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#afs_syscall" name="afs_syscall"><span style="color:#FFC1C1">afs_syscall</span></a></li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#setfsuid" name="setfsuid">setfsuid</a>&nbsp;<tab to="i3">	uid_t - - - - <tab to="i7">: set user id for file system checks <tab to="i12">&nbsp;-138-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#setfsgid" name="setfsgid">setfsgid</a>&nbsp;<tab to="i3">	gid_t - - - - <tab to="i7">: set group id for file system checks <tab to="i12">&nbsp;-139-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#llseek" name="llseek">llseek</a>&nbsp;<tab to="i3">	uint ul ul loff_t* uint <tab to="i7">: reposn r/w file offset <tab to="i12">&nbsp;-140-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getdents" name="getdents">getdents</a>&nbsp;<tab to="i3">	uint void* uint - - <tab to="i7">: get directory entries <tab to="i12">&nbsp;-141-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#newselect" name="newselect">newselect</a>+K4:select<tab to="i3">	int fd_set* fd_set* fd_set* s timeval* <tab to="i7">: sync I/O multiplexing <tab to="i12">&nbsp;-142-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#flock" name="flock">flock</a>&nbsp;<tab to="i3">	uint uint - - - <tab to="i7">: apply/remove advisory file lock <tab to="i12">&nbsp;-143-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#msync" name="msync">msync</a>&nbsp;<tab to="i3">	ul size_t int - - <tab to="i7">: synchronize file with a memory map <tab to="i12">&nbsp;-144-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#readv" name="readv">readv</a>&nbsp;<tab to="i3">	ul c s iovec* ul - - <tab to="i7">: read or write a vector <tab to="i12">&nbsp;-145-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#writev" name="writev">writev</a>&nbsp;<tab to="i3">	ul c s iovec* ul - - <tab to="i7">: read or write a vector <tab to="i12">&nbsp;-146-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getsid" name="getsid">getsid</a>&nbsp;<tab to="i3">	pid_t - - - - <tab to="i7">: get session ID <tab to="i12">&nbsp;-147-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#fdatasync" name="fdatasync">fdatasync</a>&nbsp;<tab to="i3">	uint - - - - <tab to="i7">: synchronize in-core data with disk <tab to="i12">&nbsp;-148-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sysctl" name="sysctl">sysctl</a>&nbsp;<tab to="i3">	s __sysctl_args* - - - - <tab to="i7">: <tab to="i12">&nbsp;-149-</li></li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#mlock" name="mlock">mlock</a>&nbsp;<tab to="i3">	ul size_t - - - <tab to="i7">: disable paging for parts of memory <tab to="i12">&nbsp;-150-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#munlock" name="munlock">munlock</a>&nbsp;<tab to="i3">	ul size_t - - - <tab to="i7">: reenable paging for parts of memory <tab to="i12">&nbsp;-151-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#mlockall" name="mlockall">mlockall</a>&nbsp;<tab to="i3">	int - - - - <tab to="i7">: disable paging for calling process <tab to="i12">&nbsp;-152-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#munlockall" name="munlockall">munlockall</a>&nbsp;<tab to="i3"> - - - - - <tab to="i7">: reenable paging for calling process <tab to="i12">&nbsp;-153-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_setparam" name="sched_setparam">sched_setparam</a>&nbsp;<tab to="i3">	pid_t s sched_param* - - -			<tab to="i7">: set scheduling parameters <tab to="i12">&nbsp;-154-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_getparam" name="sched_getparam">sched_getparam</a>&nbsp;<tab to="i3">	pid_t s sched_param* - - - <tab to="i7">: get scheduling parameters <tab to="i12">&nbsp;-155-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_setscheduler" name="sched_setscheduler">sched_setscheduler</a>&nbsp;<tab to="i3">	pid_t int s sched_param* - - <tab to="i7">: set scheduling algo/param <tab to="i12">&nbsp;-156-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_getscheduler" name="sched_getscheduler">sched_getscheduler</a>&nbsp;<tab to="i3">	pid_t - - - - <tab to="i7">: get scheduling algo/param <tab to="i12">&nbsp;-157-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_yield" name="sched_yield">sched_yield</a>&nbsp;<tab to="i3">	- - - - - <tab to="i7">: yield the processor <tab to="i12">&nbsp;-158-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_get_priority_max" name="sched_get_priority_max">sched_get_priority_max</a>&nbsp;<tab to="i3">	- - - - <tab to="i7">: get static priority rng <tab to="i12">&nbsp;-159-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_get_priority_min" name="sched_get_priority_min">sched_get_priority_min</a>&nbsp;<tab to="i3">	- - - - <tab to="i7">: get static priority rng <tab to="i12">&nbsp;-160-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sched_rr_get_interval" name="sched_rr_get_interval">sched_rr_get_interval</a>&nbsp;<tab to="i3">	pid_t s timespec* - - - <tab to="i7">: get SCHED_RR interval <tab to="i12">&nbsp;-161-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc3.html#nanosleep" name="nanosleep">nanosleep</a>&nbsp;<tab to="i3">	s timespec* s timespec* - - - <tab to="i7">: pause execution for specified time <tab to="i12">&nbsp;-162-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#mremap" name="mremap">mremap</a>&nbsp;<tab to="i3">	ul ul ul ul - <tab to="i7">: re-map a virtual memory address <tab to="i12">&nbsp;-163-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#setresuid" name="setresuid">setresuid</a>&nbsp;<tab to="i3">	uid_t uid_t uid_t - - <tab to="i7">: set real, eff. and saved user ID <tab to="i12">&nbsp;-164-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getresuid" name="getresuid">getresuid</a>&nbsp;<tab to="i3">	uid_t* uid_t* uid_t* - - <tab to="i7">: get real/effective/saved user ID <tab to="i12">&nbsp;-165-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#vm86" name="vm86">vm86</a>&nbsp;<tab to="i3">	s vm86_s* - - - - <tab to="i7">: enter virtual 8086 mode <tab to="i12">&nbsp;-166-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#query_module" name="query_module">query_module</a>&nbsp;<tab to="i3">	c ch* int ch* size_t size_t* <tab to="i7">: for bits pertaining to modules <tab to="i12">&nbsp;-167-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#poll" name="poll">poll</a>&nbsp;<tab to="i3">	s pollfd* uint l - - <tab to="i7">: wait for event on file descriptor <tab to="i12">&nbsp;-168-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#nfsservctl" name="nfsservctl">nfsservctl</a>&nbsp;<tab to="i3">int void* void* - - <tab to="i7">: syscall i.f. to kernel nfs daemon <tab to="i12">&nbsp;-169-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#setresgid" name="setresgid">setresgid</a>&nbsp;<tab to="i3">	gid_t gid_t gid_t - - <tab to="i7">: set real,effective,saved group ID <tab to="i12">&nbsp;-170-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getresgid" name="getresgid">getresgid</a>&nbsp;<tab to="i3">	gid_t* gid_t* gid_t* - - <tab to="i7">: get real/effective/saved group ID <tab to="i12">&nbsp;-171-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#prctl" name="prctl">prctl</a>&nbsp;<tab to="i3">	ul ul unsigned l ul <tab to="i7">: operations on a process <tab to="i12">&nbsp;-172-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigreturn" name="rt_sigreturn">rt_sigreturn</a>	<tab to="i3">ul - - - - <tab to="i7">: </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigaction" name="rt_sigaction">rt_sigaction</a>	<tab to="i3">int c s sigaction*, s sigaction*, size_t - <tab to="i7">: setup rt sighnd (RTL)</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigprocmask" name="rt_sigprocmask">rt_sigprocmask</a>	<tab to="i3">int sigset_t* sigset_t* size_t - <tab to="i7">: </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigpending" name="rt_sigpending">rt_sigpending</a>	<tab to="i3">sigset_t* size_t - - - <tab to="i7">: </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigtimedwait" name="rt_sigtimedwait">rt_sigtimedwait</a>	<tab to="i3">c sigset_t* siginfo_t* c s timespec* size_t - <tab to="i7">: </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigqueueinfo" name="rt_sigqueueinfo">rt_sigqueueinfo</a>	<tab to="i3">int int siginfo_t* - - <tab to="i7">: </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#rt_sigsuspend" name="rt_sigsuspend">rt_sigsuspend</a>	<tab to="i3">sigset_t* size_t - - - <tab to="i7">: </li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#pread" name="pread">pread</a>&nbsp;<tab to="i3">	uint ch* size_t loff_t - <tab to="i7">: read from file descr at given offset <tab to="i12">&nbsp;-180-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#pwrite" name="pwrite">pwrite</a>&nbsp;<tab to="i3">	uint c ch* size_t loff_t - <tab to="i7">: write to file descriptor at offset <tab to="i12">&nbsp;-181-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#chown" name="chown">chown</a>&nbsp;<tab to="i3">	c ch* uid_t gid_t - - <tab to="i7">: change ownership of a file <tab to="i12">&nbsp;-182-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getcwd" name="getcwd">getcwd</a>&nbsp;<tab to="i3">	ch* ul - - - <tab to="i7">: get current working directory <tab to="i12">&nbsp;-183-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#capget" name="capget">capget</a>&nbsp;<tab to="i3">	cap_user_header_t cap_user_data_t - - - <tab to="i7">: get process capabilities <tab to="i12">&nbsp;-184-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#capset" name="capset">capset</a>&nbsp;<tab to="i3">	cap_user_header_t c cap_user_data_t - - - <tab to="i7">: set process capabilities <tab to="i12">&nbsp;-185-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sigaltstack" name="sigaltstack">sigaltstack</a>&nbsp;<tab to="i3"> c stack_t* stack_t* ul ss - -</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#sendfile" name="sendfile">sendfile</a>&nbsp;<tab to="i3">	int int off_t* size_t - <tab to="i7">: xfer data between file descriptors <tab to="i12">&nbsp;-187-</li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#getpmsg" name="getpmsg"><span style="color:#FFC1C1">getpmsg</span></a></li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#putpmsg" name="putpmsg"><span style="color:#FFC1C1">putpmsg</span></a></li>
+ <li>&nbsp;<tab to="i1"><a href="lhpsysc3.html#vfork" name="vfork">vfork</a>&nbsp;<tab to="i3"> s pt_regs - - - - <tab to="i7">: create child process &amp; block parent <tab to="i12">-190-</li>
+ </ol>
+ <p>&nbsp;<br>
+ <strong>Kernel 2.4.2</strong><br>
+ (Documentation delayed until/if sufficiently stable &amp; consistent - which seems very un-likely...)<br></p>
+<ol start="191">
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getrlimit" 	name="getrlimit"	>getrlimit </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#mmap2"	 	name="mmap2"		>mmap2 </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#truncate64" 	name="truncate64"	>truncate64 </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#ftruncate64" 	name="ftruncate64"	>ftruncate64</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#stat64" 		name="stat64"		>stat64 </a>&nbsp;<tab to="i12">&nbsp;-195-</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lstat64" 		name="lstat64" 		>lstat64 </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fstat64" 		name="fstat64"		>fstat64 </a>&nbsp;<tab to="i3">&nbsp;</li>
+<p>- re below, modified w. 2.4.18 -</p>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lchown" 		name="lchown"		>lchown </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getuid" 		name="getuid"		>getuid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getgid"	 	name="getgid"		>getgid </a>&nbsp;<tab to="i12">&nbsp;-200-</li>		
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#geteuid" 		name="geteuid"		>geteuid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getegid" 		name="getegid"		>getegid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setreuid" 	name="setreuid"		>setreuid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setregid" 	name="setregid"		>setregid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getgroups" 	name="getgroups"	>getgroups </a>&nbsp;<tab to="i12">&nbsp;-205-</li>		
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setgroups" 	name="setgroups"	>setgroups </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fchown" 		name="fchown"		>fchown </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setresuid" 	name="setresuid"	>setresuid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getresuid" 	name="getresuid"	>getresuid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setresgid" 	name="setresgid"	>setresgid </a>&nbsp;<tab to="i12">&nbsp;-210-</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getresgid" 	name="getresgid"	>getresgid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#chown" 		name="chown"		>chown </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setuid" 		name="setuid"		>setuid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setgid" 		name="setgid"		>setgid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setfsuid"	 	name="setfsuid"		>setfsuid </a>&nbsp;<tab to="i12">&nbsp;-215-</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setfsgid" 	name="setfsgid"		>setfsgid </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#pivot_root" 	name="pivot_root"	>pivot_root</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#mincore" 		name="mincore"		>mincore </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#madvise"		name="madvise"		>madvise </a>&nbsp;<tab to="i3">&nbsp;</li>
+</ol>
+ <p>&nbsp;<br>
+ <strong>Kernel 2.4.18</strong><br>
+ different names wrt previous 2.4 kernels(!) and new system calls:
+<ol start="198">
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lchown"		name="lchown"		>lchown32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getuid"		name="getuid"		>getuid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getgid"		name="getgid"		>getgid32 	</a>&nbsp;<tab to="i3">200</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#geteuid"		name="geteuid"		>geteuid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getegid"		name="getegid"		>getegid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setreuid"		name="setreuid"		>setreuid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setregid"		name="setregid"		>setregid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getgroups"	name="getgroups"	>getgroups32 	</a>&nbsp;<tab to="i3">205</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setgroups"	name="setgroups"	>setgroups32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fchown"		name="fchown"		>fchown32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setresuid"	name="setresuid"	>setresuid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getresuid"	name="getresuid"	>getresuid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setresgid"	name="setresgid"	>setresgid32 	</a>&nbsp;<tab to="i3">210</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getresgid"	name="getresgid"	>getresgid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#chown"		name="chown"		>chown32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setuid"		name="setuid"		>setuid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setgid"		name="setgid"		>setgid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setfsuid"		name="setfsuid"		>setfsuid32 	</a>&nbsp;<tab to="i3">215</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setfsgid"		name="setfsgid"		>setfsgid32 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#pivot_root"	name="pivot_root"	>pivot_root 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#mincore"		name="mincore"		>mincore 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#madvise"		name="madvise"		>madvise, madvise1</a> <tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getdents64"	name="getdents64"	>getdents64 	</a>&nbsp;<tab to="i3">220</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fcntl64"		name="fcntl64"		>fcntl64 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"></li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#security"		name="security"		>security 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#gettid"		name="gettid"		>gettid		</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#readahead"	name="readahead"	>readahead 	</a>&nbsp;<tab to="i3">225</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#setxattr"		name="setxattr"		>setxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lsetxattr"	name="lsetxattr"	>lsetxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fsetxattr"	name="fsetxattr"	>fsetxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#getxattr"		name="getxattr"		>getxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lgetxattr"	name="lgetxattr"	>lgetxattr 	</a>&nbsp;<tab to="i3">230</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fgetxattr"	name="fgetxattr"	>fgetxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#listxattr"	name="listxattr"	>listxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#llistxattr"	name="llistxattr"	>llistxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#flistxattr"	name="flistxattr"	>flistxattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#removexattr"	name="removexattr"	>removexattr 	</a>&nbsp;<tab to="i3">235</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lremovexattr"	name="lremovexattr"	>lremovexattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#fremovexattr"	name="fremovexattr"	>fremovexattr 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+</ol>
+ <p>&nbsp;<br>
+ <strong>Kernel 2.4.19, additional system calls</strong><br>
+<ol start="238">
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#tkill"		name="tkill"		>tkill		</a>&nbsp;<tab to="i3">&nbsp;238</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#sendfile64"	name="sendfile64"	>sendfile64	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#futex"		name="futex"		>futex		</a>&nbsp;<tab to="i3">&nbsp;240</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#sched_setaffinity" name="sched_setaffinity">sched_setaffinity</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#sched_getaffinity" name="sched_getaffinity">sched_getaffinity</a>&nbsp;<tab to="i3">&nbsp;242</li>
+</ol>
+ <p>&nbsp;<br>
+ <strong>Kernel 2.4.20, additional system calls</strong><br>
+<ol start="243">
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#set_thread_area"	name="set_thread_area"	>set_thread_area</a>&nbsp;<tab to="i3">&nbsp;243</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#get_thread_area"	name="get_thread_area"	>get_thread_area</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#io_setup"		name="io_setup"		>io_setup 	</a>&nbsp;<tab to="i3">245</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#io_destroy"	name="io_destroy"	>io_destroy 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#io_getevents"	name="io_getevents"	>io_getevents 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#io_submit"	name="io_submit"	>io_submit 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#io_cancel"	name="io_cancel"	>io_cancel 	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#alloc_hugepages"	name="alloc_hugepages"	>alloc_hugepages</a>&nbsp;<tab to="i3">250</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#free_hugepages"	name="free_hugepages"	>free_hugepages	</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#exit_group"	name="exit_group"	>exit_group 	</a>&nbsp;<tab to="i3">252</li>
+</ol>
+ <p>&nbsp;<br>
+ <strong>kernel 2.6. additional system calls</strong><br>
+<ol start="253">
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#lookup_dcookie    " name="lookup_dcookie  ">lookup_dcookie  </a>&nbsp;<tab to="i3">253</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#epoll_create      " name="epoll_create    ">epoll_create    </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc4.html#epoll_ctl         " name="epoll_ctl       ">epoll_ctl       </a>&nbsp;<tab to="i3">255</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#epoll_wait        " name="epoll_wait      ">epoll_wait      </a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#remap_file_pages  " name="remap_file_pages">remap_file_pages</a>&nbsp;<tab to="i3">&nbsp;</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#set_tid_address   " name="set_tid_address ">set_tid_address </a>&nbsp;<tab to="i3">258</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#timer_create	" name="timer_create	">timer_create	 </a>&nbsp;<tab to="i3">259</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#timer_settime	" name="timer_settime	">timer_settime	 </a>&nbsp;<tab to="i3">(__NR_timer_create+1)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#timer_gettime	" name="timer_gettime	">timer_gettime	 </a>&nbsp;<tab to="i3">(__NR_timer_create+2)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#timer_getoverrun  " name="timer_getoverrun">timer_getoverrun</a>&nbsp;<tab to="i3">(__NR_timer_create+3)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#timer_delete	" name="timer_delete	">timer_delete	 </a>&nbsp;<tab to="i3">(__NR_timer_create+4)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#clock_settime	" name="clock_settime	">clock_settime	 </a>&nbsp;<tab to="i3">(__NR_timer_create+5)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#clock_gettime	" name="clock_gettime	">clock_gettime	 </a>&nbsp;<tab to="i3">(__NR_timer_create+6)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#clock_getres	" name="clock_getres	">clock_getres	 </a>&nbsp;<tab to="i3">(__NR_timer_create+7)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#clock_nanosleep	" name="clock_nanosleep ">clock_nanosleep</a>&nbsp;<tab to="i3">(__NR_timer_create+8)</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#statfs64		" name="statfs64	">statfs64	 </a>&nbsp;<tab to="i3">268</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#fstatfs64		" name="fstatfs64	">fstatfs64	 </a>&nbsp;<tab to="i3">269</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#tgkill		" name="tgkill		">tgkill	 </a>&nbsp;<tab to="i3">270</li>
+<li>&nbsp;<tab to="i1"><a href="lhpsysc5.html#utimes		" name="utimes		">utimes	 </a>&nbsp;<tab to="i3">271</li>
+
+</ol>
+
+<p>&nbsp;</p>
+<hr>
+<a name="co"></a>
+<p>&nbsp;</p>
+<h4>By <a href="lhplinks.html#au">asmutils-0.14</a> supported System Calls<br>
+common to the LINUX, FREEBSD, NETBSD, OPENBSD, BEOS and ATHEOS OS's.</h4>
+Several others can probably be emulated - re <a href="lhpsyscc.html">[pguide]</a>
+<ul><!-- sort -bdf -o <outfile> -t\" +4.1 <infile> -->
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#access" name="access">access</a>&nbsp;<tab to="i3"> : check user's permissions for a file <tab to="i12">&nbsp;-33-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#alarm" name="alarm">alarm</a>&nbsp;<tab to="i3"> : set alarm clock for delivery of signal <tab to="i12">&nbsp;-27-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#brk" name="brk">brk</a>&nbsp;<tab to="i3"> : change data segment size <tab to="i12">&nbsp;-45-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chdir" name="chdir">chdir</a>&nbsp;<tab to="i3"> : change working directory <tab to="i12">&nbsp;-12-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chmod" name="chmod">chmod</a>&nbsp;<tab to="i3"> : change permissions of a file <tab to="i12">&nbsp;-15-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#chroot" name="chroot">chroot</a>&nbsp;<tab to="i3"> : change root directory <tab to="i12">&nbsp;-61-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#close" name="close">close</a>&nbsp;<tab to="i3"> : close a file descriptor <tab to="i12">&nbsp;-6-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#dup2" name="dup2">dup2</a>&nbsp;<tab to="i3"> : replace 2nd w/ duplicate of 1st file descriptor <tab to="i12">&nbsp;-63-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#dup" name="dup">dup</a>&nbsp;<tab to="i3"> : duplicate a file descriptor <tab to="i12">&nbsp;-41-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#execve" name="execve">execve</a>&nbsp;<tab to="i3"> : execute program <tab to="i12">&nbsp;-11-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#exit" name="exit">exit</a>&nbsp;<tab to="i3"> : terminate the current process <tab to="i12">&nbsp;-1-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#fork" name="fork">fork</a>&nbsp;<tab to="i3"> : create a child process <tab to="i12">&nbsp;-2-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#fstat" name="fstat">fstat</a>&nbsp;<tab to="i3"> : get file status <tab to="i12">&nbsp;-108-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getgid" name="getgid">getgid</a>&nbsp;<tab to="i3"> : get group identity <tab to="i12">&nbsp;-47-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#getgroups" name="getgroups">getgroups</a>&nbsp;<tab to="i3"> : get list of supplementary group IDs <tab to="i12">&nbsp;-80-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#getpgrp" name="getpgrp">getpgrp</a>&nbsp;<tab to="i3"> : set/get process group <tab to="i12">&nbsp;-65-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getppid" name="getppid">getppid</a>&nbsp;<tab to="i3"> : get process identification <tab to="i12">&nbsp;-64-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#getuid" name="getuid">getuid</a>&nbsp;<tab to="i3"> : get user identity <tab to="i12">&nbsp;-24-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#ioctl" name="ioctl">ioctl</a>&nbsp;<tab to="i3"> : re list of <a href="lhpioctl.html">ioctl assignations</a>&nbsp;<tab to="i3"> : device control <tab to="i12">&nbsp;-54-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#kill" name="kill">kill</a>&nbsp;<tab to="i3"> : send signal to a process <tab to="i12">&nbsp;-37-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#link" name="link">link</a>&nbsp;<tab to="i3"> : make a new name for a file <tab to="i12">&nbsp;-9-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#lseek" name="lseek">lseek</a>&nbsp;<tab to="i3"> : reposition read/write file offset <tab to="i12">&nbsp;-19-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mkdir" name="mkdir">mkdir</a>&nbsp;<tab to="i3"> : create a directory <tab to="i12">&nbsp;-39-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mknod" name="mknod">mknod</a>&nbsp;<tab to="i3"> : create directory, special, ordinary file <tab to="i12">&nbsp;-14-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#mount" name="mount">mount</a>&nbsp;<tab to="i3"> : mount and unmount filesystems <tab to="i12">&nbsp;-21-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc3.html#nanosleep" name="nanosleep">nanosleep</a>&nbsp;<tab to="i3"> : pause execution for a specified time <tab to="i12">&nbsp;-162-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#open" name="open">open</a>&nbsp;<tab to="i3"> : open and possibly create a file or device <tab to="i12">&nbsp;-5-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#pipe" name="pipe">pipe</a>&nbsp;<tab to="i3"> : create pipe <tab to="i12">&nbsp;-42-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#readlink" name="readlink">readlink</a>&nbsp;<tab to="i3"> : read value of a symbolic link <tab to="i12">&nbsp;-85-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#read" name="read">read</a>&nbsp;<tab to="i3"> : read from a file descriptor <tab to="i12">&nbsp;-3-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#reboot" name="reboot">reboot</a>&nbsp;<tab to="i3"> : reboot or enable/disable Ctrl-Alt-Del <tab to="i12">&nbsp;-88-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#rename" name="rename">rename</a>&nbsp;<tab to="i3"> : change the name or location of a file <tab to="i12">&nbsp;-38-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#rmdir" name="rmdir">rmdir</a>&nbsp;<tab to="i3"> : delete a directory <tab to="i12">&nbsp;-40-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setgid" name="setgid">setgid</a>&nbsp;<tab to="i3"> : set group identity <tab to="i12">&nbsp;-46-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setpgid" name="setpgid">setpgid</a>&nbsp;<tab to="i3"> : set/get process group <tab to="i12">&nbsp;-57-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#setsid" name="setsid">setsid</a>&nbsp;<tab to="i3"> : creates session, sets process group ID <tab to="i12">&nbsp;-66-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#setuid" name="setuid">setuid</a>&nbsp;<tab to="i3"> : set user identity <tab to="i12">&nbsp;-23-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#sigaction" name="sigaction">sigaction</a>&nbsp;<tab to="i3"> : POSIX signal handling functions <tab to="i12">&nbsp;-67-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#signal" name="signal">signal</a>&nbsp;<tab to="i3"> : ANSI C signal handling <tab to="i12">&nbsp;-48-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#stat" name="stat">stat</a>&nbsp;<tab to="i3"> : get file status <tab to="i12">&nbsp;-106-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#symlink" name="symlink">symlink</a>&nbsp;<tab to="i3"> : make a new name for a file <tab to="i12">&nbsp;-83-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#sync" name="sync">sync</a>&nbsp;<tab to="i3"> : commit buffer cache to disk <tab to="i12">&nbsp;-36-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc2.html#uname" name="uname">uname</a>&nbsp;<tab to="i3"> : get name & info about current kernel <tab to="i12">&nbsp;-122-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#unlink" name="unlink">unlink</a>&nbsp;<tab to="i3"> : del name & possibly file it refers to <tab to="i12">&nbsp;-110-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#utime" name="utime">utime</a>&nbsp;<tab to="i3"> : chg access and/or modification times <tab to="i12">&nbsp;-30-</li>
+ <li>P&nbsp;<tab to="i1"><a href="lhpsysc1.html#write" name="write">write</a>&nbsp;<tab to="i3"> : write to a file descriptor <tab to="i12">&nbsp;-4-</li>
+</ul>
+</p>
+
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+
+<p>
+<a href="index.html">[main]</a>
+<a href="index-lx.shtml">[back]</a> 
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a name="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..]</a> 
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+</p>
+<p>&nbsp;</p>
+<center>
+<font size="-2">
+<a href="index-lx.shtml#nospam">H.-Peter Recktenwald, Berlin</a>, 18.Feb.2000 = .hpr.l0 =
+</font> 
+<script language="JavaScript"> document.write(document.lastModified) </script> 
+<noscript>updt:10.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.sysc0" alt="4383" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</span>
+</body>
+</html>

@@ -1,0 +1,6 @@
+keow-gate.dso
+
+This is a work-alike of the linux 2.6 kernels linux-gate.so.1.
+
+It is not yet used.
+TODO: make call native SysCallsDll routine.

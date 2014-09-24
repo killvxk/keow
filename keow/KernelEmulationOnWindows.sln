@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeowConsole", "keow-kernel\KeowConsole\KeowConsole.vcproj", "{8956922A-2692-4870-810F-5EC56F6B7704}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeowKernel", "KEOW-KERNEL\KeowKernel\KeowKernel.vcproj", "{B84B8E21-16ED-4CF9-835C-FF83FBF48EEE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8956922A-2692-4870-810F-5EC56F6B7704} = {8956922A-2692-4870-810F-5EC56F6B7704}
+		{45835B6A-4C43-4E4F-8F4B-F0F311F073B1} = {45835B6A-4C43-4E4F-8F4B-F0F311F073B1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeowProcessStub", "keow-user\KeowProcessStub\KeowProcessStub.vcproj", "{45835B6A-4C43-4E4F-8F4B-F0F311F073B1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{91269AEF-CF28-4443-96CF-47D74CED8EA1} = {91269AEF-CF28-4443-96CF-47D74CED8EA1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KeowUserSysCallsDll", "KEOW-USER\KeowUserSysCallsDll\KeowUserSysCallsDll.vcproj", "{91269AEF-CF28-4443-96CF-47D74CED8EA1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8956922A-2692-4870-810F-5EC56F6B7704}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8956922A-2692-4870-810F-5EC56F6B7704}.Debug|Win32.Build.0 = Debug|Win32
+		{8956922A-2692-4870-810F-5EC56F6B7704}.Release|Win32.ActiveCfg = Release|Win32
+		{8956922A-2692-4870-810F-5EC56F6B7704}.Release|Win32.Build.0 = Release|Win32
+		{B84B8E21-16ED-4CF9-835C-FF83FBF48EEE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B84B8E21-16ED-4CF9-835C-FF83FBF48EEE}.Debug|Win32.Build.0 = Debug|Win32
+		{B84B8E21-16ED-4CF9-835C-FF83FBF48EEE}.Release|Win32.ActiveCfg = Release|Win32
+		{B84B8E21-16ED-4CF9-835C-FF83FBF48EEE}.Release|Win32.Build.0 = Release|Win32
+		{45835B6A-4C43-4E4F-8F4B-F0F311F073B1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{45835B6A-4C43-4E4F-8F4B-F0F311F073B1}.Debug|Win32.Build.0 = Debug|Win32
+		{45835B6A-4C43-4E4F-8F4B-F0F311F073B1}.Release|Win32.ActiveCfg = Release|Win32
+		{45835B6A-4C43-4E4F-8F4B-F0F311F073B1}.Release|Win32.Build.0 = Release|Win32
+		{91269AEF-CF28-4443-96CF-47D74CED8EA1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{91269AEF-CF28-4443-96CF-47D74CED8EA1}.Debug|Win32.Build.0 = Debug|Win32
+		{91269AEF-CF28-4443-96CF-47D74CED8EA1}.Release|Win32.ActiveCfg = Release|Win32
+		{91269AEF-CF28-4443-96CF-47D74CED8EA1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

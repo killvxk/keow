@@ -1,0 +1,27 @@
+Ctrl-C handling problems
+	sigint?
+	bash only?? -- need bash source & gdb?
+	maybe setjmp/longjmp problem?
+	^--- pretty sure this is killing in-kernel code.
+	(you can't receive a signal whilst in a kernel call??)
+	(what about rt signals?)
+	Need a debug &static version of bash to help debug this.
+
+Need to split kernel code into seperate processes now?
+	Allows consoles etc to have io (ctrl-c, sigint etc) when no process is reading.
+	Makes debugging harder?
+	Can you use gdb & vc++ at the same time.
+	Can you use either?
+	How does singlestep work?
+	Does gdb to in-kernel debugging? can we do it?
+	kernel process would need many threads.
+	how much still needs to live in the actual process (eg mmap stuff)
+	allows a kernel-module .ko loader?
+
+Top crashes sometimes (/proc problem?)
+core dump support
+populate /dev with usefull devices
+gdb support
+install using debian bootstrap
+createprocess hook
+x-windows support.

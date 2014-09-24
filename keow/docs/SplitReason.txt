@@ -1,0 +1,24 @@
+Keow was originally a large dll that provided kernel services by being loaded
+into each keow started process. From there it trapped and handled the int 80h
+linux system calls and used shared memory to keep kernel global information.
+
+Why has keow now split into a seperate kernel and user portion?
+
+A few reasons drove the split.
+
+ * Need to handle gdb as a debugger.
+	Windows versions prior to WinXP do not allow
+	the debugger to disconnect without terminating the process.
+	Hence we need to proxy the debugging process.
+
+ * Desire the have console windows working independantly of whatever
+	processes are using them. This also allows better handling of
+	type-ahead and SIGINT etc.
+
+ * Hopefully handle the problems with running bash where setjmp/longjmp
+	where causing invalid user/kernel space transitions because
+	of how they are delivered whilst the process is sleeping inside
+	a kernel function (because the 'kernel' lived in each process).
+
+ * A shared memopry kernel model allowed the possiblity of the user process
+	corrupting kernel data.

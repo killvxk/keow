@@ -1,0 +1,23 @@
+#! /bin/sh
+# 10/2001 by h-peter recktenwald < lx -a- lxhp . in - berlin . de>    
+# modify lib4th html glossaries to/from gzip-ed,
+#	pass $1 = "*" for any htm(l) files which are not in L4
+# link this to <html-ungz> to enabling de-compression
+
+s="${1}"
+[ -n "${s}" ]||s='l4'
+
+[ -n "$(pwd|grep -l lib4th)" ]&&cd ../doc
+f=$(find $(pwd) \( -name ${s}\*html -o -name ${s}\*htm \) -print)
+
+[ "${0##*-}" = "ungz" ]&&{
+    for i in ${f};do zcat ${i}.gz|sed -e 's/html.gz/html/g;s/htm.gz/htm/g'>${i};done
+}||{
+[ "${0##*-}" = "gz" ]&&{
+    for i in ${f};do cat ${i}|sed -e 's/html"/html.gz"/g;s/html#/html.gz#/g;s/htm"/htm.gz"/g;s/htm#/htm.gz#/g'|gzip -9c >${i}.gz;done
+    }
+}
+
+#
+# ----------------------------------------------------------------------------- #
+# html-{un,}gz <eof>

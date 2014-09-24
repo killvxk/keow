@@ -1,0 +1,456 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: KeowConsole - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP16.tmp" with contents
+[
+/nologo /MLd /W3 /Gm /GX /ZI /Od /I "..\KeowKernel\linux-abi" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"Debug/KeowConsole.pch" /YX"sdxafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"U:\src\keow\git\keow\keow-kernel\KeowConsole\cons25.cpp"
+"U:\src\keow\git\keow\keow-kernel\KeowConsole\KeowConsole.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP16.tmp" 
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP17.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib /nologo /subsystem:console /incremental:yes /pdb:"Debug/KeowConsole.pdb" /debug /machine:I386 /out:"..\..\Debug/KeowConsole.exe" /pdbtype:sept /libpath:"..\KeowUtils\Debug" 
+".\Debug\cons25.obj"
+".\Debug\KeowConsole.obj"
+".\Debug\Resoures.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP17.tmp"
+<h3>Output Window</h3>
+Compiling...
+cons25.cpp
+KeowConsole.cpp
+Linking...
+<h3>
+--------------------Configuration: KeowUserSysCallsDll - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP19.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../keow-kernel/KeowKernel/linux-abi" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "KEOWUSERSYSCALLSDLL_EXPORTS" /Fp"Debug/KeowUserSysCallsDll.pch" /YX"includes.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"U:\src\keow\git\keow\KEOW-USER\KeowUserSysCallsDll\main.cpp"
+"U:\src\keow\git\keow\KEOW-USER\KeowUserSysCallsDll\SysCallDll_User.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP19.tmp" 
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1A.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /base:"0x69000000" /stack:0x1000 /dll /incremental:yes /pdb:"Debug/KeowUserSysCalls.pdb" /debug /machine:I386 /out:"..\..\Debug/KeowUserSysCalls.dll" /implib:"Debug/KeowUserSysCalls.lib" /pdbtype:sept 
+".\Debug\main.obj"
+".\Debug\SysCallDll_User.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1A.tmp"
+<h3>Output Window</h3>
+Compiling...
+main.cpp
+SysCallDll_User.cpp
+Linking...
+<h3>
+--------------------Configuration: KeowProcessStub - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1C.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Debug/KeowProcessStub.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c 
+"U:\src\keow\git\keow\keow-user\KeowProcessStub\main.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1C.tmp" 
+Creating command line "link.exe kernel32.lib /nologo /base:"0x69FF0000" /entry:"StubMain" /subsystem:windows /incremental:yes /pdb:"Debug/Keow.pdb" /debug /machine:I386 /nodefaultlib /out:"..\..\Debug/Keow.exe" /pdbtype:sept  ".\Debug\main.obj" "
+<h3>Output Window</h3>
+Compiling...
+main.cpp
+Linking...
+<h3>
+--------------------Configuration: KeowKernel - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x1409 /fo"Debug/Resources.res" /d "_DEBUG" "U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\Resources.rc"" 
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1E.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GR /GX /ZI /Od /I ".\linux-abi" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR"Debug/" /Fp"Debug/KeowKernel.pch" /YX"includes.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\ConstantMapping.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\DevConsole.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\Device.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\Filesystem.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\FilesystemDev.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\FilesystemGenericStatic.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\FilesystemKeow.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\FilesystemProc.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHandler.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHFile.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHNtConsole.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHNull.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHPipe.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHRandom.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHStaticData.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\KernelStartup.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\KernelTable.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\LegacyWindows.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\main.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\MemoryHelper.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\MountPoint.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\Path.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\Process.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\String.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_mem.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_mount.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_net.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_perms.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_process.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_rtsig.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_sys.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SysCallDll_Kernel.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SysCalls.cpp"
+"U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\Utils.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1E.tmp" 
+Creating temporary file "C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1F.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib shlwapi.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/KeowKernel.pdb" /debug /machine:I386 /out:"..\..\Debug/KeowKernel.exe" /pdbtype:sept 
+".\Debug\ConstantMapping.obj"
+".\Debug\DevConsole.obj"
+".\Debug\Device.obj"
+".\Debug\Filesystem.obj"
+".\Debug\FilesystemDev.obj"
+".\Debug\FilesystemGenericStatic.obj"
+".\Debug\FilesystemKeow.obj"
+".\Debug\FilesystemProc.obj"
+".\Debug\IOHandler.obj"
+".\Debug\IOHFile.obj"
+".\Debug\IOHNtConsole.obj"
+".\Debug\IOHNull.obj"
+".\Debug\IOHPipe.obj"
+".\Debug\IOHRandom.obj"
+".\Debug\IOHStaticData.obj"
+".\Debug\KernelStartup.obj"
+".\Debug\KernelTable.obj"
+".\Debug\LegacyWindows.obj"
+".\Debug\main.obj"
+".\Debug\MemoryHelper.obj"
+".\Debug\MountPoint.obj"
+".\Debug\Path.obj"
+".\Debug\Process.obj"
+".\Debug\SocketCalls.obj"
+".\Debug\String.obj"
+".\Debug\sys_io.obj"
+".\Debug\sys_mem.obj"
+".\Debug\sys_mount.obj"
+".\Debug\sys_net.obj"
+".\Debug\sys_perms.obj"
+".\Debug\sys_process.obj"
+".\Debug\sys_rtsig.obj"
+".\Debug\sys_sys.obj"
+".\Debug\SysCallDll_Kernel.obj"
+".\Debug\SysCalls.obj"
+".\Debug\Utils.obj"
+".\Debug\Resources.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\walkerp1\LOCALS~1\Temp\RSP1F.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+ConstantMapping.cpp
+DevConsole.cpp
+Device.cpp
+Filesystem.cpp
+FilesystemDev.cpp
+FilesystemGenericStatic.cpp
+FilesystemKeow.cpp
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(102) : error C2011: '_SHITEMID' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(120) : error C2011: '_ITEMIDLIST' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(158) : error C2059: syntax error : 'constant'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(161) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(161) : error C2501: 'STRRET_TYPE' : missing storage-class or type specifiers
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(165) : error C2011: '_STRRET' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(211) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(211) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shtypes.h(211) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\comcat.h(155) : error C2143: syntax error : missing ';' before '*'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\comcat.h(155) : error C2501: 'LPENUMGUID' : missing storage-class or type specifiers
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\comcat.h(163) : error C2371: 'IEnumGUID' : redefinition; different basic types
+        c:\program files\microsoft platform sdk for windows server 2003 r2\include\comcat.h(155) : see declaration of 'IEnumGUID'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(144) : error C2011: 'tagCAUB' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(150) : error C2011: 'tagCAI' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(156) : error C2011: 'tagCAUI' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(162) : error C2011: 'tagCAL' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(168) : error C2011: 'tagCAUL' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(174) : error C2011: 'tagCAFLT' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(180) : error C2011: 'tagCADBL' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(186) : error C2011: 'tagCACY' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(192) : error C2011: 'tagCADATE' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(198) : error C2011: 'tagCABSTR' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(204) : error C2011: 'tagCABSTRBLOB' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(210) : error C2011: 'tagCABOOL' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(216) : error C2011: 'tagCASCODE' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(222) : error C2011: 'tagCAPROPVARIANT' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(228) : error C2011: 'tagCAH' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(234) : error C2011: 'tagCAUH' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(240) : error C2011: 'tagCALPSTR' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(246) : error C2011: 'tagCALPWSTR' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(252) : error C2011: 'tagCAFILETIME' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(258) : error C2011: 'tagCACLIPDATA' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(264) : error C2011: 'tagCACLSID' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(285) : error C2011: 'tagPROPVARIANT' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(487) : error C2011: 'tagPROPSPEC' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(498) : error C2011: 'tagSTATPROPSTG' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(510) : error C2011: 'tagSTATPROPSETSTG' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\propidl.h(1403) : error C2084: function 'void __cdecl PropVariantInit(struct tagPROPVARIANT *)' already has a body
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(813) : error C2011: 'IPersistFolder' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(922) : error C2011: 'IPersistFolder2' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1159) : error C2011: 'IEnumIDList' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1312) : error C2011: 'tagSHGDN' : 'enum' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1322) : error C2011: 'tagSHCONTF' : 'enum' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1331) : error C2371: 'SHCONTF' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2438) : see declaration of 'SHCONTF'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1348) : warning C4005: 'SFGAO_GHOSTED' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2452) : see previous definition of 'SFGAO_GHOSTED'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1353) : warning C4005: 'SFGAO_DISPLAYATTRMASK' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2454) : see previous definition of 'SFGAO_DISPLAYATTRMASK'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(1395) : error C2011: 'IShellFolder' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2328) : error C2371: 'LPVIEWSETTINGS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1543) : see declaration of 'LPVIEWSETTINGS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2332) : error C2371: 'FWF_AUTOARRANGE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1549) : see declaration of 'FWF_AUTOARRANGE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2333) : error C2371: 'FWF_ABBREVIATEDNAMES' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1550) : see declaration of 'FWF_ABBREVIATEDNAMES'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2334) : error C2371: 'FWF_SNAPTOGRID' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1551) : see declaration of 'FWF_SNAPTOGRID'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2335) : error C2371: 'FWF_OWNERDATA' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1552) : see declaration of 'FWF_OWNERDATA'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2336) : error C2371: 'FWF_BESTFITWINDOW' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1553) : see declaration of 'FWF_BESTFITWINDOW'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2337) : error C2371: 'FWF_DESKTOP' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1554) : see declaration of 'FWF_DESKTOP'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2338) : error C2371: 'FWF_SINGLESEL' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1555) : see declaration of 'FWF_SINGLESEL'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2339) : error C2371: 'FWF_NOSUBFOLDERS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1556) : see declaration of 'FWF_NOSUBFOLDERS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2340) : error C2371: 'FWF_TRANSPARENT' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1557) : see declaration of 'FWF_TRANSPARENT'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2341) : error C2371: 'FWF_NOCLIENTEDGE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1558) : see declaration of 'FWF_NOCLIENTEDGE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2342) : error C2371: 'FWF_NOSCROLL' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1559) : see declaration of 'FWF_NOSCROLL'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2343) : error C2371: 'FWF_ALIGNLEFT' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1560) : see declaration of 'FWF_ALIGNLEFT'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2344) : error C2371: 'FWF_NOICONS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1561) : see declaration of 'FWF_NOICONS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2347) : error C2371: 'FWF_SINGLECLICKACTIVATE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1563) : see declaration of 'FWF_SINGLECLICKACTIVATE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2351) : error C2371: 'FOLDERFLAGS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1563) : see declaration of 'FOLDERFLAGS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2356) : error C2371: 'FVM_ICON' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1567) : see declaration of 'FVM_ICON'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2357) : error C2371: 'FVM_SMALLICON' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1568) : see declaration of 'FVM_SMALLICON'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2358) : error C2371: 'FVM_LIST' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1569) : see declaration of 'FVM_LIST'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2359) : error C2371: 'FVM_DETAILS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1570) : see declaration of 'FVM_DETAILS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2364) : error C2371: 'FOLDERVIEWMODE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1571) : see declaration of 'FOLDERVIEWMODE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2370) : error C2371: 'FOLDERSETTINGS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1577) : see declaration of 'FOLDERSETTINGS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2378) : warning C4005: 'SVSI_DESELECT' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2008) : see previous definition of 'SVSI_DESELECT'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2379) : warning C4005: 'SVSI_SELECT' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2009) : see previous definition of 'SVSI_SELECT'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2380) : warning C4005: 'SVSI_EDIT' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2010) : see previous definition of 'SVSI_EDIT'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2381) : warning C4005: 'SVSI_DESELECTOTHERS' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2011) : see previous definition of 'SVSI_DESELECTOTHERS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2382) : warning C4005: 'SVSI_ENSUREVISIBLE' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2012) : see previous definition of 'SVSI_ENSUREVISIBLE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2383) : warning C4005: 'SVSI_FOCUSED' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2013) : see previous definition of 'SVSI_FOCUSED'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2384) : warning C4005: 'SVSI_TRANSLATEPT' : macro redefinition
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2014) : see previous definition of 'SVSI_TRANSLATEPT'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2393) : error C2059: syntax error : 'constant'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2399) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2399) : error C2501: 'SVGIO' : missing storage-class or type specifiers
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2403) : error C2371: 'SVUIA_DEACTIVATE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2027) : see declaration of 'SVUIA_DEACTIVATE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2404) : error C2371: 'SVUIA_ACTIVATE_NOFOCUS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2028) : see declaration of 'SVUIA_ACTIVATE_NOFOCUS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2405) : error C2371: 'SVUIA_ACTIVATE_FOCUS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2029) : see declaration of 'SVUIA_ACTIVATE_FOCUS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2407) : error C2371: 'SVUIA_INPLACEACTIVATE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2031) : see declaration of 'SVUIA_INPLACEACTIVATE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2407) : error C2371: 'SVUIA_STATUS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2031) : see declaration of 'SVUIA_STATUS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2439) : error C2011: 'IShellView' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2782) : error C2011: '_SV2CVW2_PARAMS' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(2801) : error C2011: 'IShellView2' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5059) : error C2371: 'SLR_NO_UI' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1027) : see declaration of 'SLR_NO_UI'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5060) : error C2371: 'SLR_ANY_MATCH' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1028) : see declaration of 'SLR_ANY_MATCH'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5061) : error C2371: 'SLR_UPDATE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1029) : see declaration of 'SLR_UPDATE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5062) : error C2371: 'SLR_NOUPDATE' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1030) : see declaration of 'SLR_NOUPDATE'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5068) : error C2371: 'SLR_FLAGS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1031) : see declaration of 'SLR_FLAGS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5072) : error C2371: 'SLGP_SHORTPATH' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1035) : see declaration of 'SLGP_SHORTPATH'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5073) : error C2371: 'SLGP_UNCPRIORITY' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1036) : see declaration of 'SLGP_UNCPRIORITY'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5075) : error C2371: 'SLGP_RAWPATH' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1037) : see declaration of 'SLGP_RAWPATH'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5075) : error C2371: 'SLGP_FLAGS' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(1038) : see declaration of 'SLGP_FLAGS'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5094) : error C2011: 'IShellLinkA' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(5591) : error C2011: 'IShellLinkW' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(6714) : error C2011: 'IShellExtInit' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(6826) : error C2011: 'IShellPropSheetExt' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(8113) : error C2011: 'IDockingWindow' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(8277) : error C2371: 'DESKBANDINFO' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2775) : see declaration of 'DESKBANDINFO'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(8297) : error C2371: 'DBID_BANDINFOCHANGED' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2818) : see declaration of 'DBID_BANDINFOCHANGED'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(8298) : error C2371: 'DBID_SHOWONLY' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2820) : see declaration of 'DBID_SHOWONLY'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(8299) : error C2371: 'DBID_MAXIMIZEBAND' : redefinition; different basic types
+        c:\program files\microsoft visual studio\vc98\include\shlobj.h(2821) : see declaration of 'DBID_MAXIMIZEBAND'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(8326) : error C2011: 'IDeskBand' : 'struct' type redefinition
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(9344) : error C2061: syntax error : identifier 'IXMLDOMDocument'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(9453) : error C2061: syntax error : identifier 'IXMLDOMDocument'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(13643) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(13643) : error C2143: syntax error : missing ';' before '}'
+c:\program files\microsoft platform sdk for windows server 2003 r2\include\shobjidl.h(13643) : fatal error C1003: error count exceeds 100; stopping compilation
+FilesystemProc.cpp
+IOHandler.cpp
+IOHFile.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHFile.cpp(79) : error C2065: 'INVALID_FILE_ATTRIBUTES' : undeclared identifier
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\IOHFile.cpp(79) : warning C4018: '!=' : signed/unsigned mismatch
+IOHNtConsole.cpp
+IOHNull.cpp
+IOHPipe.cpp
+IOHRandom.cpp
+IOHStaticData.cpp
+KernelStartup.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\KernelStartup.cpp(163) : error C2065: 'INVALID_FILE_ATTRIBUTES' : undeclared identifier
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\KernelStartup.cpp(163) : warning C4018: '!=' : signed/unsigned mismatch
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\KernelStartup.cpp(176) : warning C4018: '!=' : signed/unsigned mismatch
+KernelTable.cpp
+LegacyWindows.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\LegacyWindows.cpp(94) : error C2065: 'INVALID_FILE_ATTRIBUTES' : undeclared identifier
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\LegacyWindows.cpp(94) : warning C4018: '==' : signed/unsigned mismatch
+main.cpp
+MemoryHelper.cpp
+MountPoint.cpp
+Path.cpp
+Process.cpp
+SocketCalls.cpp
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(42) : error C2061: syntax error : identifier 'socklen_t'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(43) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(44) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(45) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(46) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(47) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(48) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(49) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(50) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(51) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(52) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(53) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(54) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(55) : error C2061: syntax error : identifier 'a0'
+u:\src\keow\git\keow\keow-kernel\keowkernel\socketcalls.h(56) : error C2061: syntax error : identifier 'a0'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(74) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(74) : error C2065: '__user' : undeclared identifier
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(74) : error C2440: 'type cast' : cannot convert from 'int' to 'struct sockaddr'
+        No constructor could take the source type, or constructor overload resolution was ambiguous
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(74) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(74) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(77) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(77) : error C2440: 'type cast' : cannot convert from 'int' to 'struct sockaddr'
+        No constructor could take the source type, or constructor overload resolution was ambiguous
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(77) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(77) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(80) : error C2660: 'sys_listen' : function does not take 2 parameters
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(83) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(83) : error C2440: 'type cast' : cannot convert from 'int' to 'struct sockaddr'
+        No constructor could take the source type, or constructor overload resolution was ambiguous
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(83) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(83) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(86) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(86) : error C2440: 'type cast' : cannot convert from 'int' to 'struct sockaddr'
+        No constructor could take the source type, or constructor overload resolution was ambiguous
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(86) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(86) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(89) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(89) : error C2440: 'type cast' : cannot convert from 'int' to 'struct sockaddr'
+        No constructor could take the source type, or constructor overload resolution was ambiguous
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(89) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(89) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(92) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(92) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(92) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(95) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(95) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(95) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(98) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(98) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(99) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(102) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(102) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(102) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(105) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(105) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(106) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(109) : error C2660: 'sys_shutdown' : function does not take 2 parameters
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(112) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(112) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(112) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(115) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(115) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(115) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(118) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(118) : error C2440: 'type cast' : cannot convert from 'int' to 'struct SocketCalls::sys_socketcall::msghdr'
+        Source or target has incomplete type
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(118) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(118) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(121) : error C2146: syntax error : missing ')' before identifier '__user'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(121) : error C2440: 'type cast' : cannot convert from 'int' to 'struct SocketCalls::sys_socketcall::msghdr'
+        Source or target has incomplete type
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(121) : error C2059: syntax error : ')'
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\SocketCalls.cpp(121) : error C2059: syntax error : ')'
+String.cpp
+sys_io.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp(174) : error C2065: 'INVALID_FILE_ATTRIBUTES' : undeclared identifier
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp(174) : warning C4018: '==' : signed/unsigned mismatch
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp(380) : warning C4018: '==' : signed/unsigned mismatch
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp(426) : warning C4018: '==' : signed/unsigned mismatch
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp(885) : warning C4018: '==' : signed/unsigned mismatch
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_io.cpp(972) : warning C4018: '==' : signed/unsigned mismatch
+sys_mem.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_mem.cpp(210) : error C2065: 'INVALID_SET_FILE_POINTER' : undeclared identifier
+sys_mount.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_mount.cpp(63) : error C2065: 'INVALID_FILE_ATTRIBUTES' : undeclared identifier
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_mount.cpp(63) : warning C4018: '==' : signed/unsigned mismatch
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_mount.cpp(86) : warning C4018: '==' : signed/unsigned mismatch
+sys_net.cpp
+U:\src\keow\git\keow\KEOW-KERNEL\KeowKernel\sys_net.cpp(38) : error C2653: 'SocketCalls' : is not a class or namespace name
+sys_perms.cpp
+sys_process.cpp
+sys_rtsig.cpp
+sys_sys.cpp
+SysCallDll_Kernel.cpp
+SysCalls.cpp
+Utils.cpp
+Error executing cl.exe.
+
+
+
+<h3>Results</h3>
+KeowKernel.exe - 176 error(s), 20 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,4 @@
+#! /bin/sh
+
+d=$(pwd)
+for i in ${@};do lynx -dont_wrap_pre -crawl -hiddenlinks=ignore -dump file:///${d}/$i >$(basename $i .html).txt;done

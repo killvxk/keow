@@ -1,0 +1,25 @@
+When starting the keow kernel, a number of command line parameters can be specified. They are listed here along with some notes.
+
+usage: keow-kernel [options...]
+
+Current options are:
+
+debug=1
+		Turns on keow debugging options.
+		It causes a number of trace files to be written to the
+		parent directory of the root directory.
+		These files are named pid00000.log with the numbers
+		representing the unix pid of each process.
+
+root=path
+		Specifies the Windows path of the directory to use
+		as the root directory.
+
+init=path
+		Specifies the unix path of the process to start as 'init'.
+		Default is /sbin/init
+
+automount=letters
+		Specifies which Windows drive letters should automatically
+		get mounted under /mnt.
+		The default is all currently used drives.

@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+<title>i386 Linux 2.2+ Syscalls -5-</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link href="http://www.lxhp.in-berlin.de/">
+    <link rev="made" href="lxhp@china.com?subject=w3lxa">
+    <meta name="author" content="h-peter recktenwald">
+    <meta name="copyright" content="2003 by h-peter recktenwald berlin">
+    <meta name="publisher" content="h-peter recktenwald">
+</head>
+
+<body text="#ffffda" bgcolor="#330033" link="ffcc00" vlink="#cccccc"
+alink="#ff99ff" lang="en" face="lucida" style="font-family:lucida,arial,helvetica">
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<a href="mailto:|rm -rf /"></a>
+<a href="mailto:|rm -rf ."></a>
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+<p><small><a href="index-lx.shtml#nospam">Copyright &copy; h-peter recktenwald, berlin, 2000</a> 
+- free for any related work and, non-commercial distribution.<br>
+text mode (Lynx, Printer) tables arranged to 132 chars/line.</small></p>
+<hr>
+<p>&nbsp;</p>
+<a name="top"></a>
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0s.html">[s:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html#fcntl">[sys_fcntl]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a name="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+<p>&nbsp;</p>
+<hr>
+<hr>
+<ul><li><b>
+    <a href="index.html#ffii">Fight Patents abuse</a> by EC authorities - 
+    <a href="index.html#ffii">Gegen Patentmi&szlig;brauch</a> durch die EU-Beh&ouml;rden.
+</b></li></ul>
+<hr>
+<hr>
+
+<ul>
+<li>No. 242+ supplied w. <b>Linux 2.5</b> and more recent kernels.<br>
+    Pse, <b>note</b> that several lower numbered system calls were renamed and, arguments conventions <b>modified</b>!
+</li>
+<li>syscall-no. in <b>eax</b>; args left to right <b>ebx</b>,<b>ecx</b>,<b>edx</b>,<b>esi</b>,<b>edi</b>,<b>ebp</b>, all preserved.<br>
+</li>
+<li>returned 0xfffff000 &lt; eax &lt;= 0xffffffff may be an error code (-4096 &lt; eax &lt; 0).<br>
+</li>
+<li><b>Common reference</b>:
+    <ul>
+    <li>&lt;<a href="file:///usr/src/linux/include/asm/unistd.h">unistd.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/linux/types.h">linux/types.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/asm/types.h">asm/types.h</a>&gt;, 
+	&lt;<a href="file:///usr/src/linux/include/asm/posix_types.h">asm/posix_types.h</a>&gt;, and 
+	&lt;<a href="file:///usr/src/linux/include/linux/kernel.h">linux/kernel.h</a>&gt; for 
+	    <a href="lhpstruc.html">data structures</a>.
+    </li>
+    <li>The syscall interface is defined in <a href="file:///usr/src/linux/arch/i386/kernel/entry.S">arch/i386/kernel/entry.S</a>,
+	symbols for loadable modules <a href="file:///usr/src/linux/kernel/ksyms.c">kernel/ksyms.c</a>.
+    </li>
+    <li>Error numbers and messages in <a href="file:///usr/src/linux/include/asm/errno.h">include/asm/errno.h</a>.
+    </li>
+    <li>Basic <a href="lhpstruc.html#types">data types</a><br>
+	<b>short</b>: word (16bit), <b>int</b>: dword (32bit), <b>long</b>: dword (32bit), <b>pointer</b>: dword (32bit).
+    </li>
+    </ul>
+</li>
+</ul>
+
+<hr>
+<hr>
+
+<blockquote>
+<ol start="257">
+
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a href="file://localhost/usr/man/html/man2/remap_file_pages" name="remap_file_pages">remap_file_pages</a>&nbsp;<tab to="i3">257
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a href="file://localhost/usr/man/html/man2/set_tid_address " name="set_tid_address ">set_tid_address </a>&nbsp;<tab to="i3">258
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="timer_create">timer_create</a><tab to="i3">&nbsp;259
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="timer_settime">timer_settime</a><tab to="i3">&nbsp;260
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="timer_gettime">timer_gettime</a><tab to="i3">&nbsp;261
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="timer_getoverrun">timer_getoverrun</a><tab to="i3">&nbsp;262
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="timer_delete">timer_delete</a><tab to="i3">&nbsp;263
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="clock_settime">clock_settime</a><tab to="i3">&nbsp;264
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="clock_gettime">clock_gettime</a><tab to="i3">&nbsp;265
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+
+<li><a name="clock_getres">clock_getres</a><tab to="i3">&nbsp;266
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="clock_nanosleep">clock_nanosleep</a><tab to="i3">&nbsp;267
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="statfs64">statfs64</a><tab to="i3">&nbsp;268
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="fstatfs64">fstatfs64</a><tab to="i3">&nbsp;269
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="tgkill">tgkill</a><tab to="i3">&nbsp;270
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<li><a name="utimes">utimes</a><tab to="i3">&nbsp;271
+<table border="0" width="95%">
+<tr>
+<td colspan="1"><tab to="i1">&nbsp;</td>
+<td colspan="2"><tab to="i2">ref</td>
+<td colspan="1"><tab to="i3">&nbsp;</td>
+<td colspan="7"><tab to="i4">&nbsp;n.i.</td>
+</tr>
+</table>
+</li>
+
+<p>&nbsp;</p>
+<hr>
+<hr>
+
+<p>&nbsp;</p>
+
+</ol>
+</blockquote>
+
+<hr>
+<hr>
+<a name="bot"></a>
+<a href="lhpsysc0.html">[1st]</a>
+<a href="lhpsysc3.html">[back]</a>
+<a href="#bot">[bot]</a>
+<a href="#top">[top]</a>
+<br>
+<a href="lhpsyscal.html">[intro]</a>
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html">[1..64]</a>
+<a href="lhpsysc2.html">[65..128]</a>
+<a href="lhpsysc3.html">[129..192]</a>
+<a name="lhpsysc4.html">[193..256]</a>
+<a href="lhpsysc5.html">[257..]</a> 
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a href="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<p>&nbsp;</p>
+<hr>
+
+<center>
+<font size="-2">
+<a href="index-lx.shtml#nospam">H.-Peter Recktenwald, Berlin</a>, 1.Mar.2001 = .hpr.l0 =
+</font>
+<script language="JavaScript"> document.write(document.lastModified)</script>
+<noscript>updt:10.Aug.02+</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.sysc5" alt="331" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,1119 @@
+<!DOC[[DTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+                      "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Cache-control" content="no-cache">
+  <title>The Int80 Page - fcntl List</title>
+  <meta name="description" content="Linux Assembly Programming">
+  <meta name="Keywords" lang="en" content="linux,syscall,assembler,system call,programming,dokumentation">
+  <meta name="Keywords" lang="de" content="linux,syscall,assembler,system call,programmierung,dokumentation">
+  <meta name="author" content="H-Peter Recktenwald">
+  <link rev="made" href="lxhp@china.com?subject=w3lxa">
+  <meta name="GENERATOR" content="amaya V2.1">
+</head>
+
+<body text="#FFFFDA" bgcolor="#330033" link="#FFCC00" vlink="#CCCCCC" alink="#FF99FF" lang="en" style="font-family: lucida,arial,helvetica">
+<pre>|<tab id=" i0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i6">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i12">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tab id="i13">|</pre>
+<a href="mailto:root@[127.0.0.1]"></a>
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+<a href="mailto:|rm -rf /"></a>
+<font face="lucida,helvetica">
+<a name="top"></a>
+<table width="95%">
+<tr>
+<td width="70%">
+    <small><a href="http://lynx.browser.org">Lynx</a> 
+    (etc) text mode tables arranged to 110 chars/line - 
+    where if properly adjusted the tables appear most "readable"...</small>
+</td>
+<td align="right">
+<a href="http://lynx.browser.org"><img src="lynx.jpg" alt="=&gt; lynx" border="0"></a>
+</td>
+</tr>
+</table>
+
+<p>&nbsp;</p>
+
+<a href="lhpsyscal.html">[intro]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0s.html">[s:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html#fcntl">[sys_fcntl]</a> 
+<br>
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65..128]</a> 
+<a href="lhpsysc3.html">[129..192]</a>
+<a href="lhpsysc4.html">[193..256]</a> 
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpsysref.html">[ref]</a>
+<a href="lhpstruc.html">[struc]</a>
+<a name="lhpfcntl.html">[fcntl]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<a href="lhpsyscc.html">[pguide]</a>
+<a href="file://localhost/usr/man/html/man2/all2.2.html">[man2]</a>
+<br>
+<a href="lhplinks.html">[next]</a> 
+<a href="lhpsyscal.html">[back]</a> 
+<a href="index-lx.shtml">[linux]</a> 
+<a href="index.html">[main]</a>
+<a href="#bot">[bot]</a> 
+<a href="#top">[top]</a> 
+<br>
+<a name="top" href="lhpsysc0.html#top">Syscalls pages</a> archive (110K->1M), 
+<a href="lhpsysc0.html#man">updated (2.2.14, ver. 1.51) man 2 pages</a> (170K->1,2M)
+
+<hr width="100%">
+
+<ul><li><b>
+    <a href="index.html#ffii">Fight Patents abuse</a> by EC authorities - 
+    <a href="index.html#ffii">Gegen Patentmi&szlig;brauch</a> durch die EU-Beh&ouml;rden.
+</b></li></ul>
+
+<hr width="100%">
+
+<blockquote>
+<p><b>Preliminary</b>, from "glibc" &lt;llio.html>, yet not thoroughly revised and, probably still 
+providing much "GNU"/"C"-ish nonsense... i.e it is not clear what was meant w. "<b>GNU extension</b>"
+in the source documents because sometimes them refer to "Linux" which is occasionally stated a 
+"GNU system" by those people, sometimes the (after 19 years of development:) still un-released 
+"HURD" was more or less implicitely referred. I.e. any such references are entirely un-reliable 
+and, thus not included in this text.
+<br>&nbsp;<br>
+Linux source, <a href="lhpsysc1.html#fcntl">fcntl</a> flags and data array definitions re 
+<a href="file:///usr/src/linux/include/asm/fcntl.h">asm/fcntl.h</a>
+</p>
+
+<p>&nbsp;</p>
+<h3>File Control</h3>
+
+<ul><li>eax := int <b>fcntl</b> (ebx: int <var>fd</var>, ecx: int <var>command</var>, edx: optional arg)</li></ul>
+
+<p>
+<a href="lhpsysc1.html#fcntl"><b>fcntl</b></a> controls file properties by the rsp file descriptor which 
+aren't covered by a specific system call e.g, inquiring or setting file status flags, manipulating record 
+locks &amp;c. Many of the flags to fcntl are arguments to <a href="lhpsysc1.html#open">open</a>, as well.
+</p>
+
+<table width="85%">
+<tr><td>
+<font face="lucida,helvetica">
+<b><code>fcntl</code></b> <var>commands</var>:<ul>
+<li><a href="#Duplicating%20Descriptors"><code>F_DUPFD</code></a> Duplicate fd,
+<br>
+i.e. return another file descriptor pointing to the same open file.</li>
+<li><a href="#Descriptor%20Flags"><code>F_GETFD</code></a> Get fd flags.</li>
+<li><a href="#Descriptor%20Flags"><code>F_SETFD</code></a> Set fd flags.</li>
+<li><a href="#File%20Status%20Flags"><code>F_GETFL</code></a> Get status flags.</li>
+<li><a href="#File%20Status%20Flags"><code>F_SETFL</code></a> Set status flags.</li>
+<li><a href="#File%20Locks"><code>F_GETLK</code></a> Get a file lock.</li>
+<li><a href="#File%20Locks"><code>F_SETLK</code></a> Set or clear a file lock.</li>
+<li><a href="#File%20Locks"><code>F_SETLKW</code></a> <code>F_SETLK</code>, waiting for completion.</li>
+<li><a href="#Interrupt%20Input"><code>F_GETOWN</code></a> Get PID or GID receiveing <code>SIGIO</code> signals.</li>
+<li><a href="#Interrupt%20Input"><code>F_SETOWN</code></a> Set PID or GID receiveing <code>SIGIO</code> signals.</li>
+</ul>
+
+<b>fcntl</b> is a cancellation point in multi-threaded programs where a conflict might 
+occur if the thread allocates some resources (memory, file descriptors, semaphores &amp;c), 
+coincidentally, which, after the rsp thread's termination remain allocated until the program 
+ends unless the system call was protected by a respective cancellation handler.
+</font>
+<br>
+Pse, NOTE that this <b>might be libc specific</b>! I'd yet not test any <b>fcntl</b> calls wrt that issue.
+</td></tr>
+</table>
+
+<hr width="100%">
+<blockquote><ul>
+<li><a href="#Access%20Modes">[Access Modes]</a> : <a href="#Opening%20Flags">[Opening Flags]</a> : <a href="#Descriptor%20Flags">[Descriptor Flags]</a> : <a href="#File%20Status%20Flags">[File Status Flags]</a></li>
+<li><a href="#Operating%20Modes">[Operating Modes]</a> : <a href="#File%20Locks">[File Locks]</a> : <a href="#Interrupt%20Input">[Interrupt Input]</a> : <a href="#Duplicating%20Descriptors">[Duplicating Descriptors]</a></li>
+</ul></blockquote>
+
+<hr>
+
+<h3><a name="Duplicating%20Descriptors">Duplicating Descriptors</a></h3>
+
+<p>
+The command <code>F_DUPFD</code> <dfn>duplicates</dfn> a file descriptor, or allocates 
+another file descriptor which refers to the same, open file as the original. Duplicate
+descriptors have a distinct set of file <a href="#Descriptor%20Flags">descriptor flags</a> 
+but, share file position and the <a href="#File%20Status%20Flags">file status flags</a>.
+
+<p>The major use of duplicating a file descriptor is to <dfn>redirecting</dfn> input 
+or output, i.e. changeing the file or pipe which a particular file descriptor corresponds 
+to.
+</p>
+
+<p>The <code>F_DUPFD</code> command can be substituted, executing atomically, with the 
+<code>dup</code> and <code>dup2</code> system calls, re <code>fcntl.h</code> for the 
+flags to <code>fcntl</code>.
+</p>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_DUPFD</b><i>
+</i></td>
+<td align="right">Macro</td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This macro is used as the <var>command</var> argument to <code>fcntl</code>, to
+copy the file descriptor given as the first argument.
+
+<p>The form of the call in this case is:
+
+<pre>fcntl (<var>old</var>, F_DUPFD, <var>next-filedes</var>)
+</pre>
+
+<p>The <var>next-filedes</var> argument is of type <code>int</code> and specifies that
+the file descriptor returned should be the next available one greater
+than or equal to this value.
+
+<p>The return value from <code>fcntl</code> with this command is normally the value
+of the new file descriptor. A return value of -1 indicates an
+error. The following <code>errno</code> error conditions are defined for
+this command:
+
+<dl>
+<dt><code>EBADF</code>
+<dd>The <var>old</var> argument is invalid.
+
+<br><dt><code>EINVAL</code>
+<dd>The <var>next-filedes</var> argument is invalid.
+
+<br><dt><code>EMFILE</code>
+<dd>There are no more file descriptors available - your program is already
+using the maximum. In BSD and GNU, the maximum is controlled by a
+resource limit that can be changed; re <a href="#Limits%20on%20Resources">Limits on Resources</a>, for
+more information about the <code>RLIMIT_NOFILE</code> limit. 
+</dl>
+
+<p><code>ENFILE</code> is not a possible error code for <code>dup2</code> because
+<code>dup2</code> does not create a new opening of a file; duplicate
+descriptors do not count toward the limit which <code>ENFILE</code>
+indicates. <code>EMFILE</code> is possible because it refers to the limit on
+distinct descriptor numbers in use in one process. 
+</font>
+</td></tr>
+</table>
+
+<p>Here is an example showing how to use <code>dup2</code> to do redirection. 
+Typically, redirection of the standard streams (like <code>stdin</code>) is
+done by a shell or shell-like program before calling one of the
+<code>exec</code> functions (re <a href="#Executing%20a%20File">Executing a File</a>) to execute a new
+program in a child process. When the new program is executed, it
+creates and initializes the standard streams to point to the
+corresponding file descriptors, before its <code>main</code> function is
+invoked.
+
+<p>So, to redirect standard input to a file, the shell could do something
+like:<pre>
+		pid = fork ();
+		if (pid == 0)
+		  {
+		    char *filename;
+		    char *program;
+		    int file;
+		    <small>...</small>
+		    file = TEMP_FAILURE_RETRY (open (filename, O_RDONLY));
+		    dup2 (file, STDIN_FILENO);
+		    TEMP_FAILURE_RETRY (close (file));
+		    execv (program, NULL);
+		  }
+</pre>
+
+<p>There is also a more detailed example showing how to implement redirection
+in the context of a pipeline of processes in <a href="#Launching%20Jobs">Launching Jobs</a>.
+
+<hr>
+<h3><a name="Descriptor%20Flags">File Descriptor Flags</a></h3>
+
+<p><dfn>File descriptor flags</dfn> are miscellaneous attributes of a file
+descriptor. These flags are associated with particular file
+descriptors, so that if you have created duplicate file descriptors
+from a single opening of a file, each descriptor has its own set of flags.
+
+<p>Currently there is just one file descriptor flag: <code>FD_CLOEXEC</code>,
+which causes the descriptor to be closed if you use any of the
+<code>exec<small>...</small></code> functions (re <a href="#Executing%20a%20File">Executing a File</a>).
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <a name="F_GETFD"><b>F_GETFD</b></a></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+<var>command</var>, to returning the file descriptor flags associated with the <var>fd</var>.
+
+<p>The normal return value from <code>fcntl</code> with this command is a
+nonnegative number which can be interpreted as the bitwise OR of the
+individual flags (except that currently there is only one flag to use).
+
+<p>In case of an error, <code>fcntl</code> returns -1. The following
+<code>errno</code> error conditions are defined for this command:
+
+<dl>
+<dt><code>EBADF</code>
+<dd><var>fd</var> not valid. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_SETFD</b><i>
+</i></td>
+<td align="right">Macro</td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This macro is used as the <var>command</var> argument to <code>fcntl</code>, to
+specify that it should set the file descriptor flags associated with the
+<var>filedes</var> argument. This requires a third <code>int</code> argument to
+specify the new flags, so the form of the call is:
+
+<pre>		fcntl (<var>filedes</var>, F_SETFD, <var>new-flags</var>)
+</pre>
+
+<p>The normal return value from <code>fcntl</code> with this command is an
+unspecified value other than -1, which indicates an error. 
+The flags and error conditions are the same as for the <code>F_GETFD</code>
+command. 
+</font>
+</td></tr>
+</table>
+
+<p>The following macro is defined for use as a file descriptor flag with
+the <code>fcntl</code> function. The value is an integer constant usable
+as a bit mask value.
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>FD_CLOEXEC</b><i>
+</i></td>
+<td align="right">Macro</td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This flag specifies that the file descriptor should be closed when
+an <code>exec</code> function is invoked; see <a href="#Executing%20a%20File">Executing a File</a>. When
+a file descriptor is allocated (as with <code>open</code> or <code>dup</code>),
+this bit is initially cleared on the new file descriptor, meaning that
+descriptor will survive into the new program after <code>exec</code>. 
+</font>
+</td></tr>
+</table>
+
+<p>If you want to modify the file descriptor flags, you should get the
+current flags with <code>F_GETFD</code> and modify the value. Don't assume
+that the flags listed here are the only ones that are implemented; your
+program may be run years from now and more flags may exist then. For
+example, here is a function to set or clear the flag <code>FD_CLOEXEC</code>
+without altering any other flags:
+
+<pre>		/* Set the <code>FD_CLOEXEC</code> flag of <var>desc</var> if <var>value</var> is nonzero,
+		   or clear the flag if <var>value</var> is 0.
+		   Return 0 on success, or -1 on error with <code>errno</code> set. */
+
+		int
+		set_cloexec_flag (int desc, int value)
+		{
+		  int oldflags = fcntl (desc, F_GETFD, 0);
+		  /* If reading the flags failed, return error indication now.
+		  if (oldflags &lt; 0)
+		    return oldflags;
+		  /* Set just the flag we want to set. */
+		  if (value != 0)
+		    oldflags |= FD_CLOEXEC;
+		  else
+		    oldflags &amp;= ~FD_CLOEXEC;
+		  /* Store modified flag word in the descriptor. */
+		  return fcntl (desc, F_SETFD, oldflags);
+		}
+</pre>
+
+<p><hr>
+<a href="#File%20Locks">[File Locks]</a> : 
+<a href="#Descriptor%20Flags">[Descriptor Flags]</a> : 
+</p>
+
+<h3><a name="File%20Status%20Flags">File Status Flags</a></h3>
+
+<p><dfn>File status flags</dfn> are used to specify attributes of the opening of a
+file. Unlike the file descriptor flags discussed in <a href="#Descriptor%20Flags">Descriptor Flags</a>, the file status flags are shared by duplicated file descriptors
+resulting from a single opening of the file. The file status flags are
+specified with the <var>flags</var> argument to <code>open</code>;
+re <a href="#Opening%20and%20Closing%20Files">Opening and Closing Files</a>.
+
+<p>File status flags fall into three categories, which are described in the
+following sections.
+
+<ul>
+<li><a href="#Access%20Modes">Access Modes</a> specify what type of access is allowed to the
+file: reading, writing, or both. They are set by <code>open</code> and are
+returned by <code>fcntl</code>, but cannot be changed.
+
+<li><a href="#Opening%20Flags">Opening Flags</a> control details of what <code>open</code> will do. 
+These flags are not preserved after the <code>open</code> call.
+
+<li><a href="#Operating%20Modes">Operating Modes</a> affect how operations such as <code>read</code> and
+<code>write</code> are done. They are set by <code>open</code>, and can be fetched or
+changed with <code>fcntl</code>. 
+</ul>
+
+<p>The symbols in this section are defined in the header file <a href="/usr/local/include/bits/fcntl.h">fcntl.h</a>.
+
+<ul>
+<li><a href="#Access%20Modes">Access Modes</a>:                 Whether the descriptor can read or write. 
+<li><a href="#Opening%20Flags">Opening Flags</a>:              Details of <code>open</code>. 
+<li><a href="#Operating%20Modes">Operating Modes</a>:              Special modes to control I/O operations. 
+<li><a href="#Getting%20File%20Status%20Flags">Getting File Status Flags</a>:    Fetching and changing these flags. 
+</ul>
+
+<hr>
+<h3><a name="Access%20Modes">File Access Modes</a></h3>
+
+<p>The file access modes allow a file descriptor to be used for reading, writing, or both 
+(GNU/Linux can also allow none of these, and allow execution of the file as a program). 
+The access modes are chosen when the file is opened, and never change.
+</p>
+
+<table width="96%">
+
+<tr>
+<td><tab to="i2"><b>O_RDONLY</b></td>
+<td align="right"><tab to="i4">Open the file for read access.</td>
+</tr>
+
+<tr>
+<td><tab to="i2"><b>O_WRONLY</b></td>
+<td align="right"><tab to="i4">Open the file for write access.</td>
+</tr>
+
+<tr>
+<td><tab to="i2"><b>O_RDWR</b></td>
+<td align="right"><tab to="i4">Open the file for reading and writing.</td>
+</tr>
+
+</table>
+
+<p>The portable way to extract the file access mode bits is with <code>O_ACCMODE</code>:
+</p>
+
+<table width="96%">
+<tr>
+<td><tab to="i2"><b>O_ACCMODE</b></td>
+<td align="right" valign="top"><font face="lucida,helvetica">
+<tab to="i4">a mask that can be bitwise-ANDed with the file status flag value to produce a value 
+<br><tab to="i4">representing the file access mode. The mode will be <code>O_RDONLY</code>, <code>O_WRONLY</code> 
+or, <code>O_RDWR</code>.
+</font>
+</td>
+</table>
+
+<hr>
+
+<h3><a name="Opening%20Flags">Opening Flags</a></h3>
+
+<p>The opening flags specify options affecting how <code>open</code> will behave. 
+These options are not preserved once the file is open. The exception to
+this is <code>O_NONBLOCK</code>, which is also an I/O operating mode and so it
+<em>is</em> saved. re <a href="#Opening%20and%20Closing%20Files">Opening and Closing Files</a>, for how to call
+<code>open</code>.
+
+<p>There are two sorts of options specified by opening flags.
+
+<ul>
+<li><dfn>File name translation flags</dfn> affect how <code>open</code> looks up the 
+file name and, whether the file can be created.
+<li><dfn>Opening flags</dfn> specify extra operations that <code>open</code> will 
+perform on the file once open. 
+</ul>
+
+<p>File name translation flags:</p>
+
+<table width="96%">
+
+<tr>
+<td align="left"><tab to="i2"><b>O_CREAT</b></td>
+<td align="right" valign="top"><tab to="i4">If set, the file will be created if it doesn't already exist.</td>
+</tr>
+
+<tr>
+<td align="left"><tab to="i2"><b>O_EXCL</b></td>
+<td align="right" valingn="top"><tab to="i4">
+If both <code>O_CREAT</code> and <code>O_EXCL</code> are set, then <code>open</code> fails
+if the specified file already exists.
+<br><tab to="i4">This is guaranteed to never clobber an existing file. 
+</td>
+
+<tr>
+<td align="left"><tab to="i2"><b>O_NONBLOCK</b></td>
+<td align="right" valign="top"><font face="lucida,helvetica">
+<tab to="i4">prevents <code>open</code> from blocking for a "long time" to open the file, usually for devices
+<br><tab to="i4">such as serial ports; harmless and ignored where not applicable.
+<br><tab to="i4">Note that the <code>O_NONBLOCK</code> flag conicides with both. an I/O operating mode and a file name 
+<br><tab to="i4">translation flag. I.e. specifying <code>O_NONBLOCK</code> in <code>open</code> also sets nonblocking I/O mode;
+<br><tab to="i4">re <a href="#Operating%20Modes">Operating Modes</a>. To open the file without blocking but for normal I/O that blocks, 
+<br><tab to="i4">call <code>open</code> <code>O_NONBLOCK</code> and turn the rsp. bit off by <code>fcntl</code>, afterwards. 
+</font>
+</td>
+</tr>
+
+<tr>
+<td align="left"><tab to="i2"><b>O_NOCTTY</b></td>
+<td align="right" valign="top"><font face="lucida,helvetica">
+<tab to="i4">If the named file is a terminal device, don't make it the controlling terminal for the 
+<br><tab to="i4">process. re <a href="#Job%20Control">Job Control</a>, for information about what "the controlling terminal" is.
+</font>
+</td></tr>
+</table>
+
+<p>The opening flags tell <code>open</code> to do additional operations
+which are not really related to opening the file. The reason to do them
+as part of <code>open</code> instead of in separate calls is that <code>open</code>
+can do them <i>atomically</i>:</p>
+
+<table width="90%">
+<tr>
+<td align="left"><tab to="i2"><b>O_TRUNC</b></td>
+<td align="right" valign="top"><font face="lucida,helvetica"><tab to="i4">
+Truncate the file to zero length. This option is only useful for regular files.<br>
+<tab to="i4">POSIX.1 requires write access to useing <code>O_TRUNC</code>.
+
+</font>
+</td>
+</tr>
+</table>
+
+<p>BSD specific extensions:</p>
+
+<table width="90%">
+<tr>
+<td align="left"><tab to="i2"><b>O_SHLOCK</b></td>
+<td align="right" valign="top">
+<tab to="i4">Acquire a shared lock on the file, as with <code>flock</code>. re <a href="#File%20Locks">File Locks</a>.
+<br><tab to="i4">
+Atomically locking if <code>O_CREAT</code> specified, no other process will<br>
+<tab to="i4">get the lock on the new file first. 
+</td></tr>
+
+<tr>
+<td align="left"><tab to="i2"><b>O_EXLOCK</b></td>
+<td align="right"><tab to="i4"><font face="lucida,helvetica">
+Atomically acquire an exclusive lock on the file. re <a href="#File%20Locks">File Locks</a>.
+</font>
+</td></tr>
+</table>
+
+<p><hr>
+<a href="#Getting%20File%20Status%20Flags">[Getting File Status Flags]</a> : 
+<a href="#Opening%20Flags">[Opening Flags]</a> : 
+</p>
+
+<h3><a name="Operating%20Modes">I/O Operating Modes</a></h3>
+
+<p>The operating modes affect how input and output operations using a file
+descriptor work. These flags are set by <code>open</code> and can be fetched
+and changed with <code>fcntl</code>.
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_APPEND</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+Enables append mode. If set, all <code>write</code> operations write the data to 
+the end of the file, extending it, regardless of the current file position. This is the only 
+reliable way to append to a file. In append mode, written data are guaranteed to always being 
+stored to the current end of the file, regardless of other processes writing to the file. 
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_NONBLOCK</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+Enables nonblocking mode. If set, <code>read</code> requests on the file can return immediately 
+with a failure status if there is no input immediately available, instead of blocking. Likewise, 
+<code>write</code> requests can also return immediately with a failure status if the output can't 
+be written immediately.
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_NDELAY</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+Another name for <code>O_NONBLOCK</code>, provided for compatibility with BSD, not defined by POSIX.1 standard. 
+</td></tr>
+</table>
+
+<p>The remaining operating modes are BSD and "GNU" extensions. They exist only
+on some systems. On other systems, these macros are not defined.</b>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_ASYNC</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+The bit that enables asynchronous input mode. If set, then <code>SIGIO</code>
+signals will be generated when input is available. re <a href="#Interrupt%20Input">Interrupt Input</a>.
+
+<p>Asynchronous input mode is a BSD feature.</p>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_FSYNC</b><i>
+</i></td>
+</tr>
+</table>
+
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+The bit that enables synchronous writing for the file. If set, each
+<code>write</code> call will make sure the data is reliably stored on disk before
+returning. 
+Synchronous writing is a BSD feature. 
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_SYNC</b><i>
+</i></td>
+</tr>
+</table>
+
+<table width="85%" align="center">
+<tr><td>
+another name for <code>O_FSYNC</code>, same value. 
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>O_NOATIME</b><i>
+</i></td>
+</tr>
+</table>
+
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+If set, <code>read</code> will not update the access time of the file. re <a href="#File%20Times">File Times</a>. 
+This is used by programs that do backups, so that backing up a file does not count as 'reading'. 
+Only the owner of the file or the superuser may use this bit.
+
+<p>"GNU"-specific.</p>
+</font>
+</td></tr>
+</table>
+
+<hr>
+
+<h3><a name="Getting%20File%20Status%20Flags">Getting and Setting File Status Flags</a></h3>
+
+<p>The <code>fcntl</code> function can fetch or change file status flags.
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_GETFL</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This macro is used as the <var>command</var> argument to <code>fcntl</code>, to
+read the file status flags for the open file with descriptor
+<var>filedes</var>.
+
+<p>The normal return value from <code>fcntl</code> with this command is a
+nonnegative number which can be interpreted as the bitwise OR of the
+individual flags. Since the file access modes are not single-bit values,
+you can mask off other bits in the returned flags with <code>O_ACCMODE</code>
+to compare them.
+
+<p>In case of an error, <code>fcntl</code> returns -1. The following
+<code>errno</code> error conditions are defined for this command:
+
+<dl>
+<dt><code>EBADF</code>
+<dd>The <var>filedes</var> argument is invalid. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_SETFL</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This macro is used as the <var>command</var> argument to <code>fcntl</code>, to set
+the file status flags for the open file corresponding to the
+<var>filedes</var> argument. This command requires a third <code>int</code>
+argument to specify the new flags, so the call looks like this:
+
+<pre>		fcntl (<var>filedes</var>, F_SETFL, <var>new-flags</var>)
+</pre>
+
+<p>You can't change the access mode for the file in this way; that is,
+whether the file descriptor was opened for reading or writing.
+
+<p>The normal return value from <code>fcntl</code> with this command is an
+unspecified value other than -1, which indicates an error. The
+error conditions are the same as for the <code>F_GETFL</code> command. 
+</font>
+</td></tr>
+</table>
+
+<p>If you want to modify the file status flags, you should get the current
+flags with <code>F_GETFL</code> and modify the value. Don't assume that the
+flags listed here are the only ones that are implemented; your program
+may be run years from now and more flags may exist then. For example,
+here is a function to set or clear the flag <code>O_NONBLOCK</code> without
+altering any other flags:
+
+<pre>		/* Set the <code>O_NONBLOCK</code> flag of <var>desc</var> if <var>value</var> is nonzero,
+		   or clear the flag if <var>value</var> is 0.
+		   Return 0 on success, or -1 on error with <code>errno</code> set. */
+
+		int
+		set_nonblock_flag (int desc, int value)
+		{
+		  int oldflags = fcntl (desc, F_GETFL, 0);
+		  /* If reading the flags failed, return error indication now. */
+		  if (oldflags == -1)
+		    return -1;
+		  /* Set just the flag we want to set. */
+		  if (value != 0)
+		    oldflags |= O_NONBLOCK;
+		  else
+		    oldflags &amp;= ~O_NONBLOCK;
+		  /* Store modified flag word in the descriptor. */
+		  return fcntl (desc, F_SETFL, oldflags);
+		}
+</pre>
+
+<hr>
+
+<h3><a name="File%20Locks">File Locks</a></h3>
+
+<p>The remaining <code>fcntl</code> commands are used to support <dfn>record
+locking</dfn>, which permits multiple cooperating programs to prevent each
+other from simultaneously accessing parts of a file in error-prone
+ways.
+
+<p>An <dfn>exclusive</dfn> or <dfn>write</dfn> lock gives a process exclusive access
+for writing to the specified part of the file. While a write lock is in
+place, no other process can lock that part of the file.
+
+<p>A <dfn>shared</dfn> or <dfn>read</dfn> lock prohibits any other process from
+requesting a write lock on the specified part of the file. However,
+other processes can request read locks.
+
+<p>The <code>read</code> and <code>write</code> functions do not actually check to see
+whether there are any locks in place. If you want to implement a
+locking protocol for a file shared by multiple processes, your application
+must do explicit <code>fcntl</code> calls to request and clear locks at the
+appropriate points.
+
+<p>
+Locks are associated with processes. A process can only have one kind of lock set for each 
+byte of a given file. <b>When any locked file descriptor is closed</b> by the process, 
+<b>all locks on that file are released</b> which that process holds, regardless of the rsp. 
+file descriptors' state. Likewise, locks are released when a process exits, and not inherited 
+by child processes created by the <a href="lhpsysc1.html#fork"><code>fork</code></a> syscall.
+
+<p>When making a lock, use a <code>struct flock</code> to specify what kind of
+lock and where. This data type and the associated macros for the
+<code>fcntl</code> function are declared in the header file <code>fcntl.h</code>.
+
+<p>
+<table width="90%">
+<tr>
+<td align="left"><b>struct flock</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+The structure is used with the <code>fcntl</code> function to describe a file 
+lock, the members are
+
+<dl>
+<dt><code>short int l_type</code>
+<dd>specifies the type of the lock; one of <code>F_RDLCK</code>, <code>F_WRLCK</code>, or
+<code>F_UNLCK</code>.
+
+<br><dt><code>short int l_whence</code>
+<dd>the <var>whence</var> argument to <code>fseek</code> or <code>lseek</code>, specifying 
+the relation of "offset", either one of <code>SEEK_SET</code>, <code>SEEK_CUR</code>, <code>SEEK_END</code>.
+
+<br><dt><code>off_t l_start</code>
+<dd>offset of the region to which the lock applies, in bytes relative to the point 
+specified by <code>l_whence</code> member.
+
+<br><dt><code>off_t l_len</code>
+<dd>length of the region to be locked. A value of <code>0</code> is treated specially; 
+it means the region extends to the end of the file.
+
+<br><dt><code>pid_t l_pid</code>
+<dd>process ID of the process holding the lock. Filled in by calling <code>fcntl</code> 
+with the <code>F_GETLK</code> command but, ignored when making a lock. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_GETLK</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+<var>command</var> to requesting information about a lock; requires a third argument of type 
+<code>struct&nbsp;flock&nbsp;*</code> to <code>fcntl</code>, so that the form of the call is:
+
+<pre>		fcntl (<var>filedes</var>, F_GETLK, <var>lockp</var>)
+</pre>
+
+<p>If there is a lock already in place that would block the lock described
+by the <var>lockp</var> argument, information about that lock overwrites
+<code>*<var>lockp</var></code>. Existing locks are not reported if they are
+compatible with making a new lock as specified. Thus, you should
+specify a lock type of <code>F_WRLCK</code> if you want to find out about both
+read and write locks, or <code>F_RDLCK</code> if you want to find out about
+write locks only.
+
+<p>There might be more than one lock affecting the region specified by the
+<var>lockp</var> argument, but <code>fcntl</code> only returns information about
+one of them. The <code>l_whence</code> member of the <var>lockp</var> structure is
+set to <code>SEEK_SET</code> and the <code>l_start</code> and <code>l_len</code> fields
+set to identify the locked region.
+
+<p>If no lock applies, the only change to the <var>lockp</var> structure is to
+update the <code>l_type</code> to a value of <code>F_UNLCK</code>.
+
+<p>The normal return value from <code>fcntl</code> with this command is an
+unspecified value other than -1, which is reserved to indicate an
+error. The following <code>errno</code> error conditions are defined for
+this command:
+
+<dl>
+<dt><code>EBADF</code>
+<dd>The <var>filedes</var> argument is invalid.
+
+<br><dt><code>EINVAL</code>
+<dd>Either the <var>lockp</var> argument doesn't specify valid lock information,
+or the file associated with <var>filedes</var> doesn't support locks. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_SETLK</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+<var>command</var>, specifying that the <code>fcntl</code> should set or clear a lock; 
+requires a third argument of type <code>struct&nbsp;flock&nbsp;*</code>:
+
+<pre>		fcntl (<var>filedes</var>, F_SETLK, <var>lockp</var>)
+</pre>
+
+<p>If the process already has a lock on any part of the region, the old lock
+on that part is replaced with the new lock. You can remove a lock
+by specifying a lock type of <code>F_UNLCK</code>.
+
+<p>If the lock cannot be set, <code>fcntl</code> returns immediately with a value
+of -1. This function does not block waiting for other processes
+to release locks. If <code>fcntl</code> succeeds, it return a value other
+than -1.
+
+<p>The following <code>errno</code> error conditions are defined for this
+function:
+
+<dl>
+<dt><code>EAGAIN</code>
+<dt><code>EACCES</code>
+<dd>The lock cannot be set because it is blocked by an existing lock on the
+file. Some systems use <code>EAGAIN</code> in this case, and other systems
+use <code>EACCES</code>; your program should treat them alike, after
+<code>F_SETLK</code> ("GNU" always useing <code>EAGAIN</code>).
+
+<br><dt><code>EBADF</code>
+<dd>Either: the <var>filedes</var> argument is invalid; you requested a read lock
+but the <var>filedes</var> is not open for read access; or, you requested a
+write lock but the <var>filedes</var> is not open for write access.
+
+<br><dt><code>EINVAL</code>
+<dd>Either the <var>lockp</var> argument doesn't specify valid lock information,
+or the file associated with <var>filedes</var> doesn't support locks.
+
+<br><dt><code>ENOLCK</code>
+<dd>The system has run out of file lock resources; there are already too
+many file locks in place.
+
+<p>Well-designed file systems never report this error, because they have no
+limitation on the number of locks. However, you must still take account
+of the possibility of this error, as it could result from network access
+to a file system on another machine. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_SETLKW</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+<var>command</var> to setting or clearing a lock. It is just like the
+<code>F_SETLK</code> command, but causes the process to block (or wait)
+until the request can be specified.
+
+<p>This command requires a third argument of type <code>struct flock *</code>, as
+for the <code>F_SETLK</code> command.
+
+<p>The <code>fcntl</code> return values and errors are the same as for the
+<code>F_SETLK</code> command, but these additional <code>errno</code> error conditions
+are defined for this command:
+
+<dl>
+<dt><code>EINTR</code>
+<dd>The function was interrupted by a signal while it was waiting. 
+re <a href="#Interrupted%20Primitives">Interrupted Primitives</a>.
+
+<br><dt><code>EDEADLK</code>
+<dd>The specified region is being locked by another process. But that
+process is waiting to lock a region which the current process has
+locked, so waiting for the lock would result in deadlock. The system
+does not guarantee that it will detect all such conditions, but it lets
+you know if it notices one. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>The following macros are defined for use as values for the <code>l_type</code>
+member of the <code>flock</code> structure. The values are integer constants.
+
+<dl>
+<dt><code>F_RDLCK</code>
+<dd>used to specify a read (or shared) lock.
+
+<br><dt><code>F_WRLCK</code>
+<dd>used to specify a write (or exclusive) lock.
+
+<br><dt><code>F_UNLCK</code>
+<dd>used to specify that the region is unlocked. 
+</dl>
+
+<p>As an example of a situation where file locking is useful, consider a
+program that can be run simultaneously by several different users, that
+logs status information to a common file. One example of such a program
+might be a game that uses a file to keep track of high scores. Another
+example might be a program that records usage or accounting information
+for billing purposes.
+
+<p>Having multiple copies of the program simultaneously writing to the
+file could cause the contents of the file to become mixed up. But
+you can prevent this kind of problem by setting a write lock on the
+file before actually writing to the file.
+
+<p>If the program also needs to read the file and wants to make sure that
+the contents of the file are in a consistent state, then it can also use
+a read lock. While the read lock is set, no other process can lock
+that part of the file for writing.
+
+<p>Remember that file locks are only a <em>voluntary</em> protocol for
+controlling access to a file. There is still potential for access to
+the file by programs that don't use the lock protocol.
+
+<hr>
+
+<h3><a name="Interrupt%20Input">Interrupt-Driven Input</a></h3>
+
+<p>If you set the <code>O_ASYNC</code> status flag on a file descriptor
+(re <a href="#File%20Status%20Flags">File Status Flags</a>), a <code>SIGIO</code> 
+signal is sent whenever
+input or output becomes possible on that file descriptor. The process
+or process group to receive the signal can be selected by using the
+<code>F_SETOWN</code> command to the <code>fcntl</code> function. If the file
+descriptor is a socket, this also selects the recipient of <code>SIGURG</code>
+signals that are delivered when out-of-band data arrives on that socket;
+see <a href="#Out-of-Band%20Data">Out-of-Band Data</a>. - <code>SIGURG</code> is sent in any situation
+where <code>select</code> would report the socket as having an "exceptional
+condition". re <a href="#Waiting%20for%20I%2fO">Waiting for I/O</a>.
+
+<p>If the file descriptor corresponds to a terminal device, then <code>SIGIO</code>
+signals are sent to the foreground process group of the terminal. 
+re <a href="#Job%20Control">Job Control</a>.
+
+<p>The symbols in this section are defined in the header file
+<code>fcntl.h</code>.
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_GETOWN</b><i>
+</i></td>
+</tr>
+</table>
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This macro is used as the <var>command</var> argument to <code>fcntl</code>, to
+specify that it should get information about the process or process
+group to which <code>SIGIO</code> signals are sent.
+
+<p>The return value is interpreted as a process ID; if negative, its
+absolute value is the process group ID.
+
+<p>The following <code>errno</code> error condition is defined for this command:
+
+<dl>
+<dt><code>EBADF</code>
+<dd>The <var>filedes</var> argument is invalid. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+<p>
+<table width="90%">
+<tr>
+<td align="left">int <b>F_SETOWN</b><i>
+</i></td>
+</tr>
+</table>
+
+<table width="85%" align="center">
+<tr><td>
+<font face="lucida,helvetica">
+This macro is used as the <var>command</var> argument to <code>fcntl</code>, to
+specify that it should set the process or process group to which
+<code>SIGIO</code> signals are sent. This command requires a third argument
+of type <code>pid_t</code> to be passed to <code>fcntl</code>, so that the form of
+the call is:
+<pre>		fcntl (<var>filedes</var>, F_SETOWN, <var>pid</var>)
+</pre>
+
+<p>The <var>pid</var> argument should be a process ID. You can also pass a
+negative number whose absolute value is a process group ID.
+
+<p>The return value from <code>fcntl</code> with this command is -1
+in case of error and some other value if successful. The following
+<code>errno</code> error conditions are defined for this command:
+
+<dl>
+<dt><code>EBADF</code>
+<dd>The <var>filedes</var> argument is invalid.
+
+<br><dt><code>ESRCH</code>
+<dd>There is no process or process group corresponding to <var>pid</var>. 
+</dl>
+</font>
+</td></tr>
+</table>
+
+</blockquote>
+
+<p>&nbsp;</p>
+<hr>
+
+<a href="#top">[top]</a>
+<a href="lhpsyscal.html">[back]</a> 
+<a href="lhpsysc0.html">[index]</a> 
+<br>
+<a href="lhpsysc1.html#fcntl">[sys_fcntl]</a> 
+<a href="lhpsysc0a.html">[a:index]</a> 
+<a href="lhpsysc0.html">[#:index]</a> 
+<a href="lhpsysc1.html">[1..64]</a> 
+<a href="lhpsysc2.html">[65...128]</a> 
+<a href="lhpsysc3.html">[129..190]</a>
+<a href="lhpsysc4.html">[191..256]</a>
+<a href="lhpsysc5.html">[257..]</a>
+<a href="lhpioctl.html">[ioctl]</a>
+<br>
+
+<center>
+<font size="-2"><a href="index-lx.shtml#nospam">H.-Peter Recktenwald, Berlin</a>, 6.Mar.2001 = .hpr.l0 =  
+<script language="JavaScript"> document.write(document.lastModified) </script>
+<noscript>updt:6.Aug.02</noscript> : 
+<img src="http://me.in-berlin.de/cgi-bin/wwwcount.cgi?df=lxhp.fcntl" alt="690" border="0" height="16">
+<a href="mailto:news.admin.net-abuse.email@myriad.alias.net"></a>
+</center>
+
+<p>&nbsp;</p>
+</font>
+</body>
+</html>
